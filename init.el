@@ -1,8 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (setq package-enable-at-startup nil)
-
 
 (setenv "PATH"
 	(concat (getenv "PATH")
@@ -103,26 +101,9 @@
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
 (setq neo-smart-open t)
 
-;; (setq projectile-use-native-indexing t)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; mac settings                                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; mkm does this copy and paste still need to be used?
-;; for copy on oxs and paste
-;; (defun copy-from-osx ()
-;;    (shell-command-to-string "pbpaste"))
-
-;; (defun paste-to-osx (text &optional push)
-;;   (let ((process-connection-type nil))
-;;     (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-;;       (process-send-string proc text)
-;;       (process-send-eof proc))))
-
-;; (setq interprogram-cut-function 'paste-to-osx)
-;; (setq interprogram-paste-function 'copy-from-osx)
-
 
 ;; shell issues
 ;; is this needed for flyspell to work?
@@ -154,45 +135,6 @@
 
 ;; (server-start)
 (setq ns-pop-up-frames nil)
-;; mkm 2016-06-27  DISABLED
-;; make modified buffers auto-reload
-;; (defadvice server-visit-files (around save-buffers last activate)
-;;   "Try to emulate gnuclient behavior with emacsclient.
-;;     Works only for visiting one buffer at a time."
-;;   (let* ((filen (car (car (ad-get-arg 0))))
-;;          (buf (get-file-buffer filen))
-;;          (this-buf-modified-p nil))
-;;     ;;; the following is copied from server-visit-files, with
-;;     ;;; a modification for the `verify-visited-file-modtime' test
-;;     (if (and buf (set-buffer buf))
-;;         (if (file-exists-p filen)
-;;             ;;; if the file has changed on disk, reload it
-;;             ;;; using `find-file-noselect'
-;;             (if (not (verify-visited-file-modtime buf))
-;;                 (progn
-;;                   (find-file-noselect filen)
-;;                    ;;; if user answered `no', reset modtime anyway
-;;                    ;;; so that server-visit-files doesn't realize the
-;;                    ;;; difference:
-;;                   (set-visited-file-modtime)))
-;;           ;;; if file exists no longer, we let server-visit-files
-;;           ;;; deal with that
-;;           t)
-;;       (setq buf (find-file-noselect filen)))
-;;     (setq this-buf-modified-p (buffer-modified-p buf))
-;;     (set-buffer buf)
-;;     (set-buffer-modified-p nil)
-;;     ad-do-it
-;;     (set-buffer-modified-p this-buf-modified-p)))
-
-;; (defadvice handle-delete-frame (around my-handle-delete-frame-advice activate)
-;;   "Hide Emacs instead of closing the last frame"
-;;   (let ((frame   (posn-window (event-start event)))
-;;         (numfrs  (length (frame-list))))
-;;     (if (> numfrs 1)
-;;       ad-do-it
-;;       (do-applescript "tell application \"System Events\" to tell process \"Emacs\" to set visible to false"))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; magit                                                                  ;;
@@ -204,6 +146,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; grep                                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; remove crappy header from grep return
 (defun delete-grep-header ()
   (save-excursion
@@ -217,13 +160,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; (defadvice find-file (after find-file-sudo activate)
-;;   "Find file as root if necessary."
-;;   (unless (and buffer-file-name
-;;                (file-writable-p buffer-file-name))
-;;     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; persistent-scratch 
 (use-package persistent-scratch 
@@ -264,10 +200,6 @@
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
 
-;; peep-dired
-;; (setq peep-dired-cleanup-on-disable t)
-;; (setq peep-dired-ignored-extensions '("iso" "png"))
-
 ;; fix for 'ls does not support --dired' message
 (setq dired-use-ls-dired nil)
 
@@ -279,11 +211,6 @@
 ;; simpleclip
 (require 'simpleclip)
 (simpleclip-mode 1)
-
-
-;; mkm shouldn't pdf-tools be back on?
-;; trying pdf-tools
-;; (pdf-tools-install)
 
 ;; some editing extras
 (require 'expand-region)
@@ -309,15 +236,6 @@
   (global-undo-tree-mode 1)
   (setq undo-tree-mode t))
 
-;; mkm Wednesday, April 6, 2016: never used this!
-;; mkm Do I want to keep ctrl-z for undo?
-;; make ctrl-z undo
-;; (global-set-key (kbd "C-z") 'undo)
-;; make ctrl-Z redo
-;; (defalias 'redo 'undo-tree-redo)
-;; (global-set-key (kbd "C-S-z") 'redo)
-;; remember, C-x u to get the tree!!!
-
 (defun my-diff-buffer-with-file ()
   "Compare the current modified buffer with the saved version."
   (interactive)
@@ -327,7 +245,6 @@
 (global-set-key (kbd "C-z") nil)
 (global-set-key (kbd "C-x =") 'my-diff-buffer-with-file)
 (global-set-key (kbd "C-x C-=") 'ediff-current-file)
-
 
 ;; mkm since this doesn't work in magit, change ace-window
 ;; windows manipulation
@@ -346,13 +263,11 @@
 (savehist-mode 1)
 
 ;; recent files?
-;; (require 'recentf)
-;; (recentf-mode 1)
-;; (global-set-key (kbd "C-x C-r") 'ivy-recentf)
+(require 'recentf)
+(recentf-mode 1)
+(global-set-key (kbd "C-x C-r") 'ivy-recentf)
 
 
-;; mkm do I really need the insert data feature?
-;; mkm should I consider hydra for these sorts of easily forgotten commands?
 ;; let's add dates easier
 (require 'calendar)
 (defun insdate-insert-current-date (&optional omit-day-of-week-p)
@@ -364,6 +279,49 @@
                                 omit-day-of-week-p)))
 
 (global-set-key "\C-x\M-d" `insdate-insert-current-date)
+
+(use-package ace-window
+  :ensure t
+  :init
+  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?o))
+  (global-set-key (kbd "C-x o") 'ace-window)
+  :diminish ace-window-mode)
+
+(use-package smooth-scrolling
+  :ensure t
+  :config (setq smooth-scroll-margin 2)
+  :init (smooth-scrolling-mode 1))
+(setq mouse-wheel-scroll-amount '(1 ((shift) .1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
+
+(add-to-list 'default-frame-alist
+	     '(font . "Source Code Pro 14"))
+(set-face-attribute 'default t :font "Source Code Pro 14")
+
+;; mkm turn back on for magit?
+(use-package git-gutter+
+  :ensure t
+  :init (global-git-gutter+-mode)
+  :diminish (git-gutter+-mode))
+
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines +1)
+
+(add-to-list 'default-frame-alist
+	     '(font . "Source Code Pro 14"))
+(set-face-attribute 'default t :font "Source Code Pro 14")
+
+;; mkm: turn back on for magit?
+(use-package git-gutter+
+  :ensure t
+  :init (global-git-gutter+-mode)
+  :diminish (git-gutter+-mode))
+
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines +1)
+
+(require 're-builder)
+(setq reb-re-syntax 'string)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; visual                                                                 ;;
@@ -383,20 +341,10 @@
 (set-cursor-color "red")
 (blink-cursor-mode 1)
 
-;; pesky current line
-;; (global-hl-line-mode +1)
-;; (setq global-hl-line-sticky-flag t)
-;; keep my sanity
 (show-paren-mode 1)
-;; mkm Tuesday, March 8, 2016: turned off because bugging me
-;; (electric-pair-mode)
 
-;; mkm Wednesday, April 20, 2016
-;; current main -- highlight line too subtle!
-;; (global-hl-line-mode 1)
-;; (set-face-background 'hl-line "black")
-;; (set-face-foreground 'highlight nil)
 
+;; mkm: some themes to play with  :)
 ;; light
 ;; (load-theme 'soft-stone t)
 ;; (load-theme 'twilight-bright t)
@@ -414,7 +362,10 @@
 ;; (load-theme 'monokai t)
 
 
-;; Howard Abrams settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Howard Abrams settings                                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (setq initial-scratch-message "")
 (setq visible-bell t)
 
@@ -540,121 +491,15 @@
              ("s-p" . smartscan-symbol-go-backward))
   (global-smartscan-mode t))
 
-
-;; (ha/change-theme 'color-theme-sanityinc-tomorrow-day
-;;                  'org-src-color-blocks-light)
-;; (ha/change-theme 'color-theme-sanityinc-tomorrow-night
-;;                    'org-src-color-blocks-dark)
-
-(use-package ace-window
-  :ensure t
-  :init
-  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?o))
-  (global-set-key (kbd "C-x o") 'ace-window)
-  :diminish ace-window-mode)
-
-(use-package smooth-scrolling
-  :ensure t
-  :config (setq smooth-scroll-margin 2)
-  :init (smooth-scrolling-mode 1))
-(setq mouse-wheel-scroll-amount '(1 ((shift) .1) ((control) . nil)))
-(setq mouse-wheel-progressive-speed nil)
-
-;; (load-theme 'darkokai t)
-(add-to-list 'default-frame-alist
-	     '(font . "Source Code Pro 14"))
-(set-face-attribute 'default t :font "Source Code Pro 14")
-
-;; smooth scrolling on mac when not using railwaycat
-;; (use-package smooth-scroll
-;;   :config
-;;   (smooth-scroll-mode 1)
-;;   (setq smooth-scroll/vscroll-step-size 5)
-;;  )
-
-;; mkm turn back on for magit?
-(use-package git-gutter+
-  :ensure t
-  :init (global-git-gutter+-mode)
-  :diminish (git-gutter+-mode))
-
-(setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines +1)
-
-;; (error "Done")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tramp                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Monday, June 27, 2016 Too complicated of tramp setup for now, really need it?
-
-;; if this works, I need to kiss somebody
-;; (require 'tramp)
-;; (require 'dired)
-
 (setq tramp-default-method "ssh")
-
-;; (defun sudo-edit-current-file ()
-;;   (interactive)
-;;   (let ((my-file-name) ; fill this with the file to open
-;;         (position))    ; if the file is already open save position
-;;     (if (equal major-mode 'dired-mode) ; test if we are in dired-mode 
-;;         (progn
-;;           (setq my-file-name (dired-get-file-for-visit))
-;;           (find-alternate-file (prepare-tramp-sudo-string my-file-name)))
-;;       (setq my-file-name (buffer-file-name); hopefully anything else is an already opened file
-;;             position (point))
-;;       (find-alternate-file (prepare-tramp-sudo-string my-file-name))
-;;       (goto-char position))))
-
-;; (defun prepare-tramp-sudo-string (tempfile)
-;;   (if (file-remote-p tempfile)
-;;       (let ((vec (tramp-dissect-file-name tempfile)))
-
-;;         (tramp-make-tramp-file-name
-;;          "sudo"
-;;          (tramp-file-name-user nil)
-;;          (tramp-file-name-host vec)
-;;          (tramp-file-name-localname vec)
-;;          (format "ssh:%s@%s|"
-;;                  (tramp-file-name-user vec)
-;;                  (tramp-file-name-host vec))))
-;;     (concat "/sudo:root@localhost:" tempfile)))
-
-;; (define-key dired-mode-map [s-return] 'sudo-edit-current-file)
-
-;; mkm Wednesday, April 6, 2016: cleaning up mode line, don't tramp much
-;; show me where I'm at!
-;; (defconst my-mode-line-buffer-identification
-;;   (list
-;;    '(:eval
-;;      (let ((host-name
-;;             (if (file-remote-p default-directory)
-;;                 (tramp-file-name-host
-;;                  (tramp-dissect-file-name default-directory))
-;;               (system-name))))
-;;        (if (string-match "^[^0-9][^.]*\\(\\..*\\)" host-name)
-;;            (substring host-name 0 (match-beginning 1))
-;;          host-name)))
-;;    ": %12b"))
-
-;; (setq-tedefault
-;;  mode-line-buffer-identification
-;;  my-mode-line-buffer-identification)
-
-;; (add-hook
-;;  'dired-mode-hook
-;;  (lambda ()
-;;    (setq
-;;     mode-line-buffer-identification
-;;     my-mode-line-buffer-identification)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ivy-mode                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; disabled ivy mode to re-try helm on November 12, 2015
 
 (use-package ivy
   :ensure t
@@ -669,10 +514,6 @@
 (global-set-key (kbd "C-S-s") 'swiper)
 (global-set-key (kbd "C-S-r") 'swiper)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-
-;; (global-set-key (kbd "M-s") 'isearch-forward)
-;; (define-key isearch-mode-map "\M-s" 'isearch-repeat-forward)
-
 
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
@@ -693,6 +534,7 @@
 
 (setq org-adapt-indentation nil)
 
+;; mkm: disabled clock for now -- too much!
 ;; clock stuff
 ;; (defun org-agenda-timeline-all (&optional arg)
 ;;   (interactive "P")
@@ -749,9 +591,6 @@
 (setq org-default-notes-file (concat org-directory "/inbox.org"))
 (define-key global-map "\C-cc" 'org-capture)
 
-;; (setq org-todo-keyword-faces
-;;       '(("WAIT" . "dark gray")))
-
 (setq org-goto-interface 'outline
       org-goto-max-level 10)
 (setq org-startup-folded t)
@@ -777,7 +616,7 @@
 	 :empty-lines 1
 	 )
 	("f" "Fiction Entry"
-rd	 entry (file+datetree "~/Documents/org/fiction.org")
+	 entry (file+datetree "~/Documents/org/fiction.org")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
@@ -888,6 +727,181 @@ rd	 entry (file+datetree "~/Documents/org/fiction.org")
 
 ;; (error "Done")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; helm                                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; helm setup   CURRENT
+
+;; (require 'helm)
+;; (require 'helm-config)
+
+;; (global-set-key (kbd "M-x") 'helm-M-x)
+;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
+;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+;; (global-set-key (kbd "C-x b") 'helm-mini)
+;; (setq helm-buffers-fuzzy-matching t
+;;        helm-recentf-fuzzy-match    t)
+
+;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+
+;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+
+;; OLD SHIT
+
+;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
+;; (global-unset-key (kbd "C-x c"))
+
+
+
+;; (when (executable-find "curl")
+;;       (setq helm-google-suggest-use-curl-p t))
+
+; (global-set-key (kbd "C-c h o") 'helm-occur) 
+
+;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+;;       helm-ff-file-name-history-use-recentf t)
+
+;; (setq helm-grep-default-command
+;;       "ggrep -a -d skip %e -n%cH -e %p %f")
+;; (setq helm-grep-default-recurse-command
+;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
+
+;; (helm-mode 1)
+
+;; END OLD SHIT helm
+
+;; (error "Done")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; helm                                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; helm setup   CURRENT
+
+;; (require 'helm)
+;; (require 'helm-config)
+
+;; (global-set-key (kbd "M-x") 'helm-M-x)
+;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
+;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+;; (global-set-key (kbd "C-x b") 'helm-mini)
+;; (setq helm-buffers-fuzzy-matching t
+;;        helm-recentf-fuzzy-match    t)
+
+;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+
+;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+
+;; OLD SHIT
+
+;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
+;; (global-unset-key (kbd "C-x c"))
+
+
+
+;; (when (executable-find "curl")
+;;       (setq helm-google-suggest-use-curl-p t))
+
+; (global-set-key (kbd "C-c h o") 'helm-occur) 
+
+;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+;;       helm-ff-file-name-history-use-recentf t)
+
+;; (setq helm-grep-default-command
+;;       "ggrep -a -d skip %e -n%cH -e %p %f")
+;; (setq helm-grep-default-recurse-command
+;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
+
+;; (helm-mode 1)
+
+;; END OLD SHIT helm
+
+;; (error "Done")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; helm                                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; helm setup   CURRENT
+
+;; (require 'helm)
+;; (require 'helm-config)
+
+;; (global-set-key (kbd "M-x") 'helm-M-x)
+;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
+;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+;; (global-set-key (kbd "C-x b") 'helm-mini)
+;; (setq helm-buffers-fuzzy-matching t
+;;        helm-recentf-fuzzy-match    t)
+
+;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+
+;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+
+;; OLD SHIT
+
+;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
+;; (global-unset-key (kbd "C-x c"))
+
+
+
+;; (when (executable-find "curl")
+;;       (setq helm-google-suggest-use-curl-p t))
+
+; (global-set-key (kbd "C-c h o") 'helm-occur) 
+
+;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+;;       helm-ff-file-name-history-use-recentf t)
+
+;; (setq helm-grep-default-command
+;;       "ggrep -a -d skip %e -n%cH -e %p %f")
+;; (setq helm-grep-default-recurse-command
+;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
+
+;; (helm-mode 1)
+
+;; END OLD SHIT helm
+
+;; (error "Done")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; emacs auto stuff                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -921,7 +935,7 @@ rd	 entry (file+datetree "~/Documents/org/fiction.org")
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; OSX plist bullshit
+;; OSX plist workaround
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; ;; Allow editing of binary .plist files.
@@ -941,41 +955,6 @@ rd	 entry (file+datetree "~/Documents/org/fiction.org")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flyspell setup                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Time-stamp: <2015-08-26 08:48:04 kmodi>
-;;
-;; Spell check
-;; ispell, flyspell
-;; aspell, hunspell
-;;
-;; NOTE: You need to have `aspell' or `hunspell' installed first
-;;
-;; Aspell Setup:
-;; 1. Install aspell from http://aspell.net/
-;;    - Install using ./configure --prefix=~/usr_local/bin, make, make install
-;; 2. Download the latest dictionary from ftp://ftp.gnu.org/gnu/aspell/dict/0index.html
-;;    and extract it.
-;;    - Install the dictionary using ./configure, make, make install
-;;
-;; Hunspell Setup:
-;; 1. Install hunspell from http://hunspell.sourceforge.net/
-;; 2. Download openoffice dictionary extension from
-;;    http://extensions.openoffice.org/en/project/english-dictionaries-apache-openoffice
-;; 3. That is download `dict-en.oxt'. Rename that to `dict-en.zip' and unzip
-;;    the contents to a temporary folder.
-;; 4. Copy `en_US.dic' and `en_US.aff' files from there to a folder where you
-;;    save dictionary files; I saved it to `~/usr_local/share/hunspell/'
-;; 5. Add that path to shell env variable `DICPATH':
-;;     setenv DICPATH $MYLOCAL/share/hunspell
-;; 6. Restart emacs so that when hunspell is run by ispell/flyspell, that env
-;;    variable is effective.
-;;
-;; hunspell will search for a dictionary called `en_US' in the path specified by
-;; `$DICPATH'
-;;
-;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
-;; (error "Done")
-
 
 (use-package ispell
   :defer 15
@@ -1024,20 +1003,3 @@ rd	 entry (file+datetree "~/Documents/org/fiction.org")
         (advice-add 'flyspell-prog-mode :before-until #'modi/ispell-not-avail-p))))
 
 (provide 'setup-spell)
-
-;; How to add a new word to the dictionary?
-;; 1. Run ispell-word when the cursor is over the word ( `M-$' )
-;; 2. Press `i' to add the word to the dictionary
-;; 3. Done!
-;;
-;; For `aspell', the new words are auto added to `~/.aspell.en.pws'.
-;; For `hunspell', the new words are auto added to `~/.hunspell_en_US'.
-;;
-;; If the word does not auto-correct properly, call the function
-;; `flyspell-auto-correct-previous-word' repeatedly till you find the
-;; right match. It is easy if a key is bound to call that function.
-;; (put 'narrow-to-region 'disabled nil)
-
-
-(require 're-builder)
-(setq reb-re-syntax 'string)
