@@ -28,6 +28,7 @@
 
 (mapc #'package-install my-package-list)
 
+;; mkm: not used
 (defun org-src-color-blocks-light ()
   "Colors the block headers and footers to make them stand out more for lighter themes"
   (interactive)
@@ -41,6 +42,7 @@
    '(org-block-end-line
      ((t (:overline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF"))))))
 
+; mkm: not used
 (defun org-src-color-blocks-dark ()
   "Colors the block headers and footers to make them stand out more for dark themes"
   (interactive)
@@ -54,10 +56,44 @@
    '(org-block-end-line
      ((t (:foreground "#008ED1" :background "#002E41"))))))
 
-(defcustom default-light-color-theme 'sanityinc-tomorrow-day
+
+;; theme shift
+(defun load-only-theme ()
+  "Disable all themes and then load a single theme interactively."
+  (interactive)
+  (while custom-enabled-themes
+    (disable-theme (car custom-enabled-themes)))
+  (call-interactively 'load-theme))
+
+(defun switch-theme (theme)
+  ;; This interactive call is taken from `load-theme'
+  (interactive
+   (list
+    (intern (completing-read "Load custom theme: "
+                             (mapcar 'symbol-name
+                                     (custom-available-themes))))))
+  (mapcar #'disable-theme custom-enabled-themes)
+  (load-theme theme t))
+
+;;(load-theme 'minimal-light t)
+;; (load-theme 'leuven t)
+
+;; (defcustom default-light-color-theme 'sanityinc-tomorrow-day
+;;   "default light theme")
+
+;; (defcustom default-dark-color-theme 'sanityinc-tomorrow-night
+;;   "default dark theme")
+
+;; (defcustom default-light-color-theme 'minimal-light
+;;   "default light theme")
+
+(defcustom default-light-color-theme 'material-light
   "default light theme")
 
-(defcustom default-dark-color-theme 'sanityinc-tomorrow-night
+;; (defcustom default-dark-color-theme 'minimal
+;;   "default dark theme")
+
+(defcustom default-dark-color-theme 'material
   "default dark theme")
 
 (defun toggle-dark-light-theme ()
@@ -68,23 +104,60 @@
       (disable-theme theme))
     (if is-light
         (progn
-          (load-theme default-dark-color-theme t)
-          (org-src-color-blocks-dark))
+          (load-theme default-dark-color-theme t))
+;;          (org-src-color-blocks-dark))
       (progn
-        (load-theme default-light-color-theme t)
-        (org-src-color-blocks-light)))))
+        (load-theme default-light-color-theme t)))))
+  ;;      (org-src-color-blocks-light)))))
 
 (add-hook 'after-make-frame-functions 'my-theme)
 
+;; now to handle that icky larger sized org mode heading!
+;; (custom-theme-set-faces
+;;  'material
+;;  '(org-level-1 ((t (:height 1.0))))
+;;  '(org-level-2 ((t (:height 1.0))))
+;;  '(org-level-3 ((t (:height 1.0))))
+;;  '(org-level-4 ((t (:height 1.0))))
+;;  '(org-level-5 ((t (:height 1.0))))
+;;  '(org-level-6 ((t (:height 1.0)))))
+ 
+
+;; (defun my-theme (frame)
+;;   (if (display-graphic-p frame)
+;;       (progn
+;;         (tool-bar-mode -1)
+;;         (scroll-bar-mode -1)
+;;         (global-set-key (kbd "C-+") 'toggle-dark-light-theme)
+;;         (load-theme 'minimal-light t)
+;;         (custom-theme-set-faces
+;;          'minimal-light
+;;          '(org-level-1 ((t (:height 1.0))))
+;;          '(org-level-2 ((t (:height 1.0))))
+;;          '(org-level-3 ((t (:height 1.0))))
+;;          '(org-level-4 ((t (:height 1.0))))
+;;          '(org-level-5 ((t (:height 1.0))))
+;;          '(org-level-6 ((t (:height 1.0))))
+;;          ))))
+        
 (defun my-theme (frame)
   (if (display-graphic-p frame)
       (progn
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
         (global-set-key (kbd "C-+") 'toggle-dark-light-theme)
-        (progn
-          (load-theme 'sanityinc-tomorrow-night t)
-          (org-src-color-blocks-dark)))))
+        (load-theme 'material-light t)
+        (custom-theme-set-faces
+         'material-light
+         '(org-level-1 ((t (:height 1.0))))
+         '(org-level-2 ((t (:height 1.0))))
+         '(org-level-3 ((t (:height 1.0))))
+         '(org-level-4 ((t (:height 1.0))))
+         '(org-level-5 ((t (:height 1.0))))
+         '(org-level-6 ((t (:height 1.0))))
+         ))))
+
+
 
 (require 'deft)
 ;; (require 'session)
@@ -162,10 +235,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; persistent-scratch 
-(use-package persistent-scratch 
-  :config 
-  (persistent-scratch-setup-default))
+;; (use-package persistent-scratch 
+;;   :config 
+;;   (persistent-scratch-setup-default))
 
+(setq js-indent-level 2)
 
 (use-package counsel
   :bind
@@ -187,6 +261,8 @@
 ;; auto-revert mode
 ;; http://nhoffman.github.io/.emacs.d/#sec-3
 (global-auto-revert-mode 1)
+(setq auto-revert-verbose t)
+(global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;; winner-mode for sanity
 (winner-mode 1)
@@ -209,19 +285,51 @@
 
 ;; mkm  mkm I think simpleclip handles the pasting now
 ;; simpleclip
-(require 'simpleclip)
-(simpleclip-mode 1)
+;; (require 'simpleclip)
+;; (simpleclip-mode 1)
 
 ;; some editing extras
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (setq whole-line-or-region t)
-(global-set-key [remap dabbrev-expand] 'hippie-expand)
+;; (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+;; (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+;;                                          try-expand-dabbrev-all-buffers
+;;                                          try-expand-dabbrev-from-kill
+;;                                          try-complete-file-name-partially
+;;                                          try-complete-file-name
+;;                                          try-expand-all-abbrevs
+;;                                          try-expand-list
+;;                                          try-expand-line
+;;                                          try-complete-lisp-symbol-partially
+;;                                          try-complete-lisp-symbol))
+
+;; == company-mode ==
+(use-package company
+  :ensure t
+  :defer t
+  :init (add-hook 'after-init-hook 'global-company-mode)
+  :diminish company-mode
+  :config
+
+  (setq company-idle-delay              0.3
+        company-minimum-prefix-length   2
+        company-begin-commands          '(self-insert-command)
+        company-show-numbers            t
+        company-tooltip-limit           20
+        company-dabbrev-downcase        nil
+        company-echo-delay              0
+        company-backends                '((company-elisp
+                                           company-shell
+                                         ))))
+
+(eval-after-load "fundamental-mode" '(diminish 'fundamental-mode))
 
 (use-package avy
   :ensure t
   :diminish avy-mode
-  :bind (("C-." . avy-goto-word-1)))
+  :bind (("C-." . avy-goto-char-timer)))
 
 (setq org-startup-with-inline-images t)
 
@@ -302,7 +410,11 @@
 (use-package git-gutter+
   :ensure t
   :init (global-git-gutter+-mode)
-  :diminish (git-gutter+-mode))
+  :diminish (git-gutter+-mode)
+  :bind (("C-x G" . git-gutter+-mode)
+         (:map git-gutter+-mode-map
+              ("C-x N" . git-gutter+-next-hunk)
+              ("C-x P" . git-gutter+-previous-hunk))))
 
 (setq-default indicate-buffer-boundaries 'left)
 (setq-default indicate-empty-lines +1)
@@ -342,25 +454,6 @@
 (blink-cursor-mode 1)
 
 (show-paren-mode 1)
-
-
-;; mkm: some themes to play with  :)
-;; light
-;; (load-theme 'soft-stone t)
-;; (load-theme 'twilight-bright t)
-
-;; not enough contrast
-;; (load-theme 'tao-yang t)
-
-;; (load-theme 'leuven t)
-
-;; too Xmas
-;; (load-theme 'sanityinc-tomorrow-day t)
-
-;; gruvbox has too garish brights
-;; (load-theme 'gruvbox t)
-;; (load-theme 'monokai t)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Howard Abrams settings                                                 ;;
@@ -509,11 +602,15 @@
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) "))
+  (setq ivy-count-format "(%d/%d) ")
+  (global-set-key (kbd "C-S-s") 'swiper)
+  (global-set-key (kbd "C-S-r") 'swiper)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-h v") 'counsel-describe-variable)
+  )
 
-(global-set-key (kbd "C-S-s") 'swiper)
-(global-set-key (kbd "C-S-r") 'swiper)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
 
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
@@ -523,6 +620,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'org)
+
+(setq org-special-ctrl-a/e (cons 'reversed t))
+(setq org-special-ctrl-k t)
+
+
+;; get rid of pesky subscript exporting
+(setq org-export-with-sub-superscripts nil)
 
 ;;bind to key
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
@@ -534,17 +638,20 @@
 
 (setq org-adapt-indentation nil)
 
+;; archive cancelled tasks, too
+(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t ))))
+
 ;; mkm: disabled clock for now -- too much!
 ;; clock stuff
-;; (defun org-agenda-timeline-all (&optional arg)
-;;   (interactive "P")
-;;   (with-temp-buffer
-;;     (dolist (org-agenda-file org-agenda-files)
-;;       (insert-file-contents org-agenda-file nil)
-;;       (end-of-buffer)
-;;       (newline))
-;;     (write-file "/tmp/timeline.org")
-;;     (org-agenda arg "L")))
+(defun org-agenda-timeline-all (&optional arg)
+  (interactive "P")
+  (with-temp-buffer
+    (dolist (org-agenda-file org-agenda-files)
+      (insert-file-contents org-agenda-file nil)
+      (end-of-buffer)
+      (newline))
+    (write-file "/tmp/timeline.org")
+    (org-agenda arg "L")))
 
 
 (setq org-use-fast-todo-selection t)
@@ -553,10 +660,14 @@
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
-             (sequence "REPORT" "BUG" "KNOWNCAUSE" "|" "FIXED")
-	     (sequence "RAND(r)" "Expand" "|" "Done(d)")
-             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")))
-(setq org-tag-alist '(("ops" . ?O) ("tools" . ?T) ("research" . ?R) ("mastery" . ?M) ("home" . ?H) ("inbox" . "I")("hot" . "h")))
+             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
+             (type "AOR(a)" "|" "DONE")))
+(setq org-tag-alist '((:startgroup . nil)
+                      ("@monitoring" . nil) ("@home" . nil) ("@general" . nil) ("@chef" . nil) ("@sysops" . nil)
+                      (:endgroup . nil)
+                      (:newline . nil)
+                      ("tools" . ?T) ("cloudConnector" . ?C) ("deviceDB" . ?D) 
+                      ))
 
 (setq-default org-src-fontify-natively t)
 (setq org-fontify-whole-heading-line t)
@@ -576,11 +687,12 @@
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
+;; mkm:Tuesday, November 29, 2016 -- disable because breaking proj statistics update
 ;; make todo hierarchy switch to DONE when subs done
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+;; (defun org-summary-todo (n-done n-not-done)
+;;   "Switch entry to DONE when all subentries are done, to TODO otherwise."
+;;   (let (org-log-done org-log-states)   ; turn off logging
+;;     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 (setq org-enforce-todo-dependencies t)
@@ -591,7 +703,7 @@
 (setq org-default-notes-file (concat org-directory "/inbox.org"))
 (define-key global-map "\C-cc" 'org-capture)
 
-(setq org-goto-interface 'outline
+(setq org-goto-interface 'outline-path-completion
       org-goto-max-level 10)
 (setq org-startup-folded t)
 
@@ -630,36 +742,21 @@
 	("e" "Emacs"
 	 entry (file "~/Documents/org/emacs.org")
 	 "* %?\n%i\n\n")
-	("s" "Security"
-	 entry (file "~/Documents/org/prj_security.org")
+	("l" "Linux Entry"
+	 entry (file+olp "~/Documents/org/linux.org" "General")
 	 "* %?\n%i\n\n")
-	("g" "GTD" entry
-	 (file+headline "~/Documents/org/gtd.org" "Misc")
-	 "* TODO %?")
-	("r" "RAND" entry
-	 (file "~/Documents/org/research.org")
-	 "* RAND %?")
 	("c" "Chef"
 	 entry (file+headline "~/Documents/org/chef.org" "Notes")
 	 "** %?")
-	("h" "Home"
-	 entry (file+headline "~/Documents/org/gtd.org" "Home")
-	 "* TODO %?")
-	("l" "Log" entry
-	 (file+headline "~/Documents/org/log.org" "Tasks")
-	 "* %U %i %?\n"
-         :clock-in 1
-         :clock-keep 1)
 	("E" "E" entry
-	 (file+datetree "~/Documents/org/eros.org" "Journal")
+	 (file+headline"~/Documents/org/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1)
 	("G" "Todo E" entry
 	 (file+headline "~/Documents/org/eros.org" "Todo GTD")
 	 "* TODO %?")
-	("a" "Anxiety Template" entry
-	 (file+headline "~/Documents/org/cbt.org" "Triple")
-	 (file "~/Documents/org/cbt.template"))
+        ("d" "Diary" entry (file+datetree "~/Documents/org/diary.org")
+         "* %?\n%U\n" :clock-in t :clock-resume t)
 	))
 
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
@@ -667,8 +764,11 @@
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("z" tags-todo "-research&-home&-tools/!TODO|NEXT|PROJ")
-        ("n" tags-todo "-research&-home&-tools/!NEXT")))
+      '(
+        ("z" "Available Tasks" tags-todo "-research&-home&-tools/!TODO|NEXT")
+        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT")
+        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
+          ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm                                                                   ;;
@@ -725,7 +825,6 @@
 
 ;; END OLD SHIT helm
 
-;; (error "Done")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm                                                                   ;;
@@ -782,7 +881,6 @@
 
 ;; END OLD SHIT helm
 
-;; (error "Done")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm                                                                   ;;
@@ -839,7 +937,6 @@
 
 ;; END OLD SHIT helm
 
-;; (error "Done")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm                                                                   ;;
@@ -896,9 +993,8 @@
 
 ;; END OLD SHIT helm
 
-;; (error "Done")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs auto stuff                                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -907,30 +1003,67 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   (vector "#ffffff" "#f36c60" "#8bc34a" "#fff59d" "#4dd0e1" "#b39ddb" "#81d4fa" "#263238"))
  '(compilation-message-face (quote default))
  '(custom-safe-themes
    (quote
-    ("bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "ac2b1fed9c0f0190045359327e963ddad250e131fbf332e80d371b2e1dbc1dc4" "5d1434865473463d79ee0523c1ae60ecb731ab8d134a2e6f25c17a2b497dd459" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
+    ("43c1a8090ed19ab3c0b1490ce412f78f157d69a29828aa977dae941b994b4147" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "4156d0da4d9b715c6f7244be34f2622716fb563d185b6facedca2c0985751334" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "f01e589752ca7edbda53ff23f28f58ce313d3716edb39cbc1e9093a67d41a5b7" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "ac2b1fed9c0f0190045359327e963ddad250e131fbf332e80d371b2e1dbc1dc4" "5d1434865473463d79ee0523c1ae60ecb731ab8d134a2e6f25c17a2b497dd459" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
+ '(fci-rule-color "#37474f")
+ '(hl-sexp-background-color "#1c1f26")
  '(magit-diff-use-overlays nil)
  '(org-agenda-files
    (quote
-    ("~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "~/Documents/org/lita_bot.org" "~/Documents/org/career.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/craft.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/language.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/notes.org" "/Users/michael/Documents/org/research.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/time.org")))
+    ("~/Documents/org/eros.org" "~/Documents/org/linux.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
+ '(org-show-context-detail
+   (quote
+    ((occur-tree . minimal)
+     (agenda . local)
+     (bookmark-jump . lineage)
+     (isearch . lineage)
+     (default . ancestors))))
  '(package-selected-packages
    (quote
-    (ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat color-theme-sanityinc-tomorrow smartscan which-key smooth-scrolling color-theme-sanityinc-tomorrow-day color-theme color-theme-modern darkokai-theme monokai-theme gruvbox-theme soft-stone-theme gotham-theme tao-theme twilight-bright-theme warm-night-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit lua-mode leuven-theme git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+    (rainbow-delimiters solarized-theme danneskjold-theme robe company company-shell wgrep wgrep-ack wgrep-ag ztree minimal-theme material-theme ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat color-theme-sanityinc-tomorrow smartscan which-key smooth-scrolling color-theme-sanityinc-tomorrow-day color-theme color-theme-modern darkokai-theme monokai-theme gruvbox-theme soft-stone-theme gotham-theme tao-theme twilight-bright-theme warm-night-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit lua-mode leuven-theme git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
  '(show-paren-mode t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#f36c60")
+     (40 . "#ff9800")
+     (60 . "#fff59d")
+     (80 . "#8bc34a")
+     (100 . "#81d4fa")
+     (120 . "#4dd0e1")
+     (140 . "#b39ddb")
+     (160 . "#f36c60")
+     (180 . "#ff9800")
+     (200 . "#fff59d")
+     (220 . "#8bc34a")
+     (240 . "#81d4fa")
+     (260 . "#4dd0e1")
+     (280 . "#b39ddb")
+     (300 . "#f36c60")
+     (320 . "#ff9800")
+     (340 . "#fff59d")
+     (360 . "#8bc34a"))))
+ '(vc-annotate-very-old-color nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-block ((t (:background "#000000"))))
- '(org-block-background ((t (:background "#000000"))))
- '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
- '(org-block-end-line ((t (:foreground "#008ED1" :background "#002E41"))))
- '(which-func ((t (:foreground "#008000")))))
+ )
+
+ ;; '(org-block ((t (:background "#000000"))))
+ ;; '(org-block-background ((t (:background "#000000"))))
+ ;; '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
+ ;; '(org-block-end-line ((t (:foreground "#008ED1" :background "#002E41"))))
+ ;; '(which-func ((t (:foreground "#008000")))))
 
 (put 'dired-find-alternate-file 'disabled nil)
 
@@ -1003,3 +1136,4 @@
         (advice-add 'flyspell-prog-mode :before-until #'modi/ispell-not-avail-p))))
 
 (provide 'setup-spell)
+(put 'narrow-to-region 'disabled nil)
