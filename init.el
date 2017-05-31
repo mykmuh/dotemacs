@@ -154,7 +154,8 @@
 (use-package counsel-projectile
   :ensure t
   :config
-  (counsel-projectile-on))
+  (counsel-projectile-off))
+
 
   
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
@@ -444,10 +445,14 @@
   :ensure t
   :init (global-git-gutter+-mode)
   :diminish (git-gutter+-mode)
+  :config
+    (global-set-key (kbd "C-S-s") 'swiper)
   :bind (("C-x G" . git-gutter+-mode)
          (:map git-gutter+-mode-map
               ("C-x N" . git-gutter+-next-hunk)
-              ("C-x P" . git-gutter+-previous-hunk))))
+              ("C-x P" . git-gutter+-previous-hunk)))
+  :config
+  (global-set-key (kbd "C-x .") 'git-gutter+-show-hunk-inline-at-point))
 
 (setq-default indicate-buffer-boundaries 'left)
 (setq-default indicate-empty-lines +1)
