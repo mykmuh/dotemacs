@@ -6,6 +6,13 @@
 	(concat (getenv "PATH")
 		":/usr/local/bin"))
 
+
+(add-to-list 'exec-path "/usr/local/texlive/2016/bin/x86_64-darwin")
+
+;; (add-to-list 'custom-theme-load-path "/Users/michael/source/emacs-leuven-theme")
+;; (setq leuven-scale-outline-headlines nil)
+;; (load-theme 'leuven t)
+
 (require 'url-handlers)
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -23,47 +30,30 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(bind-key* "C-c C-r" 'ivy-resume)
+
 ;; mkm: moving to use-package for everything, so following will become useless
-(setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm leuven-theme lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 color-theme-sanityinc-tomorrow session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
+(setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
 
 (mapc #'package-install my-package-list)
 
-;; mkm: not used
-(defun org-src-color-blocks-light ()
-  "Colors the block headers and footers to make them stand out more for lighter themes"
-  (interactive)
-  (custom-set-faces
-   '(org-block-begin-line
-    ((t (:underline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF"))))
-   '(org-block-background
-     ((t (:background "#ffe1ff"))))
-   '(org-block
-     ((t (:background "#ffe1ff"))))
-   '(org-block-end-line
-     ((t (:overline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF"))))))
+;; got to kill it
+(bind-key "<C-f5>" 'save-buffers-kill-emacs)
 
-; mkm: not used
-(defun org-src-color-blocks-dark ()
-  "Colors the block headers and footers to make them stand out more for dark themes"
-  (interactive)
-  (custom-set-faces
-   '(org-block-begin-line
-     ((t (:foreground "#008ED1" :background "#002E41"))))
-   '(org-block-background
-     ((t (:background "#000000"))))
-   '(org-block
-     ((t (:background "#000000"))))
-   '(org-block-end-line
-     ((t (:foreground "#008ED1" :background "#002E41"))))))
+;; theme shit
+;; note: not using this at present
+;; (defadvice load-theme 
+;;   (before theme-dont-propagate activate)
+;;   (mapcar #'disable-theme custom-enabled-themes))
 
-
-;; theme shift
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
   (interactive)
   (while custom-enabled-themes
     (disable-theme (car custom-enabled-themes)))
   (call-interactively 'load-theme))
+
+(global-set-key (kbd "C-<f12>") 'switch-theme)
 
 (defun switch-theme (theme)
   ;; This interactive call is taken from `load-theme'
@@ -75,89 +65,79 @@
   (mapcar #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
-;;(load-theme 'minimal-light t)
-;; (load-theme 'leuven t)
+;; trying out switch back to color themes
+;; (use-package color-theme
+;;   :ensure t)
+;; (use-package base16-theme
+;;   :ensure t)
+;; (use-package moe-theme
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (global-hl-line-mode 1)
+;;     (custom-set-faces
+;;      '(diff-added ((t :foreground "green" :underline nil)))
+;;      '(diff-removed ((t :foreground "red" :underline nil)))
+;; ;;     '(hl-line ((t :background "white")))
+;;      ))
+;;   :config
+;;   (load-theme 'moe-light t))
+;; (moe-light)
+;; (moe-theme-set-color 'yellow)
 
-;; (defcustom default-light-color-theme 'sanityinc-tomorrow-day
-;;   "default light theme")
+(use-package apropospriate-theme
+  :ensure t
+  :init
+  (custom-set-faces
+   '(org-level-1 ((t :height 1.0 )))
+   '(org-level-2 ((t :height 1.0 )))
+   '(org-level-3 ((t :height 1.0 )))
+   )
+  :config 
+  (load-theme 'apropospriate-light t)
+  )
 
-;; (defcustom default-dark-color-theme 'sanityinc-tomorrow-night
-;;   "default dark theme")
-
-;; (defcustom default-light-color-theme 'minimal-light
-;;   "default light theme")
-
-(defcustom default-light-color-theme 'material-light
-  "default light theme")
-
-;; (defcustom default-dark-color-theme 'minimal
-;;   "default dark theme")
-
-(defcustom default-dark-color-theme 'material
-  "default dark theme")
-
-(defun toggle-dark-light-theme ()
-  (interactive)
-
-  (let ((is-light (find default-light-color-theme custom-enabled-themes)))
-    (dolist (theme custom-enabled-themes)
-      (disable-theme theme))
-    (if is-light
-        (progn
-          (load-theme default-dark-color-theme t))
-;;          (org-src-color-blocks-dark))
-      (progn
-        (load-theme default-light-color-theme t)))))
-  ;;      (org-src-color-blocks-light)))))
-
-(add-hook 'after-make-frame-functions 'my-theme)
-
-;; now to handle that icky larger sized org mode heading!
-;; (custom-theme-set-faces
-;;  'material
-;;  '(org-level-1 ((t (:height 1.0))))
-;;  '(org-level-2 ((t (:height 1.0))))
-;;  '(org-level-3 ((t (:height 1.0))))
-;;  '(org-level-4 ((t (:height 1.0))))
-;;  '(org-level-5 ((t (:height 1.0))))
-;;  '(org-level-6 ((t (:height 1.0)))))
- 
-
-;; (defun my-theme (frame)
-;;   (if (display-graphic-p frame)
-;;       (progn
-;;         (tool-bar-mode -1)
-;;         (scroll-bar-mode -1)
-;;         (global-set-key (kbd "C-+") 'toggle-dark-light-theme)
-;;         (load-theme 'minimal-light t)
-;;         (custom-theme-set-faces
-;;          'minimal-light
-;;          '(org-level-1 ((t (:height 1.0))))
-;;          '(org-level-2 ((t (:height 1.0))))
-;;          '(org-level-3 ((t (:height 1.0))))
-;;          '(org-level-4 ((t (:height 1.0))))
-;;          '(org-level-5 ((t (:height 1.0))))
-;;          '(org-level-6 ((t (:height 1.0))))
-;;          ))))
-        
-(defun my-theme (frame)
-  (if (display-graphic-p frame)
-      (progn
-        (tool-bar-mode -1)
-        (scroll-bar-mode -1)
-        (global-set-key (kbd "C-+") 'toggle-dark-light-theme)
-        (load-theme 'material-light t)
-        (custom-theme-set-faces
-         'material-light
-         '(org-level-1 ((t (:height 1.0))))
-         '(org-level-2 ((t (:height 1.0))))
-         '(org-level-3 ((t (:height 1.0))))
-         '(org-level-4 ((t (:height 1.0))))
-         '(org-level-5 ((t (:height 1.0))))
-         '(org-level-6 ((t (:height 1.0))))
-         ))))
+;; (use-package base16-theme
+;;   :ensure t
+;;   :init
+;;   (load-theme 'base16-twilight t))
 
 
+;; (use-package tango-plus-theme
+;;   :ensure t
+;;   :init
+;;   (custom-set-faces
+;;    '(org-level-1 ((t :height 1.0 )))))
+
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (load-theme 'sanityinc-tomorrow-night :no-confirm)
+;;     (setf frame-background-mode 'day)
+;;     (global-hl-line-mode 1)
+;;     (custom-set-faces
+;;      '(cursor ((t :background "#eebb28")))
+;;      '(diff-added ((t :foreground "green" :underline nil)))
+;;      '(diff-removed ((t :foreground "red" :underline nil)))
+;;      )))
+
+;;color-theme-sanityinc-solarized
+;; (use-package color-theme-sanityinc-solarized
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (load-theme 'sanityinc-solarized-dark :no-confirm)
+;;     (setf frame-background-mode 'dark)
+;;     (global-hl-line-mode 1)
+;;     (custom-set-faces
+;;      '(cursor ((t :background "#eebb28")))
+;;      '(diff-added ((t :foreground "green" :underline nil)))
+;;      '(diff-removed ((t :foreground "red" :underline nil)))
+;;      '(highlight ((t :background "black" :underline nil)))
+;;      '(magit-item-highlight ((t :background "black")))
+;;      '(hl-line  ((t :background "blace")))
+;;      )))
 
 (require 'deft)
 ;; (require 'session)
@@ -171,8 +151,37 @@
   (setq projectile-mode-line
         '(:eval (format " [%s]" (projectile-project-name)))))
 
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (counsel-projectile-on))
+
+  
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
 (setq neo-smart-open t)
+
+(use-package yaml-mode
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'yaml-mode-hook
+            (lambda ()
+              (setq-local paragraph-separate ".*>-$\\|[   ]*$")
+              (setq-local paragraph-start paragraph-separate))))
+
+(use-package json-mode
+  :ensure t
+  :defer t
+  :config
+  (progn
+    (setf json-reformat:pretty-string? t
+          json-reformat:indent-width 2)
+    (define-key json-mode-map (kbd "M-q")
+      (lambda ()
+        (interactive)
+        (if (region-active-p)
+            (call-interactively #'json-reformat-region)
+          (json-reformat-region (point-min) (point-max)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; mac settings                                                           ;;
@@ -209,6 +218,7 @@
 ;; (server-start)
 (setq ns-pop-up-frames nil)
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; magit                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -238,6 +248,31 @@
 ;; (use-package persistent-scratch 
 ;;   :config 
 ;;   (persistent-scratch-setup-default))
+
+(use-package dired-filter
+  :ensure t)
+
+(define-key dired-mode-map (kbd "/") dired-filter-map)
+
+
+
+;; no more lost files!
+(defvar --backup-directory (concat user-emacs-directory "backups"))
+(if (not (file-exists-p --backup-directory))
+        (make-directory --backup-directory t))
+(setq backup-directory-alist `(("." . ,--backup-directory)))
+(setq make-backup-files t               ; backup of a file the first time it is saved.
+      backup-by-copying t               ; don't clobber symlinks
+      version-control t                 ; version numbers for backup files
+      delete-old-versions t             ; delete excess backup files silently
+      delete-by-moving-to-trash t
+      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+      auto-save-default t               ; auto-save every buffer that visits a file
+      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+      )
+;; funky files name
 
 (setq js-indent-level 2)
 
@@ -304,7 +339,6 @@
 ;;                                          try-expand-line
 ;;                                          try-complete-lisp-symbol-partially
 ;;                                          try-complete-lisp-symbol))
-
 ;; == company-mode ==
 (use-package company
   :ensure t
@@ -374,7 +408,6 @@
 (require 'recentf)
 (recentf-mode 1)
 (global-set-key (kbd "C-x C-r") 'ivy-recentf)
-
 
 ;; let's add dates easier
 (require 'calendar)
@@ -450,10 +483,27 @@
       (list (format "%s %%S: %%j " (system-name))
             '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
-(set-cursor-color "red")
 (blink-cursor-mode 1)
 
 (show-paren-mode 1)
+;; (setq show-paren-style 'expression)
+
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :init
+  (progn
+    (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
+  :config
+  (progn
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")
+    (setf rainbow-delimiters-max-face-count 1)
+    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                        :foreground 'unspecified
+                        :inherit 'error)
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Howard Abrams settings                                                 ;;
@@ -609,8 +659,8 @@
   (global-set-key (kbd "C-c C-r") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-h v") 'counsel-describe-variable)
+  (global-set-key (kbd "s-i") 'counsel-imenu )
   )
-
 
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
@@ -623,10 +673,16 @@
 
 (setq org-special-ctrl-a/e (cons 'reversed t))
 (setq org-special-ctrl-k t)
-
+;; (setq org-cycle-include-plain-lists 'integrate)
+(setq org-cycle-separator-lines 0)
+(setq org-blank-before-new-entry (quote ((heading)
+                                         (plain-list-item . auto))))
+(setq org-reverse-note-order nil)
 
 ;; get rid of pesky subscript exporting
 (setq org-export-with-sub-superscripts nil)
+
+(setq org-agenda-log-mode-items '(clock closed))
 
 ;;bind to key
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
@@ -635,6 +691,11 @@
 (global-set-key (kbd "C-c l") 'org-store-link)
 
 (setq org-log-done 'time)
+
+;; clocking stuff
+;;(setq org-clock-out-remove-zero-time-clocks t)
+(setq org-clock-report-include-clocking-task t)
+(setq org-log-state-notes-insert-after-drawers nil)
 
 (setq org-adapt-indentation nil)
 
@@ -653,24 +714,22 @@
     (write-file "/tmp/timeline.org")
     (org-agenda arg "L")))
 
-
 (setq org-use-fast-todo-selection t)
 (setq org-fast-selection-include-todo nil)
 (setq org-log-into-drawer t)
 
 (setq org-todo-keywords
-           '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
+           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
              (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
              (type "AOR(a)" "|" "DONE")))
 (setq org-tag-alist '((:startgroup . nil)
-                      ("@monitoring" . nil) ("@home" . nil) ("@general" . nil) ("@chef" . nil) ("@sysops" . nil)
+                      ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
                       (:endgroup . nil)
                       (:newline . nil)
                       ("tools" . ?T) ("cloudConnector" . ?C) ("deviceDB" . ?D) 
                       ))
 
 (setq-default org-src-fontify-natively t)
-(setq org-fontify-whole-heading-line t)
 
 (setq org-M-RET-may-split-line t)
 
@@ -678,6 +737,8 @@
 
 (setq org-directory "~/Documents/org")
 (setq org-agenda-files (list "~/Documents/org"))
+
+;; (setq org-agenda-use-tag-inheritance '(search timeline agenda))
 
 (setq
  org-outline-path-complete-in-steps nil
@@ -693,10 +754,11 @@
 ;;   "Switch entry to DONE when all subentries are done, to TODO otherwise."
 ;;   (let (org-log-done org-log-states)   ; turn off logging
 ;;     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+;;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 (setq org-enforce-todo-dependencies t)
-(setq org-agenda-dim-blocked-tasks 't)
+
+(setq org-agenda-dim-blocked-tasks t)
 (setq org-enforce-todo-checkbox-dependencies t)
 
 ;; ;; some org-mode wonder
@@ -706,6 +768,13 @@
 (setq org-goto-interface 'outline-path-completion
       org-goto-max-level 10)
 (setq org-startup-folded t)
+(setq org-startup-indented nil)
+
+;; fix for leuven and ugly hidden stars
+;; (let ((class '((class color))))    
+;;      (custom-theme-set-faces
+;;      'leuven
+;;      `(org-hide ((,class (:foreground "#FFFFFF"))))))
 
 ;; ;; just archive DONE entries
 (defun org-archive-done-tasks ()
@@ -732,6 +801,9 @@
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
+        ("a" "Amazon Cert Study"
+         entry (file "~/Documents/org/aws_csa.org")
+         "* %?\n%i\n\n")
 	("p" "Private Journal"
 	 entry (file+datetree "~/Documents/org/personal.org" "Journal")
 	 "* %?\n\n\n%i\n"
@@ -755,6 +827,9 @@
 	("G" "Todo E" entry
 	 (file+headline "~/Documents/org/eros.org" "Todo GTD")
 	 "* TODO %?")
+	("t" "Todo" entry
+	 (file+headline "~/Documents/org/work.org" "AOR INBOX")
+	 "* TODO %?")
         ("d" "Diary" entry (file+datetree "~/Documents/org/diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
 	))
@@ -763,12 +838,57 @@
 (add-hook 'org-mode-hook 'visual-line-mode)
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
+;; (setq org-agenda-custom-commands
+;;       '(
+;;         ("z" "Available Tasks" tags-todo "-research&-home&-tools/!TODO|NEXT")
+;;         ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING")
+;;         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
+;;           ))
+
 (setq org-agenda-custom-commands
-      '(
-        ("z" "Available Tasks" tags-todo "-research&-home&-tools/!TODO|NEXT")
-        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT")
+      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
+        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-          ))
+        ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ruby                                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Autoclose paired syntax elements like parens, quotes, etc
+
+(use-package ruby-electric
+  :ensure t
+  :init
+  (add-hook 'ruby-mode-hook 'ruby-electric-mode))
+
+;; C-. s - Run Seeing is Believing for the entire file
+;; C-. c - Clear the Seeing is Believing output
+;; C-. t - Tag a line to be “targeted” for evaluation by SiB
+;; C-. x - Run only the “tagged” lines (those with trailing “# => ” markers)
+
+(use-package seeing-is-believing
+  :ensure t
+  :init
+  (add-hook 'ruby-mode-hook 'seeing-is-believing)
+  :config
+  (setq seeing-is-believing-prefix "C-,"))
+
+(use-package chruby
+  :ensure t)
+
+(use-package inf-ruby
+  :ensure t)
+
+;; fix the pesky send to ruby
+(define-key inf-ruby-minor-mode-map (kbd "C-c M-r") 'ruby-send-region)
+
+(add-to-list 'auto-mode-alist
+             '("\\.\\(?:cap\\|gemspec\\|irbrc\\|gemrc\\|rake\\|rb\\|ru\\|thor\\)\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist
+             '("\\(?:Brewfile\\|Capfile\\|Gemfile\\(?:\\.[a-zA-Z0-9._-]+\\)?\\|[rR]akefile\\)\\'" . ruby-mode))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm                                                                   ;;
@@ -992,7 +1112,6 @@
 ;; (helm-mode 1)
 
 ;; END OLD SHIT helm
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs auto stuff                                                       ;;
@@ -1006,17 +1125,46 @@
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
-   (vector "#ffffff" "#f36c60" "#8bc34a" "#fff59d" "#4dd0e1" "#b39ddb" "#81d4fa" "#263238"))
+   ["#303030" "#ff4b4b" "#d7ff5f" "#fce94f" "#5fafd7" "#d18aff" "#afd7ff" "#c6c6c6"])
+ '(ansi-term-color-vector
+   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"])
+ '(beacon-color "#F8BBD0")
  '(compilation-message-face (quote default))
  '(custom-safe-themes
    (quote
-    ("43c1a8090ed19ab3c0b1490ce412f78f157d69a29828aa977dae941b994b4147" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "4156d0da4d9b715c6f7244be34f2622716fb563d185b6facedca2c0985751334" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "f01e589752ca7edbda53ff23f28f58ce313d3716edb39cbc1e9093a67d41a5b7" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "ac2b1fed9c0f0190045359327e963ddad250e131fbf332e80d371b2e1dbc1dc4" "5d1434865473463d79ee0523c1ae60ecb731ab8d134a2e6f25c17a2b497dd459" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
+    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
+ '(dired-filter-saved-filters
+   (quote
+    (("clean_view"
+      (not
+       (regexp . ".*~$"))
+      (not
+       (regexp . "^#.*"))
+      (#("no underscore" 0 1
+         (idx 0))
+       (not
+        (regexp . "^_.*"))))
+     (#("no underscore" 0 1
+        (idx 0))
+      (not
+       (regexp . "^_.*"))))))
+ '(evil-emacs-state-cursor (quote ("#D50000" hbar)))
+ '(evil-insert-state-cursor (quote ("#D50000" bar)))
+ '(evil-normal-state-cursor (quote ("#F57F17" box)))
+ '(evil-visual-state-cursor (quote ("#66BB6A" box)))
+ '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#37474f")
+ '(highlight-indent-guides-auto-enabled nil)
+ '(highlight-symbol-colors
+   (quote
+    ("#F57F17" "#66BB6A" "#0097A7" "#42A5F5" "#7E57C2" "#D84315")))
+ '(highlight-symbol-foreground-color "#546E7A")
+ '(highlight-tail-colors (quote (("#F8BBD0" . 0) ("#FAFAFA" . 100))))
  '(hl-sexp-background-color "#1c1f26")
  '(magit-diff-use-overlays nil)
  '(org-agenda-files
    (quote
-    ("~/Documents/org/eros.org" "~/Documents/org/linux.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
+    ("~/Documents/org/aws_dev.org" "~/Documents/org/aws_csa.org" "~/Documents/org/eros.org" "~/Documents/org/linux.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
  '(org-show-context-detail
    (quote
     ((occur-tree . minimal)
@@ -1026,8 +1174,11 @@
      (default . ancestors))))
  '(package-selected-packages
    (quote
-    (rainbow-delimiters solarized-theme danneskjold-theme robe company company-shell wgrep wgrep-ack wgrep-ag ztree minimal-theme material-theme ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat color-theme-sanityinc-tomorrow smartscan which-key smooth-scrolling color-theme-sanityinc-tomorrow-day color-theme color-theme-modern darkokai-theme monokai-theme gruvbox-theme soft-stone-theme gotham-theme tao-theme twilight-bright-theme warm-night-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit lua-mode leuven-theme git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+    (base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+ '(pos-tip-background-color "#ffffff")
+ '(pos-tip-foreground-color "#78909C")
  '(show-paren-mode t)
+ '(tabbar-background-color "#ffffff")
  '(tool-bar-mode nil)
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
@@ -1057,7 +1208,69 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-level-1 ((t :height 1.0)))
+ '(org-level-2 ((t :height 1.0)))
+ '(org-level-3 ((t :height 1.0))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
 
  ;; '(org-block ((t (:background "#000000"))))
  ;; '(org-block-background ((t (:background "#000000"))))
@@ -1106,6 +1319,7 @@
     (setq ispell-silently-savep t)
 
     (use-package flyspell
+      :diminish flyspell-mode
       :init
       (progn
         (setq flyspell-use-meta-tab nil)
@@ -1113,7 +1327,7 @@
         (setq flyspell-auto-correct-binding (kbd "C-S-j")))
       :config
       (progn
-        (bind-key "<C-f12>" #'flyspell-goto-next-error flyspell-mode-map)
+        ;; (bind-key "<C-f12>" #'flyspell-goto-next-error flyspell-mode-map)
         ;; Stop flyspell overriding other key bindings
         (define-key flyspell-mode-map (kbd "C-,") nil)
         (define-key flyspell-mode-map (kbd "C-.") nil)

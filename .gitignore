@@ -1,3 +1,6 @@
+.DS_Store
+.persistent-scratch
+/eshell/
 /.org-id-locations
 /ac-comphist.dat
 /auto-save-list
