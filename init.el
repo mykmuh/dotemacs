@@ -441,18 +441,18 @@
 (set-face-attribute 'default t :font "Source Code Pro 14")
 
 ;; mkm turn back on for magit?
+;; new stuff
 (use-package git-gutter+
   :ensure t
   :init (global-git-gutter+-mode)
   :diminish (git-gutter+-mode)
   :config
-    (global-set-key (kbd "C-S-s") 'swiper)
+  (global-set-key (kbd "C-S-s") 'swiper)
   :bind (("C-x G" . git-gutter+-mode)
-         (:map git-gutter+-mode-map
-              ("C-x N" . git-gutter+-next-hunk)
-              ("C-x P" . git-gutter+-previous-hunk)))
-  :config
-  (global-set-key (kbd "C-x .") 'git-gutter+-show-hunk-inline-at-point))
+         ("C-x ." . git-gutter+-show-hunk-inline-at-point)
+         :map git-gutter+-mode-map
+         ("C-x C-n" . git-gutter+-next-hunk)
+         ("C-x C-p" . git-gutter+-previous-hunk)))
 
 (setq-default indicate-buffer-boundaries 'left)
 (setq-default indicate-empty-lines +1)
@@ -856,7 +856,17 @@
         ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
          ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-        ))
+        ("c" "Simple agenda view"
+         (
+          (tags-todo "-research&-home&-tools/!NEXT|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "")
+          (tags-todo "-research&-home&-tools/PROJ"
+                     ((org-agenda-overriding-header "Projects:")))
+          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Task Pool:")))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ruby                                                                   ;;
@@ -1169,7 +1179,7 @@
  '(magit-diff-use-overlays nil)
  '(org-agenda-files
    (quote
-    ("~/Documents/org/aws_dev.org" "~/Documents/org/aws_csa.org" "~/Documents/org/eros.org" "~/Documents/org/linux.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
+    ("~/Documents/org/documentation.org" "~/Documents/org/eros.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
  '(org-show-context-detail
    (quote
     ((occur-tree . minimal)
@@ -1179,7 +1189,7 @@
      (default . ancestors))))
  '(package-selected-packages
    (quote
-    (base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+    (command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
  '(pos-tip-background-color "#ffffff")
  '(pos-tip-foreground-color "#78909C")
  '(show-paren-mode t)
