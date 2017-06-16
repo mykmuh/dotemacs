@@ -652,16 +652,26 @@
          ("dired" (mode . dired-mode))
          ("org" (name . "^.*org$"))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
-         ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
-         ("mu4e" (filename . "\*mu4e\*"))
+         ("chef" (or
+                  (name . ".*\\.erb")
+                  (name . ".*\\.yml")))
+         ("shell" (or
+                   (mode . eshell-mode)
+                   (mode . shell-mode)
+                   (name . ".*\\.sh")))
          ("programming" (or
                          (mode . python-mode)
                          (mode . c++-mode)
-                         (mode . ruby-mode)))
+                         (mode . perl-mode)
+                         (mode . ruby-mode)
+                         (name . ".*\\.ps1")))
          ("emacs" (or
                    (name . "^\\*scratch\\*$")
                    (name . "^\\*Messages\\*$")
-                   (name . ".*\.el$")))
+                   (name . "^\\*Help\\*$")
+                   (name . ".*\\.el$")))
+         ("magit" (or
+                   (name . "^*magit.*:.*")))
          )))
 (add-hook 'ibuffer-mode-hook
 	  '(lambda ()
