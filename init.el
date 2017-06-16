@@ -306,9 +306,6 @@
 ;; save my place
 (save-place-mode 1)
 
-;; love me some ibuffer
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
 
@@ -646,6 +643,53 @@
 (setq tramp-default-method "ssh")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ibuffer                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+(setq ibuffer-saved-filter-groups
+      '(("default"
+         ("dired" (mode . dired-mode))
+         ("org" (name . "^.*org$"))
+         ("web" (or (mode . web-mode) (mode . js2-mode)))
+         ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+         ("mu4e" (filename . "\*mu4e\*"))
+         ("programming" (or
+                         (mode . python-mode)
+                         (mode . c++-mode)
+                         (mode . ruby-mode)))
+         ("emacs" (or
+                   (name . "^\\*scratch\\*$")
+                   (name . "^\\*Messages\\*$")
+                   (name . ".*\.el$")))
+         )))
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+             (ibuffer-auto-mode 1)
+             (ibuffer-switch-to-saved-filter-groups "default")))
+
+;; don't show these
+					;(add-to-list 'ibuffer-never-show-predicates "zowie")
+;; Don't show filter groups if there are no buffers in that group
+(setq ibuffer-show-empty-filter-groups nil)
+
+;; Don't ask for confirmation to delete marked buffers
+(setq ibuffer-expert t)
+
+;; nearly all of this is the default layout
+(setq ibuffer-formats 
+      '((mark modified read-only " "
+              (name 45 45 :left :elide) ; change: 30s were originally 18s
+              " "
+              (size 9 -1 :right)
+              " "
+              (mode 16 16 :left :elide)
+              " " filename-and-process)
+        (mark " "
+              (name 16 -1)
+              " " filename)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ivy-mode                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -742,6 +786,12 @@
 
 (setq org-directory "~/Documents/org")
 (setq org-agenda-files (list "~/Documents/org"))
+
+;; latex export settings
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(setq org-latex-listings t)
+
+(setq org-latex-listings-options '(("breaklines" "true")))
 
 ;; (setq org-agenda-use-tag-inheritance '(search timeline agenda))
 
