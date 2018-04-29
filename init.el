@@ -394,12 +394,11 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) .1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
-(add-to-list 'default-frame-alist
-	     '(font . "Source Code Pro 14"))
-(set-face-attribute 'default t :font "Source Code Pro 14")
 
-;; mkm turn back on for magit?
-;; new stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; git                                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package git-gutter+
   :ensure t
   :init (global-git-gutter+-mode)
@@ -412,21 +411,11 @@
          ("C-x C-n" . git-gutter+-next-hunk)
          ("C-x C-p" . git-gutter+-previous-hunk)))
 
-(setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines +1)
-
-(add-to-list 'default-frame-alist
-	     '(font . "Source Code Pro 14"))
-(set-face-attribute 'default t :font "Source Code Pro 14")
-
 ;; mkm: turn back on for magit?
 (use-package git-gutter+
   :ensure t
   :init (global-git-gutter+-mode)
   :diminish (git-gutter+-mode))
-
-(setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines +1)
 
 (require 're-builder)
 (setq reb-re-syntax 'string)
@@ -447,6 +436,13 @@
             '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
 (blink-cursor-mode 1)
+
+(add-to-list 'default-frame-alist
+	     '(font . "Source Code Pro 14"))
+(set-face-attribute 'default t :font "Source Code Pro 14")
+
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines +1)
 
 (show-paren-mode 1)
 ;; (setq show-paren-style 'expression)
@@ -479,7 +475,7 @@
   (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
   (when (fboundp 'horizontal-scroll-bar-mode)
     (horizontal-scroll-bar-mode -1))
-  (scroll-bar-mode -1))           ;; Scrollbars are waste screen estate
+  (scroll-bar-mode -1))           ;; Scrollbars waste screen estate
 
 (use-package hydra
   :ensure t
@@ -750,9 +746,10 @@
 (global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
 (global-set-key (kbd "<f3>") 'highlight-indentation-mode)
 
-
 (set-face-background 'highlight-indentation-face "#e3e3d3")
 (set-face-background 'highlight-indentation-current-column-face "#D3D3E3")
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org-mode                                                               ;;
@@ -857,7 +854,6 @@
 (define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
-
 
 ;; mobile-org settings -- cross your fingers!
 (setq org-mobile-inbox-for-pull "~/Documents/org")
