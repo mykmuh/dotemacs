@@ -12,10 +12,6 @@
 
 (add-to-list 'exec-path "/usr/local/texlive/2016/bin/x86_64-darwin")
 
-;; (add-to-list 'custom-theme-load-path "/Users/michael/source/emacs-leuven-theme")
-;; (setq leuven-scale-outline-headlines nil)
-;; (load-theme 'leuven t)
-
 (require 'url-handlers)
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -38,9 +34,6 @@
 ;; all in personal lisp and downloaded packages
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;; devonthink
-;; (load "org-devonthink")
-
 ;; mouse like kitchin
 (require 'org-mouse)
 
@@ -58,12 +51,6 @@
 
 ;; got to kill it
 (bind-key "<C-f5>" 'save-buffers-kill-emacs)
-
-;; theme shit
-;; note: not using this at present
-;; (defadvice load-theme 
-;;   (before theme-dont-propagate activate)
-;;   (mapcar #'disable-theme custom-enabled-themes))
 
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
