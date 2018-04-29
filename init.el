@@ -126,6 +126,7 @@
             (call-interactively #'json-reformat-region)
           (json-reformat-region (point-min) (point-max)))))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; mac settings                                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -241,8 +242,7 @@
 
 (defun mkm/fix-title()
   (interactive)
-  (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM"))))
-  )
+  (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM")))))
 
 (global-set-key (kbd "C-c t") 'mkm/fix-title)
 (global-set-key (kbd "C-s-f") 'counsel-ag)
@@ -357,9 +357,6 @@
 (require 'neotree)
 (global-set-key (kbd "C-`") 'neotree-toggle)
 
-;; make it ignore neotree window
-(require 'ace-window)
-
 ;; mkm make sure savehistory is working as intended
 ;; disabling so I can try session mode
 (desktop-save-mode 1)
@@ -382,6 +379,7 @@
 
 (global-set-key "\C-x\M-d" `insdate-insert-current-date)
 
+;; (require 'ace-window)
 (use-package ace-window
   :ensure t
   :init
