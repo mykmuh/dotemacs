@@ -98,7 +98,7 @@
 (use-package counsel-projectile
   :ensure t
   :config
-  (counsel-projectile-off))
+  (counsel-projectile-mode))
 
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
 (setq neo-smart-open t)
