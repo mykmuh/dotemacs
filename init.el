@@ -51,9 +51,6 @@
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
-;; to copy from browser on mac
-(require 'org-protocol)
-
 ;; mkm: moving to use-package for everything, so following will become useless
 (setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
 
@@ -87,26 +84,6 @@
   (mapcar #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
-;; trying out switch back to color themes
-;; (use-package color-theme
-;;   :ensure t)
-;; (use-package base16-theme
-;;   :ensure t)
-;; (use-package moe-theme
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (global-hl-line-mode 1)
-;;     (custom-set-faces
-;;      '(diff-added ((t :foreground "green" :underline nil)))
-;;      '(diff-removed ((t :foreground "red" :underline nil)))
-;; ;;     '(hl-line ((t :background "white")))
-;;      ))
-;;   :config
-;;   (load-theme 'moe-light t))
-;; (moe-light)
-;; (moe-theme-set-color 'yellow)
-
 (use-package apropospriate-theme
   :ensure t
   :init
@@ -118,48 +95,6 @@
   :config 
   (load-theme 'apropospriate-light t)
   )
-
-;; (use-package base16-theme
-;;   :ensure t
-;;   :init
-;;   (load-theme 'base16-twilight t))
-
-
-;; (use-package tango-plus-theme
-;;   :ensure t
-;;   :init
-;;   (custom-set-faces
-;;    '(org-level-1 ((t :height 1.0 )))))
-
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (load-theme 'sanityinc-tomorrow-night :no-confirm)
-;;     (setf frame-background-mode 'day)
-;;     (global-hl-line-mode 1)
-;;     (custom-set-faces
-;;      '(cursor ((t :background "#eebb28")))
-;;      '(diff-added ((t :foreground "green" :underline nil)))
-;;      '(diff-removed ((t :foreground "red" :underline nil)))
-;;      )))
-
-;;color-theme-sanityinc-solarized
-;; (use-package color-theme-sanityinc-solarized
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (load-theme 'sanityinc-solarized-dark :no-confirm)
-;;     (setf frame-background-mode 'dark)
-;;     (global-hl-line-mode 1)
-;;     (custom-set-faces
-;;      '(cursor ((t :background "#eebb28")))
-;;      '(diff-added ((t :foreground "green" :underline nil)))
-;;      '(diff-removed ((t :foreground "red" :underline nil)))
-;;      '(highlight ((t :background "black" :underline nil)))
-;;      '(magit-item-highlight ((t :background "black")))
-;;      '(hl-line  ((t :background "blace")))
-;;      )))
 
 (require 'deft)
 ;; (require 'session)
@@ -216,8 +151,6 @@
 ;; keys
 (setq mac-command-modifier 'super)
 (setq mac-option-modifier 'meta)
-;; (setq mac-command-modifier 'meta)
-;; (setq mac-option-modifier 'super)
 (setq sentence-end-double-space nil)
 
 
@@ -292,11 +225,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; persistent-scratch 
-;; (use-package persistent-scratch 
-;;   :config 
-;;   (persistent-scratch-setup-default))
 
 (use-package dired-filter
   :ensure t)
@@ -376,11 +304,6 @@
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
 
-;; Save whatever’s in the current (system) clipboard before 
-;; replacing it with the Emacs’ text. 
-;; https://github.com/dakrone/eos/blob/master/eos.org 
-;; (setq save-interprogram-paste-before-kill t) 
-
 (global-set-key [(control x) (control c)]
                 (function
                  (lambda () (interactive)
@@ -409,45 +332,10 @@
   :ensure t
   :diminish dired+-mode)
 
-;; mkm  mkm I think simpleclip handles the pasting now
-;; simpleclip
-;; (require 'simpleclip)
-;; (simpleclip-mode 1)
-
 ;; some editing extras
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (setq whole-line-or-region t)
-;; (global-set-key [remap dabbrev-expand] 'hippie-expand)
-
-;; (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-;;                                          try-expand-dabbrev-all-buffers
-;;                                          try-expand-dabbrev-from-kill
-;;                                          try-complete-file-name-partially
-;;                                          try-complete-file-name
-;;                                          try-expand-all-abbrevs
-;;                                          try-expand-list
-;;                                          try-expand-line
-;;                                          try-complete-lisp-symbol-partially
-;;                                          try-complete-lisp-symbol))
-;; == company-mode ==
-;; (use-package company
-;;   :ensure t
-;;   :defer t
-;;   :init (add-hook 'after-init-hook 'global-company-mode)
-;;   :diminish company-mode
-;;   :config
-
-;;   (setq company-idle-delay              0.3
-;;         company-minimum-prefix-length   2
-;;         company-begin-commands          '(self-insert-command)
-;;         company-show-numbers            t
-;;         company-tooltip-limit           20
-;;         company-dabbrev-downcase        nil
-;;         company-echo-delay              0
-;;         company-backends                '((company-elisp
-;;                                            company-shell
-;;                                          ))))
 
 (eval-after-load "fundamental-mode" '(diminish 'fundamental-mode))
 
@@ -479,16 +367,11 @@
 (global-set-key (kbd "C-x =") 'my-diff-buffer-with-file)
 (global-set-key (kbd "C-x C-=") 'ediff-current-file)
 
-;; mkm since this doesn't work in magit, change ace-window
-;; windows manipulation
-;; (global-set-key (kbd "C-S-p") 'ace-window)
-
 (require 'neotree)
 (global-set-key (kbd "C-`") 'neotree-toggle)
 
 ;; make it ignore neotree window
 (require 'ace-window)
-;; (add-to-list 'aw-ignored-buffers " *NeoTree*")
 
 ;; mkm make sure savehistory is working as intended
 ;; disabling so I can try session mode
@@ -717,18 +600,6 @@
 
 (require 'bind-key)
 
-;; (use-package smartscan
-;;   :ensure t
-;;   :config
-;;   (unbind-key "M-n" smartscan-map)
-;;   (unbind-key "M-p" smartscan-map)
-;;   (unbind-key "s-n")
-;;   (unbind-key "s-p")
-;;   (bind-keys :map smartscan-map
-;;              ("s-n" . smartscan-symbol-go-forward)
-;;              ("s-p" . smartscan-symbol-go-backward))
-;;   (global-smartscan-mode t))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tramp                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -778,8 +649,6 @@
              (ibuffer-auto-mode 1)
              (ibuffer-switch-to-saved-filter-groups "default")))
 
-;; don't show these
-					;(add-to-list 'ibuffer-never-show-predicates "zowie")
 ;; Don't show filter groups if there are no buffers in that group
 (setq ibuffer-show-empty-filter-groups nil)
 
@@ -830,12 +699,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'indent-tools)
-;;(require 'yafolding)
-;;(load "makey")
-;;(require 'discover)
-;;(global-discover-mode 1)
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
-;; (require 'origami)
+
 
 (require 'yafolding)
 (defun aj-toggle-fold ()
@@ -909,18 +774,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'org)
-
-;; (setq org-special-ctrl-a/e (cons 'reversed t))
-;; (setq org-special-ctrl-k t)
-;; (setq org-cycle-include-plain-lists 'integrate)
-;; (setq org-cycle-separator-lines 0)
-;; (setq org-blank-before-new-entry (quote ((heading)
-;;                                         (plain-list-item . auto))))
-;; (setq org-reverse-note-order nil)
-
-;; get rid of pesky subscript exporting
-;; (setq org-export-with-sub-superscripts nil)
-
 (setq org-replace-disputed-keys t)
 (setq org-agenda-log-mode-items '(clock closed))
 
@@ -935,7 +788,6 @@
 (setq org-log-done 'time)
 
 ;; clocking stuff
-;;(setq org-clock-out-remove-zero-time-clocks t)
 (setq org-clock-report-include-clocking-task t)
 (setq org-log-state-notes-insert-after-drawers nil)
 
@@ -1042,14 +894,6 @@
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-;; mkm:Tuesday, November 29, 2016 -- disable because breaking proj statistics update
-;; make todo hierarchy switch to DONE when subs done
-;; (defun org-summary-todo (n-done n-not-done)
-;;   "Switch entry to DONE when all subentries are done, to TODO otherwise."
-;;   (let (org-log-done org-log-states)   ; turn off logging
-;;     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-;;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
 (setq org-enforce-todo-dependencies t)
 
 (setq org-agenda-dim-blocked-tasks t)
@@ -1064,13 +908,7 @@
 (setq org-startup-folded t)
 (setq org-startup-indented nil)
 
-;; fix for leuven and ugly hidden stars
-;; (let ((class '((class color))))    
-;;      (custom-theme-set-faces
-;;      'leuven
-;;      `(org-hide ((,class (:foreground "#FFFFFF"))))))
-
-;; ;; just archive DONE entries
+;; just archive DONE entries
 (defun org-archive-done-tasks ()
   (interactive)
   (org-map-entries
@@ -1104,9 +942,6 @@
          :with-timestamps t
          :html-validation-link nil
          :publishing-function org-html-publish-to-html)))
-;;         :html-head "<link rel=\"stylesheet\"
-;; href=\"~/Documents/org/zk_pub/mystyle.css\"
-;;type=\"text/css\"/>")))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -1229,6 +1064,7 @@
 
 (setq markdown-enable-wiki-links nil)
 (setq markdown-hide-urls t)
+
 ;; use visual-line mode in markdown mode
 (defun my-markdown-mode-hook ()
   (visual-line-mode 1)
@@ -1249,15 +1085,6 @@
                       (insert "[" z "](" file ")")
                       )
                     (end-of-line))))
-    
-;; (define-key markdown-mode-map (kbd "s-l") 'mkm/link-zk)
-
-;; devonthink
-;; (defun org-dtp-open (record-location) "Visit the dtp message with the given Message-ID." (shell-command (concat "open x-devonthink-item:" record-location)))
-
-;; (org-link-set-parameters "x-devonthink-item" :follow 'org-dtp-open :export (lambda (path desc backend) (cond ((eq 'html backend) (format "<font color="red"> <a href="x-devonthink-item:%s">%s </a> </font>" path desc)))) :face '(:foreground "red") :help-echo "Click me for devonthink link.")
-
-;; (provide 'org-devonthink)
 
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
@@ -1308,13 +1135,6 @@
 (add-hook 'org-mode-hook 'visual-line-mode)
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
-;; (setq org-agenda-custom-commands
-;;       '(
-;;         ("z" "Available Tasks" tags-todo "-research&-home&-tools/!TODO|NEXT")
-;;         ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING")
-;;         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-;;           ))
-
 (setq org-agenda-custom-commands
       '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
          ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
@@ -1323,9 +1143,6 @@
         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
         ("c" "Simple agenda view"
          (
-          ;; (tags-todo "-research&-home&-tools&/PRIORITY=\"A\""
-          ;;            ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-          ;;             (org-agenda-overriding-header "High-Priority Tasks:")))
           (tags-todo "-research&-home&-tools/!NEXT"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Today's Tasks:")))
@@ -1388,262 +1205,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ruby                                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Autoclose paired syntax elements like parens, quotes, etc
-
-;; (use-package ruby-electric
-;;   :ensure t
-;;   :init
-;;   (add-hook 'ruby-mode-hook 'ruby-electric-mode))
-
-;; C-. s - Run Seeing is Believing for the entire file
-;; C-. c - Clear the Seeing is Believing output
-;; C-. t - Tag a line to be “targeted” for evaluation by SiB
-;; C-. x - Run only the “tagged” lines (those with trailing “# => ” markers)
-
-;; (use-package seeing-is-believing
-;;   :ensure t
-;;   :init
-;;   (add-hook 'ruby-mode-hook 'seeing-is-believing)
-;;   :config
-;;   (setq seeing-is-believing-prefix "C-,"))
-
-;; (use-package chruby
-;;   :ensure t)
-
-;; (use-package inf-ruby
-;;   :ensure t)
-
-;; ;; fix the pesky send to ruby
-;; (define-key inf-ruby-minor-mode-map (kbd "C-c M-r") 'ruby-send-region)
 
 (add-to-list 'auto-mode-alist
              '("\\.\\(?:cap\\|gemspec\\|irbrc\\|gemrc\\|rake\\|rb\\|ru\\|thor\\)\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist
              '("\\(?:Brewfile\\|Capfile\\|Gemfile\\(?:\\.[a-zA-Z0-9._-]+\\)?\\|[rR]akefile\\)\\'" . ruby-mode))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; helm                                                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; helm setup   CURRENT
-
-;; (require 'helm)
-;; (require 'helm-config)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
-;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; (global-set-key (kbd "C-x b") 'helm-mini)
-;; (setq helm-buffers-fuzzy-matching t
-;;        helm-recentf-fuzzy-match    t)
-
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-
-
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
-;; (global-unset-key (kbd "C-x c"))
-
-
-
-;; (when (executable-find "curl")
-;;       (setq helm-google-suggest-use-curl-p t))
-
-; (global-set-key (kbd "C-c h o") 'helm-occur) 
-
-;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-;;       helm-ff-file-name-history-use-recentf t)
-
-;; (setq helm-grep-default-command
-;;       "ggrep -a -d skip %e -n%cH -e %p %f")
-;; (setq helm-grep-default-recurse-command
-;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
-
-;; (helm-mode 1)
-
-;; END OLD SHIT helm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; helm                                                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; helm setup   CURRENT
-
-;; (require 'helm)
-;; (require 'helm-config)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
-;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; (global-set-key (kbd "C-x b") 'helm-mini)
-;; (setq helm-buffers-fuzzy-matching t
-;;        helm-recentf-fuzzy-match    t)
-
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-
-;; OLD SHIT
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
-;; (global-unset-key (kbd "C-x c"))
-
-
-
-;; (when (executable-find "curl")
-;;       (setq helm-google-suggest-use-curl-p t))
-
-; (global-set-key (kbd "C-c h o") 'helm-occur) 
-
-;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-;;       helm-ff-file-name-history-use-recentf t)
-
-;; (setq helm-grep-default-command
-;;       "ggrep -a -d skip %e -n%cH -e %p %f")
-;; (setq helm-grep-default-recurse-command
-;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
-
-;; (helm-mode 1)
-
-;; END OLD SHIT helm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; helm                                                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; helm setup   CURRENT
-
-;; (require 'helm)
-;; (require 'helm-config)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
-;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; (global-set-key (kbd "C-x b") 'helm-mini)
-;; (setq helm-buffers-fuzzy-matching t
-;;        helm-recentf-fuzzy-match    t)
-
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-
-;; OLD SHIT
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
-;; (global-unset-key (kbd "C-x c"))
-
-
-
-;; (when (executable-find "curl")
-;;       (setq helm-google-suggest-use-curl-p t))
-
-; (global-set-key (kbd "C-c h o") 'helm-occur) 
-
-;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-;;       helm-ff-file-name-history-use-recentf t)
-
-;; (setq helm-grep-default-command
-;;       "ggrep -a -d skip %e -n%cH -e %p %f")
-;; (setq helm-grep-default-recurse-command
-;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
-
-;; (helm-mode 1)
-
-;; END OLD SHIT helm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; helm                                                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; helm setup   CURRENT
-
-;; (require 'helm)
-;; (require 'helm-config)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (setq helm-M-x-fuzzy-match t) ;; fuzzy matching
-;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; (global-set-key (kbd "C-x b") 'helm-mini)
-;; (setq helm-buffers-fuzzy-matching t
-;;        helm-recentf-fuzzy-match    t)
-
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-
-;; OLD SHIT
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-;; (global-set-key (kbd "C-c h") 'helm-command-prefix)
-;; (global-unset-key (kbd "C-x c"))
-
-
-
-;; (when (executable-find "curl")
-;;       (setq helm-google-suggest-use-curl-p t))
-
-; (global-set-key (kbd "C-c h o") 'helm-occur) 
-
-;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-;;       helm-ff-file-name-history-use-recentf t)
-
-;; (setq helm-grep-default-command
-;;       "ggrep -a -d skip %e -n%cH -e %p %f")
-;; (setq helm-grep-default-recurse-command
-;;       "ggrep -a -d recurse %e -n%cH -e %p %f")
-
-;; (helm-mode 1)
-
-;; END OLD SHIT helm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs auto stuff                                                       ;;
@@ -1743,7 +1310,7 @@
               ("-convert" "xml1" "-o" "-" "-")
               nil nil "bplist"])
 
-;; ;;It is necessary to perform an update!
+;; It is necessary to perform an update!
 (jka-compr-update)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1775,7 +1342,6 @@
         (setq flyspell-auto-correct-binding (kbd "C-S-j")))
       :config
       (progn
-        ;; (bind-key "<C-f12>" #'flyspell-goto-next-error flyspell-mode-map)
         ;; Stop flyspell overriding other key bindings
         (define-key flyspell-mode-map (kbd "C-,") nil)
         (define-key flyspell-mode-map (kbd "C-.") nil)
