@@ -914,6 +914,7 @@
 (require 'org)
 
 (setq org-startup-indented t)
+
 (setq org-cycle-separator-lines 0)
 (setq org-blank-before-new-entry (quote ((heading)
                                          (plain-list-item . auto))))
@@ -924,7 +925,8 @@
 (setq org-show-hierarchy-above t)
 (setq org-show-siblings (quote ((default))))
 
-(setq org-special-ctrl-a/e (cons 'reversed t))
+;;(setq org-special-ctrl-a/e (cons 'reversed t))
+(setq org-special-ctrl-a/e t)
 (setq org-special-ctrl-k t)
 (setq org-yank-adjusted-subtrees t)
 
@@ -951,6 +953,15 @@
 (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
 (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 
+
+;; Remove empty LOGBOOK drawers on clock out
+(defun bh/remove-empty-drawer-on-clock-out ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line 0)
+    (org-remove-empty-drawer-at "LOGBOOK" (point))))
+
+(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
 
 ;; get rid of pesky subscript exporting
 ;; (setq org-export-with-sub-superscripts nil)
@@ -990,13 +1001,23 @@
     (org-agenda arg "L")))
 
 (setq org-use-fast-todo-selection t)
+(setq org-treat-S-cursor-todo-selection-as-state-change nil)
 (setq org-fast-selection-include-todo nil)
 (setq org-log-into-drawer t)
 
 (setq org-todo-keywords
-           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
-             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
-             (type "AOR(a)" "|" "DONE")))
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "WAITING(w@/!)" "HOLD(h@/!)" | "CANCELLED(c@/!)" "MEETING")))
+
+(setq org-todo-keyword-faces
+      (quote (("TODO" :foreground "red" :weight bold)
+              ("NEXT" :foreground "blue" :weight bold)
+              ("DONE" :foreground "forest green" :weight bold)
+              ("WAITING" :foreground "orange" :weight bold)
+              ("HOLD" :foreground "magenta" :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold)
+              ("MEETING" :foreground "forest green" :weight bold))))
+
 (setq org-tag-alist '((:startgroup . nil)
                       ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
                       (:endgroup . nil)
@@ -1067,25 +1088,30 @@
 
 ;; (setq org-agenda-use-tag-inheritance '(search timeline agenda))
 
+;; bh modifications
 (setq
  org-outline-path-complete-in-steps nil
- org-refile-use-outline-path 'file
- org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
+ org-refile-use-outline-path t
+ org-refile-targets  '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 9))
  )
+
+; Allow refile to create parent tasks with confirmation
+(setq org-refile-allow-creating-parent-nodes (quote confirm))
+
+;;;; Refile settings
+; Exclude DONE state tasks from refile targets
+(defun bh/verify-refile-target ()
+  "Exclude todo keywords with a done state from refile targets"
+  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+(setq org-refile-target-verify-function 'bh/verify-refile-target)
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-;; mkm:Tuesday, November 29, 2016 -- disable because breaking proj statistics update
-;; make todo hierarchy switch to DONE when subs done
-;; (defun org-summary-todo (n-done n-not-done)
-;;   "Switch entry to DONE when all subentries are done, to TODO otherwise."
-;;   (let (org-log-done org-log-states)   ; turn off logging
-;;     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-;;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
 (setq org-enforce-todo-dependencies t)
 
-(setq org-agenda-dim-blocked-tasks t)
+(setq org-agenda-dim-blocked-tasks nil)
 (setq org-enforce-todo-checkbox-dependencies t)
 
 ;; ;; some org-mode wonder
@@ -1301,65 +1327,45 @@
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
-	("j" "Journal Entry"
-	 entry (file+datetree "~/Documents/org/work/journal.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
+	("j" "Journal" entry
+         (file+datetree "~/Documents/org/work/diary.org")
+	 "* %?\n%U\n" :clock-in t :clock-resume t)
 	("t" "todo" entry
 	 (file+headline "~/Documents/org/refile.org" "INBOX")
-	 "* TODO %?\n%U\n%a\n")
-	("n" "notes" entry
+	 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+	("n" "note" entry
 	 (file+headline "~/Documents/org/refile.org" "INBOX")
-	 "* %? :NOTE:\n%U\n")
-	("h" "Home Entry"
-	 entry (file+datetree "~/Documents/org/personal/home.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
+	 "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
+        ("m" "Meeting" entry (file "~/Documents/org/refile.org")
+         "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
 	("i" "inbox - Home" entry
 	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
 	 "* TODO %?")
-        ("l" "A link, for reading later."
-         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
-         "** %:description\n%u : %:link\n\n%i"
-         :empty-lines 1)
-	("f" "Fiction Entry"
-	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("e" "Emacs"
-	 entry (file "~/Documents/org/work/notes/emacs.org")
-	 "* %?\n%i\n\n")
-	("x" "Linux Entry"
-	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
-	 "* %?\n%i\n\n")
-	("c" "Chef"
-	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
-	 "** %?")
-	("E" "E" entry
-	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	;; ("t" "Todo" entry
-	;;  (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
-	;;  "* TODO %?")
-        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
 	))
 
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
-(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
-(setq org-agenda-compact-blocks t)
 
-;; (setq org-agenda-custom-commands
-;;       '(
-;;         ("z" "Available Tasks" tags-todo "-research&-home&-tools/!TODO|NEXT")
-;;         ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING")
-;;         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-;;           ))
+;; bh
+(add-hook 'org-mode-hook
+          '(lambda ()
+             ;; Undefine C-c [ and C-c ] since this breaks my
+             ;; org-agenda files when directories are include 
+             (org-defkey org-mode-map "\C-c[" 'undefined)
+             (org-defkey org-mode-map "\C-c]" 'undefined)
+             (org-defkey org-mode-map "\C-c;" 'undefined))
+          'append)
+
+(setq org-todo-state-tags-triggers
+      (quote (("CANCELLED" ("CANCELLED" . t))
+              ("WAITING" ("WAITING" . t))
+              ("HOLD" ("WAITING") ("HOLD" . t))
+              (done ("WAITING") ("HOLD"))
+              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+(setq org-agenda-compact-blocks t)
 
 (setq org-agenda-custom-commands
       '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
