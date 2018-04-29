@@ -2,6 +2,10 @@
 ;; Packages                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; super vs shift key
+;; - s = super
+;; - S = shift
+
 (setenv "PATH"
 	(concat (getenv "PATH")
 		":/usr/local/bin"))
@@ -29,8 +33,29 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
-
+(add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
+;; let's edit opml files
+(load-library "org-opml")
 (bind-key* "C-c C-r" 'ivy-resume)
+
+;; all in personal lisp and downloaded packages
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; devonthink
+;; (load "org-devonthink")
+
+;; mouse like kitchin
+(require 'org-mouse)
+
+;;preview files in dired
+(use-package peep-dired
+  :ensure t
+  :defer t ; don't access `dired-mode-map' until `peep-dired' is loaded
+  :bind (:map dired-mode-map
+              ("P" . peep-dired)))
+
+;; to copy from browser on mac
+(require 'org-protocol)
 
 ;; mkm: moving to use-package for everything, so following will become useless
 (setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
@@ -151,13 +176,11 @@
   (setq projectile-mode-line
         '(:eval (format " [%s]" (projectile-project-name)))))
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-off))
+;; (use-package counsel-projectile
+;;   :ensure t
+;;   :config
+;;   (counsel-projectile-off))
 
-
-  
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
 (setq neo-smart-open t)
 
@@ -199,6 +222,34 @@
 ;; (setq mac-command-modifier 'meta)
 ;; (setq mac-option-modifier 'super)
 (setq sentence-end-double-space nil)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; babel                                                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq org-src-preserve-indentation nil 
+      org-edit-src-content-indentation 0)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (ruby . t)
+   (shell . t)
+   (python . t)
+   (ruby . t)))
+
+;; to fix python
+(with-eval-after-load 'python
+  (defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+          (python-shell-completion-native-output-timeout
+           python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_"))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -256,8 +307,53 @@
 (define-key dired-mode-map (kbd "/") dired-filter-map)
 
 
+;; rename function from Steve Yegge
+(defun rename-this-buffer-and-file ()
+  "Renames current buffer and file it is visiting."
+  (interactive)
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (error "Buffer '%s' is not visiting a file!" name)
+      (let ((new-name (read-file-name "New name: " filename)))
+        (cond ((get-buffer new-name)
+               (error "A buffer named '%s' already exists!" new-name))
+              (t
+               (rename-file filename new-name 1)
+               (rename-buffer new-name)
+               (set-visited-file-name new-name)
+               (set-buffer-modified-p nil)
+               (message "File '%s' successfully renamed to '%s'" name (file-name-nondirectory new-name))))))))
+
+(global-set-key (kbd "C-c r") 'rename-this-buffer-and-file)
+
+(defun mkm/fix-title()
+  (interactive)
+  (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM"))))
+  )
+
+(global-set-key (kbd "C-c t") 'mkm/fix-title)
+(global-set-key (kbd "C-s-f") 'counsel-ag)
+
+(defun toggle-camelcase-underscores ()
+  "Toggle between camelcase and underscore notation for the symbol at point."
+  (interactive)
+  (save-excursion
+    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+           (start (car bounds))
+           (end (cdr bounds))
+           (currently-using-underscores-p (progn (goto-char start)
+                                                 (re-search-forward "_" end t))))
+      (if currently-using-underscores-p
+          (progn
+            (upcase-initials-region start end)
+            (replace-string "_" "" nil start end)
+            (downcase-region start (1+ start)))
+        (replace-regexp "\\([A-Z]\\)" "_\\1" nil (1+ start) end)
+        (downcase-region start (cdr (bounds-of-thing-at-point 'symbol)))))))
 
 ;; no more lost files!
+
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-directory))
         (make-directory --backup-directory t))
@@ -286,7 +382,7 @@
 ;; Save whatever’s in the current (system) clipboard before 
 ;; replacing it with the Emacs’ text. 
 ;; https://github.com/dakrone/eos/blob/master/eos.org 
-(setq save-interprogram-paste-before-kill t) 
+;; (setq save-interprogram-paste-before-kill t) 
 
 (global-set-key [(control x) (control c)]
                 (function
@@ -338,23 +434,23 @@
 ;;                                          try-complete-lisp-symbol-partially
 ;;                                          try-complete-lisp-symbol))
 ;; == company-mode ==
-(use-package company
-  :ensure t
-  :defer t
-  :init (add-hook 'after-init-hook 'global-company-mode)
-  :diminish company-mode
-  :config
+;; (use-package company
+;;   :ensure t
+;;   :defer t
+;;   :init (add-hook 'after-init-hook 'global-company-mode)
+;;   :diminish company-mode
+;;   :config
 
-  (setq company-idle-delay              0.3
-        company-minimum-prefix-length   2
-        company-begin-commands          '(self-insert-command)
-        company-show-numbers            t
-        company-tooltip-limit           20
-        company-dabbrev-downcase        nil
-        company-echo-delay              0
-        company-backends                '((company-elisp
-                                           company-shell
-                                         ))))
+;;   (setq company-idle-delay              0.3
+;;         company-minimum-prefix-length   2
+;;         company-begin-commands          '(self-insert-command)
+;;         company-show-numbers            t
+;;         company-tooltip-limit           20
+;;         company-dabbrev-downcase        nil
+;;         company-echo-delay              0
+;;         company-backends                '((company-elisp
+;;                                            company-shell
+;;                                          ))))
 
 (eval-after-load "fundamental-mode" '(diminish 'fundamental-mode))
 
@@ -388,10 +484,10 @@
 
 ;; mkm since this doesn't work in magit, change ace-window
 ;; windows manipulation
-(global-set-key (kbd "C-S-p") 'ace-window)
+;; (global-set-key (kbd "C-S-p") 'ace-window)
 
 (require 'neotree)
-(global-set-key (kbd "C-~") 'neotree-toggle)
+(global-set-key (kbd "C-`") 'neotree-toggle)
 
 ;; make it ignore neotree window
 (require 'ace-window)
@@ -624,17 +720,17 @@
 
 (require 'bind-key)
 
-(use-package smartscan
-  :ensure t
-  :config
-  (unbind-key "M-n" smartscan-map)
-  (unbind-key "M-p" smartscan-map)
-  (unbind-key "s-n")
-  (unbind-key "s-p")
-  (bind-keys :map smartscan-map
-             ("s-n" . smartscan-symbol-go-forward)
-             ("s-p" . smartscan-symbol-go-backward))
-  (global-smartscan-mode t))
+;; (use-package smartscan
+;;   :ensure t
+;;   :config
+;;   (unbind-key "M-n" smartscan-map)
+;;   (unbind-key "M-p" smartscan-map)
+;;   (unbind-key "s-n")
+;;   (unbind-key "s-p")
+;;   (bind-keys :map smartscan-map
+;;              ("s-n" . smartscan-symbol-go-forward)
+;;              ("s-p" . smartscan-symbol-go-backward))
+;;   (global-smartscan-mode t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tramp                                                                  ;;
@@ -649,12 +745,16 @@
 
 (setq ibuffer-saved-filter-groups
       '(("default"
+         ("tramp" (or
+                   (name . "^\\*tramp.*")
+                   (filename . "^/sudo.*")
+                   (filename . "^/ssh.*")))
+         ("markdown" (name . ".*\\.md"))
          ("dired" (mode . dired-mode))
+         ("yaml" (or
+                  (name . ".*\\.yml")))
          ("org" (name . "^.*org$"))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
-         ("chef" (or
-                  (name . ".*\\.erb")
-                  (name . ".*\\.yml")))
          ("shell" (or
                    (mode . eshell-mode)
                    (mode . shell-mode)
@@ -672,6 +772,9 @@
                    (name . ".*\\.el$")))
          ("magit" (or
                    (name . "^*magit.*:.*")))
+         ("chef" (or
+                  (name . ".*\\.erb")
+                  (name . ".*\\.yml")))
          )))
 (add-hook 'ibuffer-mode-hook
 	  '(lambda ()
@@ -724,24 +827,138 @@
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; yaml stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'indent-tools)
+;;(require 'yafolding)
+;;(load "makey")
+;;(require 'discover)
+;;(global-discover-mode 1)
+(global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
+;; (require 'origami)
+
+(require 'yafolding)
+(defun aj-toggle-fold ()
+  "Toggle fold all lines larger than indentation on current line"
+  (interactive)
+  (let ((col 1))
+    (save-excursion
+      (back-to-indentation)
+      (setq col (+ 1 (current-column)))
+      (set-selective-display
+       (if selective-display nil (or col 1))))))
+
+;;;;; General hydra
+(defhydra mkm-indent-tools-hydra (:color red :hint nil)
+  "
+ ^Indent^         | ^Navigation^        | ^Actions^
+------------------+---------------------+-----------
+ _>_ indent       | _j_ v               | _i_ imenu
+ _<_ de-indent    | _k_ ʌ               | _C_ Copy…
+ _l_ end of level | _n_ next sibling    | _c_ comment
+ _E_ end of fn    | _p_ previous sibling| _U_ uncomment (paragraph)
+ _P_ paragraph    | _u_ up parent       | _f_ fold
+ _SPC_ space      | _d_ down child      | _F_ fold all level
+ ___ undo         | _e_ end of tree     | _q_ quit
+"
+
+  (">" indent-tools-indent)
+  ("<" indent-tools-demote)
+  ("E" indent-tools-indent-end-of-defun)
+  ("c" indent-tools-comment)
+  ("U" indent-tools-uncomment)
+  ("P" indent-tools-indent-paragraph)
+  ("l" indent-tools-indent-end-of-level)
+  ("K" indent-tools-kill-tree)
+  ("C" indent-tools-copy-hydra/body :color blue)
+  ("s" indent-tools-select)
+  ("e" indent-tools-goto-end-of-tree)
+  ("u" indent-tools-goto-parent)
+  ("d" indent-tools-goto-child)
+  ("S" indent-tools-select-end-of-tree)
+  ("n" indent-tools-goto-next-sibling)
+  ("p" indent-tools-goto-previous-sibling)
+  ("i" helm-imenu)
+  ("j" forward-line)
+  ("k" previous-line)
+  ("SPC" indent-tools-indent-space)
+  ("_" undo-tree-undo)
+  ("L" recenter-top-bottom)
+  ("f" yafolding-toggle-element)
+  ("F" yafolding-toggle-all)
+  ("q" nil)
+  )
+
+(require 'highlight-indentation)
+;; f3
+(defun mkm/show-lines ()
+  "Toggle `highlight-indentation-mode and `highlight-indentation-current-column-mode."
+  (interactive)
+  (highlight-indentation-mode)
+  (highlight-indentation-current-column-mode))
+
+(global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
+(global-set-key (kbd "<f3>") 'highlight-indentation-mode)
+
+
+(set-face-background 'highlight-indentation-face "#e3e3d3")
+(set-face-background 'highlight-indentation-current-column-face "#D3D3E3")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org-mode                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'org)
 
-(setq org-special-ctrl-a/e (cons 'reversed t))
-(setq org-special-ctrl-k t)
-;; (setq org-cycle-include-plain-lists 'integrate)
+(setq org-startup-indented t)
 (setq org-cycle-separator-lines 0)
 (setq org-blank-before-new-entry (quote ((heading)
                                          (plain-list-item . auto))))
 (setq org-reverse-note-order nil)
+(setq org-insert-heading-respect-content nil)
+
+(setq org-show-following-heading t)
+(setq org-show-hierarchy-above t)
+(setq org-show-siblings (quote ((default))))
+
+(setq org-special-ctrl-a/e (cons 'reversed t))
+(setq org-special-ctrl-k t)
+(setq org-yank-adjusted-subtrees t)
+
+(setq org-tags-match-list-sublevels t)
+(setq org-agenda-persistent-filter t)
+(setq org-agenda-skip-additional-timestamps-same-entry t)
+(setq org-agenda-window-setup 'current-window)
+
+(setq org-cycle-include-plain-lists t)
+
+
+;; bh functions
+(defun bh/mark-next-parent-tasks-todo ()
+  "Visit each parent task and change NEXT states to TODO"
+  (let ((mystate (or (and (fboundp 'org-state)
+                          state)
+                     (nth 2 (org-heading-components)))))
+    (when mystate
+      (save-excursion
+        (while (org-up-heading-safe)
+          (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+            (org-todo "TODO")))))))
+
+(add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
+(add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
+
 
 ;; get rid of pesky subscript exporting
-(setq org-export-with-sub-superscripts nil)
+;; (setq org-export-with-sub-superscripts nil)
 
+(setq org-replace-disputed-keys t)
 (setq org-agenda-log-mode-items '(clock closed))
+
+(require 'ox-confluence)
 
 ;;bind to key
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
@@ -760,7 +977,6 @@
 
 ;; archive cancelled tasks, too
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t ))))
-
 ;; mkm: disabled clock for now -- too much!
 ;; clock stuff
 (defun org-agenda-timeline-all (&optional arg)
@@ -795,7 +1011,53 @@
 (setq org-use-speed-commands t)
 
 (setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org"))
+(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/notes" "~/Documents/org/work/projects"))
+
+(defun my-dnd-func (event)
+  (interactive "e")
+  (goto-char (nth 1 (event-start event)))
+  (x-focus-frame nil)
+  (let* ((payload (car (last event)))
+         (type (car payload))
+         (fname (cadr payload))
+         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
+    (cond
+     ;; insert image link
+     ((and  (eq 'drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; insert image link with caption
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert "#+ATTR_ORG: :width 300\n")
+      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; C-drag-n-drop to open a file
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type))
+      (find-file fname))
+     ((and (eq 'M-drag-n-drop (car event))
+           (eq 'file type))
+      (insert (format "[[attachfile:%s]]" fname)))
+     ;; regular drag and drop on file
+     ((eq 'file type)
+      (insert (format "[[%s]]\n" fname)))
+     (t
+      (error "I am not equipped for dnd on %s" payload)))))
+
+
+(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
+
+
+;; mobile-org settings -- cross your fingers!
+(setq org-mobile-inbox-for-pull "~/Documents/org")
+(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
 ;; latex export settings
 (add-to-list 'org-latex-packages-alist '("" "listings"))
@@ -827,13 +1089,12 @@
 (setq org-enforce-todo-checkbox-dependencies t)
 
 ;; ;; some org-mode wonder
-(setq org-default-notes-file (concat org-directory "/inbox.org"))
+(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
 (define-key global-map "\C-cc" 'org-capture)
 
 (setq org-goto-interface 'outline-path-completion
       org-goto-max-level 10)
 (setq org-startup-folded t)
-(setq org-startup-indented nil)
 
 ;; fix for leuven and ugly hidden stars
 ;; (let ((class '((class color))))    
@@ -853,55 +1114,245 @@
 (setq org-speed-commands-user
           '(("S" . (widen))))
 
+
+;; mkm 4-28-18 NEW START
+(require 'org-agenda)
+(setq org-agenda-prefix-format '((agenda  . "  • ")
+                                 (timeline  . "  % s")
+;;                                 (todo  . " %i %-12:c")
+                                 (todo  . "  %i  ")
+                                 (tags  . " %i %-12:c")
+                                 (search . " %i %-12:c")))
+
+;; publish zettelkasten
+(setq org-publish-project-alist
+      '(("zk"
+         :base-directory "~/Documents/org/zk/"
+         :base-extension "org"
+         :publishing-directory "~/Documents/org/my_pub/"
+         :makeindex non-nil
+         :auto-index t
+         :section-numbers nil
+         :with-author nil
+         :with-date nil
+         :auto-sitemap t
+         :with-toc nil
+         :with-properties t
+         :with-title t
+         :with-tags t
+         :with-date nil
+         :with-creator nil
+         :with-email nil
+         :with-timestamps t
+         :html-validation-link nil
+         :publishing-function org-html-publish-to-html)))
+;;         :html-head "<link rel=\"stylesheet\"
+;; href=\"~/Documents/org/zk_pub/mystyle.css\"
+;;type=\"text/css\"/>")))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-term-color-vector
+   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
+ '(beacon-color "#F8BBD0")
+ '(compilation-message-face (quote default))
+ '(custom-safe-themes
+   (quote
+    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
+ '(dired-filter-saved-filters
+   (quote
+    (("clean_view"
+      (not
+       (regexp . ".*~$"))
+      (not
+       (regexp . "^#.*"))
+      (#("no underscore" 0 1
+         (idx 0))
+       (not
+        (regexp . "^_.*"))))
+     (#("no underscore" 0 1
+        (idx 0))
+      (not
+       (regexp . "^_.*"))))))
+ '(evil-emacs-state-cursor (quote ("#D50000" hbar)))
+ '(evil-insert-state-cursor (quote ("#D50000" bar)))
+ '(evil-normal-state-cursor (quote ("#F57F17" box)))
+ '(evil-visual-state-cursor (quote ("#66BB6A" box)))
+ '(fci-rule-character-color "#d9d9d9")
+ '(fci-rule-color "#37474f")
+ '(highlight-indent-guides-auto-enabled nil t)
+ '(highlight-symbol-colors
+   (quote
+    ("#F57F17" "#66BB6A" "#0097A7" "#42A5F5" "#7E57C2" "#D84315")))
+ '(highlight-symbol-foreground-color "#546E7A")
+ '(highlight-tail-colors (quote (("#F8BBD0" . 0) ("#FAFAFA" . 100))))
+ '(hl-sexp-background-color "#1c1f26")
+ '(magit-diff-use-overlays nil)
+ '(markdown-asymmetric-header t)
+ '(markdown-command "/usr/local/bin/markdown")
+ '(markdown-live-preview-delete-export (quote delete-on-export))
+ '(org-show-context-detail
+   (quote
+    ((occur-tree . minimal)
+     (agenda . local)
+     (bookmark-jump . lineage)
+     (isearch . lineage)
+     (default . minimal))))
+ '(package-selected-packages
+   (quote
+    (htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+ '(pos-tip-background-color "#ffffff")
+ '(pos-tip-foreground-color "#78909C")
+ '(show-paren-mode t)
+ '(tabbar-background-color "#ffffff")
+ '(tool-bar-mode nil)
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#f36c60")
+     (40 . "#ff9800")
+     (60 . "#fff59d")
+     (80 . "#8bc34a")
+     (100 . "#81d4fa")
+     (120 . "#4dd0e1")
+     (140 . "#b39ddb")
+     (160 . "#f36c60")
+     (180 . "#ff9800")
+     (200 . "#fff59d")
+     (220 . "#8bc34a")
+     (240 . "#81d4fa")
+     (260 . "#4dd0e1")
+     (280 . "#b39ddb")
+     (300 . "#f36c60")
+     (320 . "#ff9800")
+     (340 . "#fff59d")
+     (360 . "#8bc34a"))))
+ '(vc-annotate-very-old-color nil))
+
+;; (defun mkm/fix-title()
+;;   (interactive)
+;;   (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM"))))
+
+(defun mkm/zettel-file-new (x)
+  "Create zettel file with name from heading."
+  (interactive "sZettel Heading: ")
+  (let* (
+         (first-char (downcase (substring x nil 1)))
+         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
+         (z (concat (downcase first-char) rest-str)))
+
+    (find-file (concat "~/Documents/org/zk/" z ".md"))
+    (insert (concat "# " x "\n\n"))))
+
+(global-set-key (kbd "s-n") 'mkm/zettel-file-new)
+
+
+(defun mkm/zix-file-new (x)
+  "Create zix file with name from heading and zix prefix"
+  (interactive "szix Heading: ")
+  (let* (
+         (first-char (downcase (substring x nil 1)))
+         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
+         (z (concat (downcase first-char) rest-str)))
+
+    (find-file (concat "~/Documents/org/zk/zix_" z ".md"))
+    (insert (concat "# " x "\n\n"))))
+
+(global-set-key (kbd "s-N") 'mkm/zix-file-new)
+
+(setq markdown-enable-wiki-links nil)
+(setq markdown-hide-urls t)
+;; use visual-line mode in markdown mode
+(defun my-markdown-mode-hook ()
+  (visual-line-mode 1)
+  (local-set-key (kbd "s-l") 'mkm/link-zk))
+
+(add-hook 'markdown-mode-hook 'my-markdown-mode-hook)
+
+(defun mkm/link-zk ()
+  (interactive)
+  (ivy-read "ZK File: "
+          (directory-files "~/Documents/org/zk" nil "^.*\.md$")
+          :action (lambda (file)
+                    (save-excursion
+                      (with-temp-buffer
+                        (insert-file-contents (concat "/Users/michael/Documents/org/zk/" file))
+                        (goto-char 1)
+                        (setq z (buffer-substring-no-properties 3 (line-end-position))))
+                      (insert "[" z "](" file ")")
+                      )
+                    (end-of-line))))
+    
+;; (define-key markdown-mode-map (kbd "s-l") 'mkm/link-zk)
+
+;; devonthink
+;; (defun org-dtp-open (record-location) "Visit the dtp message with the given Message-ID." (shell-command (concat "open x-devonthink-item:" record-location)))
+
+;; (org-link-set-parameters "x-devonthink-item" :follow 'org-dtp-open :export (lambda (path desc backend) (cond ((eq 'html backend) (format "<font color="red"> <a href="x-devonthink-item:%s">%s </a> </font>" path desc)))) :face '(:foreground "red") :help-echo "Click me for devonthink link.")
+
+;; (provide 'org-devonthink)
+
+
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
 	("j" "Journal Entry"
-	 entry (file+datetree "~/Documents/org/journal.org")
+	 entry (file+datetree "~/Documents/org/work/journal.org")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
+	("t" "todo" entry
+	 (file+headline "~/Documents/org/refile.org" "INBOX")
+	 "* TODO %?\n%U\n%a\n")
+	("n" "notes" entry
+	 (file+headline "~/Documents/org/refile.org" "INBOX")
+	 "* %? :NOTE:\n%U\n")
+	("h" "Home Entry"
+	 entry (file+datetree "~/Documents/org/personal/home.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("i" "inbox - Home" entry
+	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
+	 "* TODO %?")
+        ("l" "A link, for reading later."
+         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
+         "** %:description\n%u : %:link\n\n%i"
+         :empty-lines 1)
 	("f" "Fiction Entry"
-	 entry (file+datetree "~/Documents/org/fiction.org")
+	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
-        ("a" "Amazon Cert Study"
-         entry (file "~/Documents/org/aws_csa.org")
-         "* %?\n%i\n\n")
-	("p" "Private Journal"
-	 entry (file+datetree "~/Documents/org/personal.org" "Journal")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	("i" "Inbox"
-	 entry (file "~/Documents/org/inbox.org")
-	 "** %? \n%U\n")
 	("e" "Emacs"
-	 entry (file "~/Documents/org/emacs.org")
+	 entry (file "~/Documents/org/work/notes/emacs.org")
 	 "* %?\n%i\n\n")
-	("l" "Linux Entry"
-	 entry (file+olp "~/Documents/org/linux.org" "General")
+	("x" "Linux Entry"
+	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
 	 "* %?\n%i\n\n")
 	("c" "Chef"
-	 entry (file+headline "~/Documents/org/chef.org" "Notes")
+	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
 	 "** %?")
 	("E" "E" entry
-	 (file+headline"~/Documents/org/eros.org" "Notes")
+	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1)
-	("G" "Todo E" entry
-	 (file+headline "~/Documents/org/eros.org" "Todo GTD")
-	 "* TODO %?")
-	("t" "Todo" entry
-	 (file+headline "~/Documents/org/work.org" "AOR INBOX")
-	 "* TODO %?")
-        ("d" "Diary" entry (file+datetree "~/Documents/org/diary.org")
+	;; ("t" "Todo" entry
+	;;  (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
+	;;  "* TODO %?")
+        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
 	))
 
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
+(setq org-agenda-compact-blocks t)
 
 ;; (setq org-agenda-custom-commands
 ;;       '(
@@ -918,46 +1369,103 @@
         ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
         ("c" "Simple agenda view"
          (
-          (tags-todo "-research&-home&-tools/!NEXT|WAITING"
+          ;; (tags-todo "-research&-home&-tools&/PRIORITY=\"A\""
+          ;;            ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+          ;;             (org-agenda-overriding-header "High-Priority Tasks:")))
+          (tags-todo "-research&-home&-tools/!NEXT"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "High-priority unfinished tasks:")))
+                      (org-agenda-overriding-header "Today's Tasks:")
+                      (org-agenda-prefix-format "  %i  " )))
           (agenda "")
           (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
+                     ((org-agenda-overriding-header "Projects:")
+                     (org-agenda-prefix-format "  %i  " )))
+          (tags-todo "-research&-home&-tools/!WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Waiting Tasks:")
+                      (org-agenda-prefix-format "  %i  " )))
           (tags-todo "-research&-home&-tools/!TODO|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Task Pool:")))))))
+                      (org-agenda-overriding-header "Task Pool:")
+                      (org-agenda-prefix-format "  %i  " )))
+          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
+                     ((org-agenda-overriding-header "Projects (Someday):")
+                      (org-agenda-prefix-format "  %i  " )))
+          ))))
+
+;; drag and drop!
+;; from http://kitchingroup.cheme.cmu.edu/blog/2015/07/10/Drag-images-and-files-onto-org-mode-and-insert-a-link-to-them/#disqus_thread
+(defun my-dnd-func (event)
+  (interactive "e")
+  (goto-char (nth 1 (event-start event)))
+  (x-focus-frame nil)
+  (let* ((payload (car (last event)))
+         (type (car payload))
+         (fname (cadr payload))
+         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
+    (cond
+     ;; insert image link
+     ((and  (eq 'drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; insert image link with caption
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert "#+ATTR_ORG: :width 300\n")
+      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; C-drag-n-drop to open a file
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type))
+      (find-file fname))
+     ((and (eq 'M-drag-n-drop (car event))
+           (eq 'file type))
+      (insert (format "[[attachfile:%s]]" fname)))
+     ;; regular drag and drop on file
+     ((eq 'file type)
+      (insert (format "[[%s]]\n" fname)))
+     (t
+      (error "I am not equipped for dnd on %s" payload)))))
+
+
+(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ruby                                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Autoclose paired syntax elements like parens, quotes, etc
 
-(use-package ruby-electric
-  :ensure t
-  :init
-  (add-hook 'ruby-mode-hook 'ruby-electric-mode))
+;; (use-package ruby-electric
+;;   :ensure t
+;;   :init
+;;   (add-hook 'ruby-mode-hook 'ruby-electric-mode))
 
 ;; C-. s - Run Seeing is Believing for the entire file
 ;; C-. c - Clear the Seeing is Believing output
 ;; C-. t - Tag a line to be “targeted” for evaluation by SiB
 ;; C-. x - Run only the “tagged” lines (those with trailing “# => ” markers)
 
-(use-package seeing-is-believing
-  :ensure t
-  :init
-  (add-hook 'ruby-mode-hook 'seeing-is-believing)
-  :config
-  (setq seeing-is-believing-prefix "C-,"))
+;; (use-package seeing-is-believing
+;;   :ensure t
+;;   :init
+;;   (add-hook 'ruby-mode-hook 'seeing-is-believing)
+;;   :config
+;;   (setq seeing-is-believing-prefix "C-,"))
 
-(use-package chruby
-  :ensure t)
+;; (use-package chruby
+;;   :ensure t)
 
-(use-package inf-ruby
-  :ensure t)
+;; (use-package inf-ruby
+;;   :ensure t)
 
-;; fix the pesky send to ruby
-(define-key inf-ruby-minor-mode-map (kbd "C-c M-r") 'ruby-send-region)
+;; ;; fix the pesky send to ruby
+;; (define-key inf-ruby-minor-mode-map (kbd "C-c M-r") 'ruby-send-region)
 
 (add-to-list 'auto-mode-alist
              '("\\.\\(?:cap\\|gemspec\\|irbrc\\|gemrc\\|rake\\|rb\\|ru\\|thor\\)\\'" . ruby-mode))
@@ -990,7 +1498,7 @@
 ;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
 
-;; OLD SHIT
+
 
 ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
 ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
@@ -1192,91 +1700,7 @@
 ;; emacs auto stuff                                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#303030" "#ff4b4b" "#d7ff5f" "#fce94f" "#5fafd7" "#d18aff" "#afd7ff" "#c6c6c6"])
- '(ansi-term-color-vector
-   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"])
- '(beacon-color "#F8BBD0")
- '(compilation-message-face (quote default))
- '(custom-safe-themes
-   (quote
-    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
- '(dired-filter-saved-filters
-   (quote
-    (("clean_view"
-      (not
-       (regexp . ".*~$"))
-      (not
-       (regexp . "^#.*"))
-      (#("no underscore" 0 1
-         (idx 0))
-       (not
-        (regexp . "^_.*"))))
-     (#("no underscore" 0 1
-        (idx 0))
-      (not
-       (regexp . "^_.*"))))))
- '(evil-emacs-state-cursor (quote ("#D50000" hbar)))
- '(evil-insert-state-cursor (quote ("#D50000" bar)))
- '(evil-normal-state-cursor (quote ("#F57F17" box)))
- '(evil-visual-state-cursor (quote ("#66BB6A" box)))
- '(fci-rule-character-color "#d9d9d9")
- '(fci-rule-color "#37474f")
- '(highlight-indent-guides-auto-enabled nil)
- '(highlight-symbol-colors
-   (quote
-    ("#F57F17" "#66BB6A" "#0097A7" "#42A5F5" "#7E57C2" "#D84315")))
- '(highlight-symbol-foreground-color "#546E7A")
- '(highlight-tail-colors (quote (("#F8BBD0" . 0) ("#FAFAFA" . 100))))
- '(hl-sexp-background-color "#1c1f26")
- '(magit-diff-use-overlays nil)
- '(org-agenda-files
-   (quote
-    ("~/Documents/org/documentation.org" "~/Documents/org/eros.org" "~/Documents/org/work.org" "~/Documents/org/personal.org" "~/Documents/org/prj_security.org" "~/Documents/org/prj_tim.org" "~/Documents/org/prj_device.org" "~/Documents/org/prj_sensu.org" "/Users/michael/Documents/org/brent.org" "/Users/michael/Documents/org/cbt.org" "/Users/michael/Documents/org/chef.org" "/Users/michael/Documents/org/emacs.org" "/Users/michael/Documents/org/fiction.org" "/Users/michael/Documents/org/gtd.org" "/Users/michael/Documents/org/inbox.org" "/Users/michael/Documents/org/journal.org" "/Users/michael/Documents/org/log.org" "/Users/michael/Documents/org/rhsca.org" "/Users/michael/Documents/org/skillet.org" "/Users/michael/Documents/org/diary.org")))
- '(org-show-context-detail
-   (quote
-    ((occur-tree . minimal)
-     (agenda . local)
-     (bookmark-jump . lineage)
-     (isearch . lineage)
-     (default . ancestors))))
- '(package-selected-packages
-   (quote
-    (command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree markdown-mode magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
- '(pos-tip-background-color "#ffffff")
- '(pos-tip-foreground-color "#78909C")
- '(show-paren-mode t)
- '(tabbar-background-color "#ffffff")
- '(tool-bar-mode nil)
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#f36c60")
-     (40 . "#ff9800")
-     (60 . "#fff59d")
-     (80 . "#8bc34a")
-     (100 . "#81d4fa")
-     (120 . "#4dd0e1")
-     (140 . "#b39ddb")
-     (160 . "#f36c60")
-     (180 . "#ff9800")
-     (200 . "#fff59d")
-     (220 . "#8bc34a")
-     (240 . "#81d4fa")
-     (260 . "#4dd0e1")
-     (280 . "#b39ddb")
-     (300 . "#f36c60")
-     (320 . "#ff9800")
-     (340 . "#fff59d")
-     (360 . "#8bc34a"))))
- '(vc-annotate-very-old-color nil))
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
