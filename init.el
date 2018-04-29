@@ -10,7 +10,6 @@
 	(concat (getenv "PATH")
 		":/usr/local/bin"))
 
-
 (add-to-list 'exec-path "/usr/local/texlive/2016/bin/x86_64-darwin")
 
 ;; (add-to-list 'custom-theme-load-path "/Users/michael/source/emacs-leuven-theme")
@@ -33,10 +32,8 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
 (add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
-;; let's edit opml files
-(load-library "org-opml")
-(bind-key* "C-c C-r" 'ivy-resume)
 
 ;; all in personal lisp and downloaded packages
 (add-to-list 'load-path "~/.emacs.d/lisp/")
