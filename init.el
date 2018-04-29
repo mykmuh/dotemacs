@@ -482,6 +482,7 @@
   :config
   (hydra-add-font-lock))
 
+;; for hydra, below
 (require 'windmove)
 
 (defun hydra-move-splitter-left (arg)
@@ -812,7 +813,7 @@
 (setq org-use-speed-commands t)
 
 (setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work"))
+(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
 
 (defun my-dnd-func (event)
   (interactive "e")
