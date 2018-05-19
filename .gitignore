@@ -19,3 +19,7 @@
 /var/
 *.elc
 *~
+/init.el.backup
+/lisp/org-devonthink.el
+/lisp/ox-confluence.el
+el-get/

@@ -71,17 +71,28 @@
   (mapcar #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
-(use-package apropospriate-theme
+;; disabled Saturday, May 19, 2018
+;; (use-package apropospriate-theme
+;;   :ensure t
+;;   :init
+;;   (custom-set-faces
+;;    '(org-level-1 ((t :height 1.0 )))
+;;    '(org-level-2 ((t :height 1.0 )))
+;;    '(org-level-3 ((t :height 1.0 )))
+;;    )
+;;   :config 
+;;   (load-theme 'apropospriate-light t)
+;;   )
+
+;; some stuff I'm trying mkm Friday, May 18, 2018)
+(use-package color-theme
+  :ensure t)
+
+(use-package zenburn-theme
   :ensure t
-  :init
-  (custom-set-faces
-   '(org-level-1 ((t :height 1.0 )))
-   '(org-level-2 ((t :height 1.0 )))
-   '(org-level-3 ((t :height 1.0 )))
-   )
-  :config 
-  (load-theme 'apropospriate-light t)
-  )
+  :config (load-theme 'zenburn t))
+
+;; end stuff Friday, May 18, 2018
 
 (require 'deft)
 ;; (require 'session)
@@ -210,6 +221,20 @@
 (defadvice grep (after delete-grep-header activate) (delete-grep-header))
 (defadvice rgrep (after delete-grep-header activate) (delete-grep-header))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; markdown-mode                                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -218,6 +243,9 @@
   :ensure t)
 
 (define-key dired-mode-map (kbd "/") dired-filter-map)
+
+;; some stuff for markdown
+(setq-default tab-width 4)
 
 
 ;; rename function from Steve Yegge
@@ -320,9 +348,10 @@
   :diminish dired+-mode)
 
 ;; some editing extras
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-(setq whole-line-or-region t)
+;; disabled Saturday, May 19, 2018
+;; (require 'expand-region)
+;; (global-set-key (kbd "C-=") 'er/expand-region)
+;; (setq whole-line-or-region t)
 
 (eval-after-load "fundamental-mode" '(diminish 'fundamental-mode))
 
@@ -932,9 +961,10 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#FAFAFA" "#FF1744" "#66BB6A" "#F57F17" "#42A5F5" "#7E57C2" "#0097A7" "#546E7A"])
  '(ansi-term-color-vector
    [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
- '(beacon-color "#F8BBD0")
  '(compilation-message-face (quote default))
  '(custom-safe-themes
    (quote
@@ -954,19 +984,7 @@
         (idx 0))
       (not
        (regexp . "^_.*"))))))
- '(evil-emacs-state-cursor (quote ("#D50000" hbar)))
- '(evil-insert-state-cursor (quote ("#D50000" bar)))
- '(evil-normal-state-cursor (quote ("#F57F17" box)))
- '(evil-visual-state-cursor (quote ("#66BB6A" box)))
- '(fci-rule-character-color "#d9d9d9")
- '(fci-rule-color "#37474f")
  '(highlight-indent-guides-auto-enabled nil t)
- '(highlight-symbol-colors
-   (quote
-    ("#F57F17" "#66BB6A" "#0097A7" "#42A5F5" "#7E57C2" "#D84315")))
- '(highlight-symbol-foreground-color "#546E7A")
- '(highlight-tail-colors (quote (("#F8BBD0" . 0) ("#FAFAFA" . 100))))
- '(hl-sexp-background-color "#1c1f26")
  '(magit-diff-use-overlays nil)
  '(markdown-asymmetric-header t)
  '(markdown-command "/usr/local/bin/markdown")
@@ -983,33 +1001,9 @@
      (default . minimal))))
  '(package-selected-packages
    (quote
-    (htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
- '(pos-tip-background-color "#ffffff")
- '(pos-tip-foreground-color "#78909C")
+    (zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
  '(show-paren-mode t)
- '(tabbar-background-color "#ffffff")
  '(tool-bar-mode nil)
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#f36c60")
-     (40 . "#ff9800")
-     (60 . "#fff59d")
-     (80 . "#8bc34a")
-     (100 . "#81d4fa")
-     (120 . "#4dd0e1")
-     (140 . "#b39ddb")
-     (160 . "#f36c60")
-     (180 . "#ff9800")
-     (200 . "#fff59d")
-     (220 . "#8bc34a")
-     (240 . "#81d4fa")
-     (260 . "#4dd0e1")
-     (280 . "#b39ddb")
-     (300 . "#f36c60")
-     (320 . "#ff9800")
-     (340 . "#fff59d")
-     (360 . "#8bc34a"))))
  '(vc-annotate-very-old-color nil))
 
 
