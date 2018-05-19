@@ -234,6 +234,9 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+(setq markdown-enable-wiki-links nil)
+(setq markdown-hide-urls t)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
@@ -776,41 +779,10 @@
 
 (setq org-log-done 'time)
 
-;; clocking stuff
-(setq org-clock-report-include-clocking-task t)
-(setq org-log-state-notes-insert-after-drawers nil)
+(setq org-adapt-indentation t)
 
-(setq org-adapt-indentation nil)
-
-;; archive cancelled tasks, too
-(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t ))))
-
-;; mkm: disabled clock for now -- too much!
-;; clock stuff
-(defun org-agenda-timeline-all (&optional arg)
-  (interactive "P")
-  (with-temp-buffer
-    (dolist (org-agenda-file org-agenda-files)
-      (insert-file-contents org-agenda-file nil)
-      (end-of-buffer)
-      (newline))
-    (write-file "/tmp/timeline.org")
-    (org-agenda arg "L")))
-
-(setq org-use-fast-todo-selection t)
 (setq org-fast-selection-include-todo nil)
 (setq org-log-into-drawer t)
-
-(setq org-todo-keywords
-           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
-             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
-             (type "AOR(a)" "|" "DONE")))
-(setq org-tag-alist '((:startgroup . nil)
-                      ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
-                      (:endgroup . nil)
-                      (:newline . nil)
-                      ("tools" . ?T) ("cloudConnector" . ?C) ("deviceDB" . ?D) 
-                      ))
 
 (setq-default org-src-fontify-natively t)
 
@@ -821,58 +793,15 @@
 (setq org-directory "~/Documents/org")
 (setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
 
-(defun my-dnd-func (event)
-  (interactive "e")
-  (goto-char (nth 1 (event-start event)))
-  (x-focus-frame nil)
-  (let* ((payload (car (last event)))
-         (type (car payload))
-         (fname (cadr payload))
-         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
-    (cond
-     ;; insert image link
-     ((and  (eq 'drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; insert image link with caption
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert "#+ATTR_ORG: :width 300\n")
-      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; C-drag-n-drop to open a file
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type))
-      (find-file fname))
-     ((and (eq 'M-drag-n-drop (car event))
-           (eq 'file type))
-      (insert (format "[[attachfile:%s]]" fname)))
-     ;; regular drag and drop on file
-     ((eq 'file type)
-      (insert (format "[[%s]]\n" fname)))
-     (t
-      (error "I am not equipped for dnd on %s" payload)))))
-
-
 (define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
-
-;; mobile-org settings -- cross your fingers!
-(setq org-mobile-inbox-for-pull "~/Documents/org")
-(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
 ;; latex export settings
 (add-to-list 'org-latex-packages-alist '("" "listings"))
 (setq org-latex-listings t)
 
 (setq org-latex-listings-options '(("breaklines" "true")))
-
-;; (setq org-agenda-use-tag-inheritance '(search timeline agenda))
 
 (setq
  org-outline-path-complete-in-steps nil
@@ -882,9 +811,6 @@
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-(setq org-enforce-todo-dependencies t)
-
-(setq org-agenda-dim-blocked-tasks t)
 (setq org-enforce-todo-checkbox-dependencies t)
 
 ;; ;; some org-mode wonder
@@ -896,148 +822,8 @@
 (setq org-startup-folded t)
 (setq org-startup-indented nil)
 
-;; just archive DONE entries
-(defun org-archive-done-tasks ()
-  (interactive)
-  (org-map-entries
-   (lambda ()
-     (org-archive-subtree)
-     (setq org-map-continue-from (outline-previous-heading)))
-   "/DONE" 'tree))
-
 (setq org-speed-commands-user
           '(("S" . (widen))))
-
-;; publish zettelkasten
-(setq org-publish-project-alist
-      '(("zk"
-         :base-directory "~/Documents/org/zk/"
-         :base-extension "org"
-         :publishing-directory "~/Documents/org/my_pub/"
-         :makeindex non-nil
-         :auto-index t
-         :section-numbers nil
-         :with-author nil
-         :with-date nil
-         :auto-sitemap t
-         :with-toc nil
-         :with-properties t
-         :with-title t
-         :with-tags t
-         :with-date nil
-         :with-creator nil
-         :with-email nil
-         :with-timestamps t
-         :html-validation-link nil
-         :publishing-function org-html-publish-to-html)))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#FAFAFA" "#FF1744" "#66BB6A" "#F57F17" "#42A5F5" "#7E57C2" "#0097A7" "#546E7A"])
- '(ansi-term-color-vector
-   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
- '(compilation-message-face (quote default))
- '(custom-safe-themes
-   (quote
-    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
- '(dired-filter-saved-filters
-   (quote
-    (("clean_view"
-      (not
-       (regexp . ".*~$"))
-      (not
-       (regexp . "^#.*"))
-      (#("no underscore" 0 1
-         (idx 0))
-       (not
-        (regexp . "^_.*"))))
-     (#("no underscore" 0 1
-        (idx 0))
-      (not
-       (regexp . "^_.*"))))))
- '(highlight-indent-guides-auto-enabled nil t)
- '(magit-diff-use-overlays nil)
- '(markdown-asymmetric-header t)
- '(markdown-command "/usr/local/bin/markdown")
- '(markdown-live-preview-delete-export (quote delete-on-export))
- '(org-agenda-files
-   (quote
-    ("~/Documents/org/work/work.org" "/Users/michael/Documents/org/work/gtd.org" "/Users/michael/Documents/org/work/inbox.org" "/Users/michael/Documents/org/work/journal.org" "/Users/michael/Documents/org/work/log.org" "/Users/michael/Documents/org/work/diary.org")))
- '(org-show-context-detail
-   (quote
-    ((occur-tree . minimal)
-     (agenda . local)
-     (bookmark-jump . lineage)
-     (isearch . lineage)
-     (default . minimal))))
- '(package-selected-packages
-   (quote
-    (zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
- '(show-paren-mode t)
- '(tool-bar-mode nil)
- '(vc-annotate-very-old-color nil))
-
-
-(defun mkm/fix-title()
-  (interactive)
-  (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM"))))
-  )
-
-(defun mkm/zettel-file-new (x)
-  "Create zettel file with name from heading."
-  (interactive "sZettel Heading: ")
-  (let* (
-         (first-char (downcase (substring x nil 1)))
-         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
-         (z (concat (downcase first-char) rest-str)))
-
-    (find-file (concat "~/Documents/org/zk/" z ".md"))
-    (insert (concat "# " x "\n\n"))))
-
-(global-set-key (kbd "s-n") 'mkm/zettel-file-new)
-
-(defun mkm/zix-file-new (x)
-  "Create zix file with name from heading and zix prefix"
-  (interactive "szix Heading: ")
-  (let* (
-         (first-char (downcase (substring x nil 1)))
-         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
-         (z (concat (downcase first-char) rest-str)))
-
-    (find-file (concat "~/Documents/org/zk/zix_" z ".md"))
-    (insert (concat "# " x "\n\n"))))
-
-(global-set-key (kbd "s-N") 'mkm/zix-file-new)
-
-(setq markdown-enable-wiki-links nil)
-(setq markdown-hide-urls t)
-
-;; use visual-line mode in markdown mode
-(defun my-markdown-mode-hook ()
-  (visual-line-mode 1)
-  (local-set-key (kbd "s-l") 'mkm/link-zk))
-
-(add-hook 'markdown-mode-hook 'my-markdown-mode-hook)
-
-(defun mkm/link-zk ()
-  (interactive)
-  (ivy-read "ZK File: "
-          (directory-files "~/Documents/org/zk" nil "^.*\.md$")
-          :action (lambda (file)
-                    (save-excursion
-                      (with-temp-buffer
-                        (insert-file-contents (concat "/Users/michael/Documents/org/zk/" file))
-                        (goto-char 1)
-                        (setq z (buffer-substring-no-properties 3 (line-end-position))))
-                      (insert "[" z "](" file ")")
-                      )
-                    (end-of-line))))
 
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
@@ -1155,6 +941,88 @@
 (define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; zettelkasten                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; publish zettelkasten
+(setq org-publish-project-alist
+      '(("zk"
+         :base-directory "~/Documents/org/zk/"
+         :base-extension "org"
+         :publishing-directory "~/Documents/org/my_pub/"
+         :makeindex non-nil
+         :auto-index t
+         :section-numbers nil
+         :with-author nil
+         :with-date nil
+         :auto-sitemap t
+         :with-toc nil
+         :with-properties t
+         :with-title t
+         :with-tags t
+         :with-date nil
+         :with-creator nil
+         :with-email nil
+         :with-timestamps t
+         :html-validation-link nil
+         :publishing-function org-html-publish-to-html)))
+
+(defun mkm/fix-title()
+  (interactive)
+  (insert (replace-regexp-in-string " " "" (upcase-initials (org-entry-get nil "ITEM"))))
+  )
+
+(defun mkm/zettel-file-new (x)
+  "Create zettel file with name from heading."
+  (interactive "sZettel Heading: ")
+  (let* (
+         (first-char (downcase (substring x nil 1)))
+         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
+         (z (concat (downcase first-char) rest-str)))
+
+    (find-file (concat "~/Documents/org/zk/" z ".md"))
+    (insert (concat "# " x "\n\n"))))
+
+(global-set-key (kbd "s-n") 'mkm/zettel-file-new)
+
+(defun mkm/zix-file-new (x)
+  "Create zix file with name from heading and zix prefix"
+  (interactive "szix Heading: ")
+  (let* (
+         (first-char (downcase (substring x nil 1)))
+         (rest-str (substring (replace-regexp-in-string " " "" (upcase-initials x )) 1))
+         (z (concat (downcase first-char) rest-str)))
+
+    (find-file (concat "~/Documents/org/zk/zix_" z ".md"))
+    (insert (concat "# " x "\n\n"))))
+
+(global-set-key (kbd "s-N") 'mkm/zix-file-new)
+
+;; use visual-line mode in markdown mode
+(defun my-markdown-mode-hook ()
+  (visual-line-mode 1)
+  (local-set-key (kbd "s-l") 'mkm/link-zk))
+
+(add-hook 'markdown-mode-hook 'my-markdown-mode-hook)
+
+(defun mkm/link-zk ()
+  (interactive)
+  (ivy-read "ZK File: "
+          (directory-files "~/Documents/org/zk" nil "^.*\.md$")
+          :action (lambda (file)
+                    (save-excursion
+                      (with-temp-buffer
+                        (insert-file-contents (concat "/Users/michael/Documents/org/zk/" file))
+                        (goto-char 1)
+                        (setq z (buffer-substring-no-properties 3 (line-end-position))))
+                      (insert "[" z "](" file ")")
+                      )
+                    (end-of-line))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ruby                                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1165,88 +1033,6 @@
              '("\\(?:Brewfile\\|Capfile\\|Gemfile\\(?:\\.[a-zA-Z0-9._-]+\\)?\\|[rR]akefile\\)\\'" . ruby-mode))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; emacs auto stuff                                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-level-1 ((t :height 1.0)))
- '(org-level-2 ((t :height 1.0)))
- '(org-level-3 ((t :height 1.0))))
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; '(org-block ((t (:background "#000000"))))
- ;; '(org-block-background ((t (:background "#000000"))))
- ;; '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
- ;; '(org-block-end-line ((t (:foreground "#008ED1" :background "#002E41"))))
- ;; '(which-func ((t (:foreground "#008000")))))
-
-(put 'dired-find-alternate-file 'disabled nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OSX plist workaround
@@ -1317,4 +1103,138 @@
         (advice-add 'flyspell-prog-mode :before-until #'modi/ispell-not-avail-p))))
 
 (provide 'setup-spell)
+
 (put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; emacs auto stuff                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; '(org-block ((t (:background "#000000"))))
+ ;; '(org-block-background ((t (:background "#000000"))))
+ ;; '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
+ ;; '(org-block-end-line ((t (:foreground "#008ED1" :background "#002E41"))))
+ ;; '(which-func ((t (:foreground "#008000")))))
+
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#FAFAFA" "#FF1744" "#66BB6A" "#F57F17" "#42A5F5" "#7E57C2" "#0097A7" "#546E7A"])
+ '(ansi-term-color-vector
+   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
+ '(compilation-message-face (quote default))
+ '(custom-safe-themes
+   (quote
+    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
+ '(dired-filter-saved-filters
+   (quote
+    (("clean_view"
+      (not
+       (regexp . ".*~$"))
+      (not
+       (regexp . "^#.*"))
+      (#("no underscore" 0 1
+         (idx 0))
+       (not
+        (regexp . "^_.*"))))
+     (#("no underscore" 0 1
+        (idx 0))
+      (not
+       (regexp . "^_.*"))))))
+ '(highlight-indent-guides-auto-enabled nil t)
+ '(magit-diff-use-overlays nil)
+ '(markdown-asymmetric-header t)
+ '(markdown-command "/usr/local/bin/markdown")
+ '(markdown-live-preview-delete-export (quote delete-on-export))
+ '(org-agenda-files
+   (quote
+    ("~/Documents/org/work/work.org" "/Users/michael/Documents/org/work/gtd.org" "/Users/michael/Documents/org/work/inbox.org" "/Users/michael/Documents/org/work/journal.org" "/Users/michael/Documents/org/work/log.org" "/Users/michael/Documents/org/work/diary.org")))
+ '(org-show-context-detail
+   (quote
+    ((occur-tree . minimal)
+     (agenda . local)
+     (bookmark-jump . lineage)
+     (isearch . lineage)
+     (default . minimal))))
+ '(package-selected-packages
+   (quote
+    (zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+ '(show-paren-mode t)
+ '(tool-bar-mode nil)
+ '(vc-annotate-very-old-color nil))
