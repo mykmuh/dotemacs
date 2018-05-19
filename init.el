@@ -244,10 +244,6 @@
 
 (define-key dired-mode-map (kbd "/") dired-filter-map)
 
-;; some stuff for markdown
-(setq-default tab-width 4)
-
-
 ;; rename function from Steve Yegge
 (defun rename-this-buffer-and-file ()
   "Renames current buffer and file it is visiting."
@@ -275,25 +271,8 @@
 (global-set-key (kbd "C-c t") 'mkm/fix-title)
 (global-set-key (kbd "C-s-f") 'counsel-ag)
 
-(defun toggle-camelcase-underscores ()
-  "Toggle between camelcase and underscore notation for the symbol at point."
-  (interactive)
-  (save-excursion
-    (let* ((bounds (bounds-of-thing-at-point 'symbol))
-           (start (car bounds))
-           (end (cdr bounds))
-           (currently-using-underscores-p (progn (goto-char start)
-                                                 (re-search-forward "_" end t))))
-      (if currently-using-underscores-p
-          (progn
-            (upcase-initials-region start end)
-            (replace-string "_" "" nil start end)
-            (downcase-region start (1+ start)))
-        (replace-regexp "\\([A-Z]\\)" "_\\1" nil (1+ start) end)
-        (downcase-region start (cdr (bounds-of-thing-at-point 'symbol)))))))
 
 ;; no more lost files!
-
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-directory))
         (make-directory --backup-directory t))
@@ -310,8 +289,6 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
       )
 ;; funky files name
-
-(setq js-indent-level 2)
 
 (use-package counsel
   :bind
