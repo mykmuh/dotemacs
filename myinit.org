@@ -47,6 +47,8 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(setq-default indent-tabs-mode nil)
+
 ;;preview files in dired
 (use-package peep-dired
   :ensure t
@@ -54,10 +56,10 @@
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
-
 ;; got to kill it
 (bind-key "<C-f5>" 'save-buffers-kill-emacs)
 #+END_SRC
+
 ** visual
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
@@ -81,7 +83,15 @@
 (setq-default indicate-empty-lines +1)
 
 (show-paren-mode 1)
-;; (setq show-paren-style 'expression)
+
+;; winner-mode for sanity
+(winner-mode 1)
+
+;; save my place
+(save-place-mode 1)
+
+;; no need for tabs
+(setq-default indent-tabs-mode nil)
 
 (use-package rainbow-delimiters
   :ensure t
@@ -140,10 +150,43 @@
 ;;  :ensure t)
 #+END_SRC
 
+** fix for loading as a daemon
+When running as a daemon, some themes don't seem to want to load when restarting. Hopefully the following will help:
+
+#+BEGIN_SRC emacs-lisp
+;; theme
+(defvar my:theme 'github-modern)
+(defvar my:theme-window-loaded nil)
+(defvar my:theme-terminal-loaded nil)
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions(lambda (frame)
+                       (select-frame frame)
+                       (if (window-system frame)
+                           (unless my:theme-window-loaded
+                             (if my:theme-terminal-loaded
+                                 (enable-theme my:theme)
+                               (load-theme my:theme t))
+                             (setq my:theme-window-loaded t))
+                         (unless my:theme-terminal-loaded
+                           (if my:theme-window-loaded
+                               (enable-theme my:theme)
+                             (load-theme my:theme t))
+                           (setq my:theme-terminal-loaded t)))))
+
+  (progn
+    (load-theme my:theme t)
+    (if (display-graphic-p)
+        (setq my:theme-window-loaded t)
+      (setq my:theme-terminal-loaded t))))
+#+END_SRC
+
 ** specific themes
 zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
 
-Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light". Ok, flatui. I promise to stop now.
+Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light". Ok, flatui. I promise to stop now. Maybe github-modern?
+
+Switching back to flatui.
 # (use-package zenburn-theme
 #   :ensure t
 #   :config (load-theme 'zenburn t))
@@ -291,18 +334,13 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
   :ensure t
   :init (global-git-gutter+-mode)
   :diminish (git-gutter+-mode))
+
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 #+END_SRC
 
-* unfactored
+* yaml
 #+BEGIN_SRC emacs-lisp
-(require 're-builder)
-(setq reb-re-syntax 'string)
-
-(require 'deft)
-;; (require 'session)
-
-(setq neo-smart-open t)
-
 (use-package yaml-mode
   :ensure t
   :defer t
@@ -311,6 +349,17 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
             (lambda ()
               (setq-local paragraph-separate ".*>-$\\|[   ]*$")
               (setq-local paragraph-start paragraph-separate))))
+#+END_SRC
+
+* unfactored
+#+BEGIN_SRC emacs-lisp
+(require 're-builder)
+(setq reb-re-syntax 'string)
+
+(require 'deft)
+
+(setq neo-smart-open t)
+
 
 (use-package json-mode
   :ensure t
@@ -325,9 +374,6 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
         (if (region-active-p)
             (call-interactively #'json-reformat-region)
           (json-reformat-region (point-min) (point-max)))))))
-
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -365,12 +411,6 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
 (setq ns-pop-up-frames nil)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; magit                                                                  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(global-set-key (kbd "C-x g") 'magit-status)
-(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; grep                                                                   ;;
@@ -461,14 +501,7 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
 (setq auto-revert-verbose t)
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
-;; winner-mode for sanity
-(winner-mode 1)
 
-;; save my place
-(save-place-mode 1)
-
-;; no need for tabs
-(setq-default indent-tabs-mode nil)
 
 ;; fix for 'ls does not support --dired' message
 (setq dired-use-ls-dired nil)
