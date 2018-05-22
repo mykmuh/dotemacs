@@ -227,7 +227,7 @@ Switching back to flatui.
 (global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
 (global-set-key (kbd "<f3>") 'highlight-indentation-mode)
 
-(set-face-background 'highlight-indentation-face "#e3e3d3")
+(set-face-background 'highlight-indentation-face "#f9f6f9")
 (set-face-background 'highlight-indentation-current-column-face "#e3d3e3")
 #+END_SRC
 
