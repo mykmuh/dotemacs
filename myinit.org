@@ -38,6 +38,7 @@
 (setq sentence-end-double-space nil)
 
 #+END_SRC
+
 * user interface tweaks
 ** general
 #+BEGIN_SRC emacs-lisp
@@ -135,17 +136,33 @@
 ;;   )
 
 ;; some stuff I'm trying mkm Friday, May 18, 2018)
-(use-package color-theme
-  :ensure t)
+;; (use-package color-theme
+;;  :ensure t)
 #+END_SRC
 
 ** specific themes
 zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
-#+BEGIN_SRC emacs-lisp
-(use-package zenburn-theme
-  :ensure t
-  :config (load-theme 'zenburn t))
-#+END_SRC
+
+Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light".
+# (use-package zenburn-theme
+#   :ensure t
+#   :config (load-theme 'zenburn t))
+** list of possibilities
+;; light
+- minimal-light: so far, this is rocking it!
+- material-light : just icky. All the oversized crap from Leuven, with some funky color choices
+- (load-theme 'tao-yang t): not enough contrast
+- (load-theme 'sanityinc-tomorrow-day t): ;; too Xmas
+
+;; (load-theme 'soft-stone t)
+;; (load-theme 'twilight-bright t)
+
+;; not loving the dark background on l1
+;; (load-theme 'leuven t)
+
+;; gruvbox has too garish brights
+;; (load-theme 'gruvbox t)
+;; (load-theme 'monokai t)
 
 * projectile
 #+BEGIN_SRC emacs-lisp
@@ -173,6 +190,7 @@ zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leu
 ;; note: for iterm2, set alt to esc+
 
 #+END_SRC
+
 * ibuffer
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -234,6 +252,7 @@ zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leu
               (name 16 -1)
               " " filename)))
 #+END_SRC
+
 * markdown
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
@@ -251,6 +270,7 @@ zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leu
 (setq markdown-indent-on-enter t)
 (setq markdown-gfm-uppercase-checkbox t)
 #+END_SRC
+
 * git
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter+
@@ -271,6 +291,7 @@ zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leu
   :init (global-git-gutter+-mode)
   :diminish (git-gutter+-mode))
 #+END_SRC
+
 * unfactored
 #+BEGIN_SRC emacs-lisp
 (require 're-builder)
@@ -1107,141 +1128,5 @@ zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leu
 (put 'dired-find-alternate-file 'disabled nil)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; emacs auto stuff                                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;;(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
- ;; '(org-block ((t (:background "#000000"))))
- ;; '(org-block-background ((t (:background "#000000"))))
- ;; '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
- ;; '(org-block-end-line ((t (:foreground "#008ED1" :background "#002E41"))))
- ;; '(which-func ((t (:foreground "#008000")))))
-
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#FAFAFA" "#FF1744" "#66BB6A" "#F57F17" "#42A5F5" "#7E57C2" "#0097A7" "#546E7A"])
- '(ansi-term-color-vector
-   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
- '(compilation-message-face (quote default))
- '(custom-safe-themes
-   (quote
-    ("7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" "6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "4cbec5d41c8ca9742e7c31cc13d8d4d5a18bd3a0961c18eb56d69972bbcf3071" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default)))
- '(dired-filter-saved-filters
-   (quote
-    (("clean_view"
-      (not
-       (regexp . ".*~$"))
-      (not
-       (regexp . "^#.*"))
-      (#("no underscore" 0 1
-         (idx 0))
-       (not
-        (regexp . "^_.*"))))
-     (#("no underscore" 0 1
-        (idx 0))
-      (not
-       (regexp . "^_.*"))))))
- '(highlight-indent-guides-auto-enabled nil t)
- '(magit-diff-use-overlays nil)
- '(markdown-asymmetric-header t)
- '(markdown-command "/usr/local/bin/markdown")
- '(markdown-live-preview-delete-export (quote delete-on-export))
- '(org-agenda-files
-   (quote
-    ("~/Documents/org/work/work.org" "/Users/michael/Documents/org/work/gtd.org" "/Users/michael/Documents/org/work/inbox.org" "/Users/michael/Documents/org/work/journal.org" "/Users/michael/Documents/org/work/log.org" "/Users/michael/Documents/org/work/diary.org")))
- '(org-show-context-detail
-   (quote
-    ((occur-tree . minimal)
-     (agenda . local)
-     (bookmark-jump . lineage)
-     (isearch . lineage)
-     (default . minimal))))
- '(package-selected-packages
-   (quote
-    (zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow-day color-theme-sanityinc-day tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme color-theme-gruvbox color-theme-sanityince-tomorrow color-theme-sanityinc-tomorrow chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling color-theme smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
- '(show-paren-mode t)
- '(tool-bar-mode nil)
- '(vc-annotate-very-old-color nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 #+END_SRC
 
