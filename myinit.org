@@ -1,14 +1,7 @@
 #+STARTUP: overview
 * initial set up
+** packages
 #+BEGIN_SRC emacs-lisp
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Packages                                                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; super vs shift key
-;; - s = super
-;; - S = shift
-
 (setenv "PATH"
 	(concat (getenv "PATH")
 		":/usr/local/bin"))
@@ -21,9 +14,32 @@
 
 ;; all in personal lisp and downloaded packages
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; mkm: moving to use-package for everything, so following will become useless
+(setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
+
+(mapc #'package-install my-package-list)
 #+END_SRC
 
+** mac specific
+#+BEGIN_SRC emacs-lisp
+;; super vs shift key
+;; - s = super
+;; - S = shift
+
+;; shell issues
+;; is this needed for flyspell to work?
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+;; keys
+(setq mac-command-modifier 'super)
+(setq mac-option-modifier 'meta)
+(setq sentence-end-double-space nil)
+
+#+END_SRC
 * user interface tweaks
+** general
 #+BEGIN_SRC emacs-lisp
 ;; mouse like kitchin
 (require 'org-mouse)
@@ -37,22 +53,54 @@
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
-;; mkm: moving to use-package for everything, so following will become useless
-(setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
-
-(mapc #'package-install my-package-list)
 
 ;; got to kill it
 (bind-key "<C-f5>" 'save-buffers-kill-emacs)
 #+END_SRC
-* some org to add later
+** visual
 #+BEGIN_SRC emacs-lisp
-(use-package org-bullets
+(setq inhibit-startup-message t)
+
+(when (window-system)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1))
+
+;; show full path in title bar
+(setq frame-title-format
+      (list (format "%s %%S: %%j " (system-name))
+            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+
+(blink-cursor-mode 1)
+
+(add-to-list 'default-frame-alist
+	     '(font . "Source Code Pro 14"))
+(set-face-attribute 'default t :font "Source Code Pro 14")
+
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines +1)
+
+(show-paren-mode 1)
+;; (setq show-paren-style 'expression)
+
+(use-package rainbow-delimiters
   :ensure t
+  :defer t
+  :init
+  (progn
+    (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
   :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (progn
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")
+    (setf rainbow-delimiters-max-face-count 1)
+    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                        :foreground 'unspecified
+                        :inherit 'error)
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")))
 #+END_SRC
+
 * themes
+** scaffolding
 #+BEGIN_SRC emacs-lisp
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
@@ -89,19 +137,17 @@
 ;; some stuff I'm trying mkm Friday, May 18, 2018)
 (use-package color-theme
   :ensure t)
+#+END_SRC
 
+** specific themes
+#+BEGIN_SRC emacs-lisp
 (use-package zenburn-theme
   :ensure t
   :config (load-theme 'zenburn t))
-
-;; end stuff Friday, May 18, 2018
 #+END_SRC
-* unfactored
+
+* projectile
 #+BEGIN_SRC emacs-lisp
-
-(require 'deft)
-;; (require 'session)
-
 (use-package projectile
   :ensure t
   :config
@@ -117,6 +163,121 @@
   (counsel-projectile-mode))
 
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
+
+;; super key
+(define-key global-map [?\s-d] 'projectile-find-dir)
+(define-key global-map [?\s-f] 'projectile-find-file)
+(define-key global-map [?\s-g] 'projectile-grep)
+
+;; note: for iterm2, set alt to esc+
+
+#+END_SRC
+* ibuffer
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+(setq ibuffer-saved-filter-groups
+      '(("default"
+         ("tramp" (or
+                   (name . "^\\*tramp.*")
+                   (filename . "^/sudo.*")
+                   (filename . "^/ssh.*")))
+         ("markdown" (name . ".*\\.md"))
+         ("dired" (mode . dired-mode))
+         ("yaml" (or
+                  (name . ".*\\.yml")))
+         ("org" (name . "^.*org$"))
+         ("web" (or (mode . web-mode) (mode . js2-mode)))
+         ("shell" (or
+                   (mode . eshell-mode)
+                   (mode . shell-mode)
+                   (name . ".*\\.sh")))
+         ("programming" (or
+                         (mode . python-mode)
+                         (mode . c++-mode)
+                         (mode . perl-mode)
+                         (mode . ruby-mode)
+                         (name . ".*\\.ps1")))
+         ("emacs" (or
+                   (name . "^\\*scratch\\*$")
+                   (name . "^\\*Messages\\*$")
+                   (name . "^\\*Help\\*$")
+                   (name . ".*\\.el$")))
+         ("magit" (or
+                   (name . "^*magit.*:.*")))
+         ("chef" (or
+                  (name . ".*\\.erb")
+                  (name . ".*\\.yml")))
+         )))
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+             (ibuffer-auto-mode 1)
+             (ibuffer-switch-to-saved-filter-groups "default")))
+
+;; Don't show filter groups if there are no buffers in that group
+(setq ibuffer-show-empty-filter-groups nil)
+
+;; Don't ask for confirmation to delete marked buffers
+(setq ibuffer-expert t)
+
+;; nearly all of this is the default layout
+(setq ibuffer-formats 
+      '((mark modified read-only " "
+              (name 45 45 :left :elide) ; change: 30s were originally 18s
+              " "
+              (size 9 -1 :right)
+              " "
+              (mode 16 16 :left :elide)
+              " " filename-and-process)
+        (mark " "
+              (name 16 -1)
+              " " filename)))
+#+END_SRC
+* markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+(setq markdown-enable-wiki-links nil)
+(setq markdown-hide-urls t)
+
+(setq markdown-open-command "~/bin/mark")
+(setq markdown-indent-on-enter t)
+(setq markdown-gfm-uppercase-checkbox t)
+#+END_SRC
+* git
+#+BEGIN_SRC emacs-lisp
+(use-package git-gutter+
+  :ensure t
+  :init (global-git-gutter+-mode)
+  :diminish (git-gutter+-mode)
+  :config
+  (global-set-key (kbd "C-S-s") 'swiper)
+  :bind (("C-x G" . git-gutter+-mode)
+         ("C-x ." . git-gutter+-show-hunk-inline-at-point)
+         :map git-gutter+-mode-map
+         ("C-x C-n" . git-gutter+-next-hunk)
+         ("C-x C-p" . git-gutter+-previous-hunk)))
+
+;; mkm: turn back on for magit?
+(use-package git-gutter+
+  :ensure t
+  :init (global-git-gutter+-mode)
+  :diminish (git-gutter+-mode))
+#+END_SRC
+* unfactored
+#+BEGIN_SRC emacs-lisp
+(require 're-builder)
+(setq reb-re-syntax 'string)
+
+(require 'deft)
+;; (require 'session)
+
 (setq neo-smart-open t)
 
 (use-package yaml-mode
@@ -143,19 +304,6 @@
           (json-reformat-region (point-min) (point-max)))))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; mac settings                                                           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; shell issues
-;; is this needed for flyspell to work?
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-
-;; keys
-(setq mac-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq sentence-end-double-space nil)
 
 
 
@@ -187,17 +335,6 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; projectile                                                             ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; super key
-(define-key global-map [?\s-d] 'projectile-find-dir)
-(define-key global-map [?\s-f] 'projectile-find-file)
-(define-key global-map [?\s-g] 'projectile-grep)
-
-;; note: for iterm2, set alt to esc+
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacsclient                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -227,24 +364,6 @@
 (defadvice rgrep (after delete-grep-header activate) (delete-grep-header))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; markdown-mode                                                          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
-
-(setq markdown-enable-wiki-links nil)
-(setq markdown-hide-urls t)
-
-(setq markdown-open-command "~/bin/mark")
-(setq markdown-indent-on-enter t)
-(setq markdown-gfm-uppercase-checkbox t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
@@ -412,74 +531,6 @@
 (setq mouse-wheel-progressive-speed nil)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; git                                                                    ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package git-gutter+
-  :ensure t
-  :init (global-git-gutter+-mode)
-  :diminish (git-gutter+-mode)
-  :config
-  (global-set-key (kbd "C-S-s") 'swiper)
-  :bind (("C-x G" . git-gutter+-mode)
-         ("C-x ." . git-gutter+-show-hunk-inline-at-point)
-         :map git-gutter+-mode-map
-         ("C-x C-n" . git-gutter+-next-hunk)
-         ("C-x C-p" . git-gutter+-previous-hunk)))
-
-;; mkm: turn back on for magit?
-(use-package git-gutter+
-  :ensure t
-  :init (global-git-gutter+-mode)
-  :diminish (git-gutter+-mode))
-
-(require 're-builder)
-(setq reb-re-syntax 'string)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; visual                                                                 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq inhibit-startup-message t)
-
-(when (window-system)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1))
-
-;; show full path in title bar
-(setq frame-title-format
-      (list (format "%s %%S: %%j " (system-name))
-            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
-
-(blink-cursor-mode 1)
-
-(add-to-list 'default-frame-alist
-	     '(font . "Source Code Pro 14"))
-(set-face-attribute 'default t :font "Source Code Pro 14")
-
-(setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines +1)
-
-(show-paren-mode 1)
-;; (setq show-paren-style 'expression)
-
-(use-package rainbow-delimiters
-  :ensure t
-  :defer t
-  :init
-  (progn
-    (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-    (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
-  :config
-  (progn
-    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")
-    (setf rainbow-delimiters-max-face-count 1)
-    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
-                        :foreground 'unspecified
-                        :inherit 'error)
-    (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Howard Abrams settings                                                 ;;
@@ -605,67 +656,6 @@
 
 (setq tramp-default-method "ssh")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ibuffer                                                                ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
-(setq ibuffer-saved-filter-groups
-      '(("default"
-         ("tramp" (or
-                   (name . "^\\*tramp.*")
-                   (filename . "^/sudo.*")
-                   (filename . "^/ssh.*")))
-         ("markdown" (name . ".*\\.md"))
-         ("dired" (mode . dired-mode))
-         ("yaml" (or
-                  (name . ".*\\.yml")))
-         ("org" (name . "^.*org$"))
-         ("web" (or (mode . web-mode) (mode . js2-mode)))
-         ("shell" (or
-                   (mode . eshell-mode)
-                   (mode . shell-mode)
-                   (name . ".*\\.sh")))
-         ("programming" (or
-                         (mode . python-mode)
-                         (mode . c++-mode)
-                         (mode . perl-mode)
-                         (mode . ruby-mode)
-                         (name . ".*\\.ps1")))
-         ("emacs" (or
-                   (name . "^\\*scratch\\*$")
-                   (name . "^\\*Messages\\*$")
-                   (name . "^\\*Help\\*$")
-                   (name . ".*\\.el$")))
-         ("magit" (or
-                   (name . "^*magit.*:.*")))
-         ("chef" (or
-                  (name . ".*\\.erb")
-                  (name . ".*\\.yml")))
-         )))
-(add-hook 'ibuffer-mode-hook
-	  '(lambda ()
-             (ibuffer-auto-mode 1)
-             (ibuffer-switch-to-saved-filter-groups "default")))
-
-;; Don't show filter groups if there are no buffers in that group
-(setq ibuffer-show-empty-filter-groups nil)
-
-;; Don't ask for confirmation to delete marked buffers
-(setq ibuffer-expert t)
-
-;; nearly all of this is the default layout
-(setq ibuffer-formats 
-      '((mark modified read-only " "
-              (name 45 45 :left :elide) ; change: 30s were originally 18s
-              " "
-              (size 9 -1 :right)
-              " "
-              (mode 16 16 :left :elide)
-              " " filename-and-process)
-        (mark " "
-              (name 16 -1)
-              " " filename)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ivy-mode                                                               ;;
