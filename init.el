@@ -237,6 +237,9 @@
 (setq markdown-enable-wiki-links nil)
 (setq markdown-hide-urls t)
 
+(setq markdown-open-command "~/bin/mark")
+(setq markdown-indent-on-enter t)
+(setq markdown-gfm-uppercase-checkbox t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; editing                                                                ;;
