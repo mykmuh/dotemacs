@@ -143,13 +143,14 @@
 ** specific themes
 zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
 
-Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light".
+Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light". Ok, flatui. I promise to stop now.
 # (use-package zenburn-theme
 #   :ensure t
 #   :config (load-theme 'zenburn t))
 ** list of possibilities
 ;; light
-- minimal-light: so far, this is rocking it!
+- flatui is nice and what I'm trying
+- minimal-light: so far, this is rocking it! -- eh, maybe not
 - material-light : just icky. All the oversized crap from Leuven, with some funky color choices
 - (load-theme 'tao-yang t): not enough contrast
 - (load-theme 'sanityinc-tomorrow-day t): ;; too Xmas
@@ -776,8 +777,8 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
 (global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
 (global-set-key (kbd "<f3>") 'highlight-indentation-mode)
 
-(set-face-background 'highlight-indentation-face "#e3e3d3")
-(set-face-background 'highlight-indentation-current-column-face "#D3D3E3")
+;; (set-face-background 'highlight-indentation-face "#e3e3d3")
+;; (set-face-background 'highlight-indentation-current-column-face "#D3D3E3")
 
 
 
