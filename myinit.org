@@ -140,6 +140,7 @@
 #+END_SRC
 
 ** specific themes
+zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
 #+BEGIN_SRC emacs-lisp
 (use-package zenburn-theme
   :ensure t
