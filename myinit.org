@@ -111,6 +111,12 @@
 #+END_SRC
 
 * themes
+** github-modern mods
+My current choice, but needs some tweaking
+#+BEGIN_SRC emacs-lisp
+(setq github-override-colors-alist
+      '(("github-selection" . "#d7e8ff")))
+#+END_SRC
 ** scaffolding
 #+BEGIN_SRC emacs-lisp
 (defun load-only-theme ()
@@ -207,6 +213,36 @@ Switching back to flatui.
 ;; gruvbox has too garish brights
 ;; (load-theme 'gruvbox t)
 ;; (load-theme 'monokai t)
+
+* highlight-indentation
+#+BEGIN_SRC emacs-lisp
+(require 'highlight-indentation)
+;; f3
+(defun mkm/show-lines ()
+  "Toggle `highlight-indentation-mode and `highlight-indentation-current-column-mode."
+  (interactive)
+  (highlight-indentation-mode)
+  (highlight-indentation-current-column-mode))
+
+(global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
+(global-set-key (kbd "<f3>") 'highlight-indentation-mode)
+
+(set-face-background 'highlight-indentation-face "#e3e3d3")
+(set-face-background 'highlight-indentation-current-column-face "#e3d3e3")
+#+END_SRC
+
+* ivy
+First, a tweak to selection. I'm not too hip on what ivy is doing here with the multip matches, but this gets me so I can read stuff again in the minibuffer.
+
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ '(ivy-minibuffer-match-face-1 ((t (:background "#D3D3E3"))))
+ '(ivy-minibuffer-match-face-2 ((t (:background "#f2f3d3"))))
+ '(ivy-minibuffer-match-face-3 ((t (:background "#f2f3d3"))))
+ '(ivy-minibuffer-match-face-4 ((t (:background "#f2f3d3"))))
+ '(ivy-highlight-face ((t (:background "#f2f3d3"))))
+ '(ivy-current-match ((t (:background "#b3ffb3")))))
+#+END_SRC
 
 * projectile
 #+BEGIN_SRC emacs-lisp
@@ -798,20 +834,6 @@ Switching back to flatui.
   ("F" yafolding-toggle-all)
   ("q" nil)
   )
-
-(require 'highlight-indentation)
-;; f3
-(defun mkm/show-lines ()
-  "Toggle `highlight-indentation-mode and `highlight-indentation-current-column-mode."
-  (interactive)
-  (highlight-indentation-mode)
-  (highlight-indentation-current-column-mode))
-
-(global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
-(global-set-key (kbd "<f3>") 'highlight-indentation-mode)
-
-;; (set-face-background 'highlight-indentation-face "#e3e3d3")
-;; (set-face-background 'highlight-indentation-current-column-face "#D3D3E3")
 
 
 
