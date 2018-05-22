@@ -115,7 +115,7 @@
 My current choice, but needs some tweaking
 #+BEGIN_SRC emacs-lisp
 (setq github-override-colors-alist
-      '(("github-selection" . "#d7e8ff")))
+      '(("github-selection" . "#ffc04c")))
 #+END_SRC
 ** scaffolding
 #+BEGIN_SRC emacs-lisp
