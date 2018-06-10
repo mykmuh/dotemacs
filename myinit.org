@@ -41,6 +41,11 @@
 
 * user interface tweaks
 ** general
+Never, ever, ever accidentally close the emacsclient again!
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-w") 'kill-ring-save)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 ;; mouse like kitchin
 (require 'org-mouse)
@@ -61,6 +66,9 @@
 #+END_SRC
 
 ** visual
+
+Just some tweaks here.
+
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 
@@ -79,19 +87,14 @@
 	     '(font . "Source Code Pro 14"))
 (set-face-attribute 'default t :font "Source Code Pro 14")
 
-(setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines +1)
-
 (show-paren-mode 1)
-
-;; winner-mode for sanity
-(winner-mode 1)
-
-;; save my place
-(save-place-mode 1)
 
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
+
+;; make cursor the width of the character it is under
+;; i.e. full width of a TAB
+(setq x-stretch-cursor t)
 
 (use-package rainbow-delimiters
   :ensure t
@@ -110,6 +113,79 @@
     (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")))
 #+END_SRC
 
+I'm not sure what the following do. Maybe I should look 'em up?
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines +1)
+#+END_SRC
+
+Let's me jump back to frame layout that I'm using. 
+#+BEGIN_SRC emacs-lisp
+;; winner-mode for sanity
+(winner-mode 1)
+
+;; save my place
+(save-place-mode 1)
+#+END_SRC
+
+So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm previewing long bits of CloudFormation.
+
+
+
+
+* flyspell
+This screws me up enough to merit its own section.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ispell
+  :defer 15
+  :config
+  (progn
+    (cond
+     ((executable-find "aspell")
+      (setq ispell-program-name "aspell")
+      (setq ispell-extra-args   '("--sug-mode=ultra"
+                                  "--lang=en_US")))
+     ((executable-find "hunspell")
+      (setq ispell-program-name "hunspell")
+      (setq ispell-extra-args   '("-d en_US"))))
+
+    ;; Save a new word to personal dictionary without asking
+    (setq ispell-silently-savep t)
+
+    (use-package flyspell
+      :diminish flyspell-mode
+      :init
+      (progn
+        (setq flyspell-use-meta-tab nil)
+        ;; Binding for `flyspell-auto-correct-previous-word'
+        (setq flyspell-auto-correct-binding (kbd "C-S-j")))
+      :config
+      (progn
+        ;; Stop flyspell overriding other key bindings
+        (define-key flyspell-mode-map (kbd "C-,") nil)
+        (define-key flyspell-mode-map (kbd "C-.") nil)
+        (global-set-key (kbd "<f12>") 'flyspell-mode))
+
+        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+        (with-eval-after-load 'auto-complete
+          (ac-flyspell-workaround))
+        ;; https://github.com/larstvei/dot-emacs#flyspell
+        ;;(add-hook 'text-mode-hook #'turn-on-flyspell)
+        ;;(add-hook 'org-mode-hook  #'turn-on-flyspell)
+
+        ;; Flyspell signals an error if there is no spell-checking tool is
+        ;; installed. We can advice `turn-on-flyspell' and `flyspell-prog-mode'
+        ;; to try to enable flyspell only if a spell-checking tool is available.
+        (defun modi/ispell-not-avail-p (&rest args)
+          "Return `nil' if `ispell-program-name' is available; `t' otherwise."
+          (not (executable-find ispell-program-name)))
+        (advice-add 'turn-on-flyspell   :before-until #'modi/ispell-not-avail-p)
+        (advice-add 'flyspell-prog-mode :before-until #'modi/ispell-not-avail-p))))
+
+(provide 'setup-spell)
+#+END_SRC
 * themes
 ** github-modern mods
 My current choice, but needs some tweaking
@@ -284,7 +360,8 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
          ("markdown" (name . ".*\\.md"))
          ("dired" (mode . dired-mode))
          ("yaml" (or
-                  (name . ".*\\.yml")))
+                  (name . ".*\\.yml")
+                  (name . ".*\\.yaml")))
          ("org" (name . "^.*org$"))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
          ("shell" (or
@@ -385,6 +462,65 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
             (lambda ()
               (setq-local paragraph-separate ".*>-$\\|[   ]*$")
               (setq-local paragraph-start paragraph-separate))))
+
+#+END_SRC
+
+* indentation settings
+#+BEGIN_SRC emacs-lisp
+(require 'indent-tools)
+(global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
+
+(require 'yafolding)
+
+(defun aj-toggle-fold ()
+  "Toggle fold all lines larger than indentation on current line"
+  (interactive)
+  (let ((col 1))
+    (save-excursion
+      (back-to-indentation)
+      (setq col (+ 1 (current-column)))
+      (set-selective-display
+       (if selective-display nil (or col 1))))))
+
+(defhydra mkm-indent-tools-hydra (:color red :hint nil)
+  "
+ ^Indent^         | ^Navigation^        | ^Actions^
+------------------+---------------------+-----------
+ _>_ indent       | _j_ v               | _i_ imenu
+ _<_ de-indent    | _k_ ʌ               | _C_ Copy…
+ _L_ end of level | _n_ next sibling    | _c_ comment
+ _E_ end of fn    | _p_ previous sibling| _U_ uncomment (paragraph)
+ _P_ paragraph    | _u_ up parent       | _f_ fold
+ _SPC_ space      | _d_ down child      | _F_ fold all level
+ ___ undo         | _e_ end of tree     | _q_ quit
+"
+
+  (">" indent-tools-indent)
+  ("<" indent-tools-demote)
+  ("E" indent-tools-indent-end-of-defun)
+  ("c" indent-tools-comment)
+  ("U" indent-tools-uncomment)
+  ("P" indent-tools-indent-paragraph)
+  ("L" indent-tools-indent-end-of-level)
+  ("K" indent-tools-kill-tree)
+  ("C" indent-tools-copy-hydra/body :color blue)
+  ("s" indent-tools-select)
+  ("e" indent-tools-goto-end-of-tree)
+  ("u" indent-tools-goto-parent)
+  ("d" indent-tools-goto-child)
+  ("S" indent-tools-select-end-of-tree)
+  ("n" indent-tools-goto-next-sibling)
+  ("p" indent-tools-goto-previous-sibling)
+  ("i" helm-imenu)
+  ("j" forward-line)
+  ("k" previous-line)
+  ("SPC" indent-tools-indent-space)
+  ("_" undo-tree-undo)
+  ("l" recenter-top-bottom)
+  ("f" yafolding-toggle-element)
+  ("F" yafolding-toggle-all)
+  ("q" nil)
+  )
 #+END_SRC
 
 * unfactored
@@ -582,8 +718,8 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (global-set-key (kbd "C-x =") 'my-diff-buffer-with-file)
 (global-set-key (kbd "C-x C-=") 'ediff-current-file)
 
-(require 'neotree)
-(global-set-key (kbd "C-`") 'neotree-toggle)
+;;(require 'neotree)
+;;(global-set-key (kbd "C-`") 'neotree-toggle)
 
 ;; mkm make sure savehistory is working as intended
 ;; disabling so I can try session mode
@@ -774,66 +910,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; yaml stuff
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(require 'indent-tools)
-(global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
-
-
-(require 'yafolding)
-(defun aj-toggle-fold ()
-  "Toggle fold all lines larger than indentation on current line"
-  (interactive)
-  (let ((col 1))
-    (save-excursion
-      (back-to-indentation)
-      (setq col (+ 1 (current-column)))
-      (set-selective-display
-       (if selective-display nil (or col 1))))))
-
-;;;;; General hydra
-(defhydra mkm-indent-tools-hydra (:color red :hint nil)
-  "
- ^Indent^         | ^Navigation^        | ^Actions^
-------------------+---------------------+-----------
- _>_ indent       | _j_ v               | _i_ imenu
- _<_ de-indent    | _k_ ʌ               | _C_ Copy…
- _l_ end of level | _n_ next sibling    | _c_ comment
- _E_ end of fn    | _p_ previous sibling| _U_ uncomment (paragraph)
- _P_ paragraph    | _u_ up parent       | _f_ fold
- _SPC_ space      | _d_ down child      | _F_ fold all level
- ___ undo         | _e_ end of tree     | _q_ quit
-"
-
-  (">" indent-tools-indent)
-  ("<" indent-tools-demote)
-  ("E" indent-tools-indent-end-of-defun)
-  ("c" indent-tools-comment)
-  ("U" indent-tools-uncomment)
-  ("P" indent-tools-indent-paragraph)
-  ("l" indent-tools-indent-end-of-level)
-  ("K" indent-tools-kill-tree)
-  ("C" indent-tools-copy-hydra/body :color blue)
-  ("s" indent-tools-select)
-  ("e" indent-tools-goto-end-of-tree)
-  ("u" indent-tools-goto-parent)
-  ("d" indent-tools-goto-child)
-  ("S" indent-tools-select-end-of-tree)
-  ("n" indent-tools-goto-next-sibling)
-  ("p" indent-tools-goto-previous-sibling)
-  ("i" helm-imenu)
-  ("j" forward-line)
-  ("k" previous-line)
-  ("SPC" indent-tools-indent-space)
-  ("_" undo-tree-undo)
-  ("L" recenter-top-bottom)
-  ("f" yafolding-toggle-element)
-  ("F" yafolding-toggle-all)
-  ("q" nil)
-  )
 
 
 
@@ -1128,61 +1204,8 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 ;; It is necessary to perform an update!
 (jka-compr-update)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; flyspell setup                                                         ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package ispell
-  :defer 15
-  :config
-  (progn
-    (cond
-     ((executable-find "aspell")
-      (setq ispell-program-name "aspell")
-      (setq ispell-extra-args   '("--sug-mode=ultra"
-                                  "--lang=en_US")))
-     ((executable-find "hunspell")
-      (setq ispell-program-name "hunspell")
-      (setq ispell-extra-args   '("-d en_US"))))
-
-    ;; Save a new word to personal dictionary without asking
-    (setq ispell-silently-savep t)
-
-    (use-package flyspell
-      :diminish flyspell-mode
-      :init
-      (progn
-        (setq flyspell-use-meta-tab nil)
-        ;; Binding for `flyspell-auto-correct-previous-word'
-        (setq flyspell-auto-correct-binding (kbd "C-S-j")))
-      :config
-      (progn
-        ;; Stop flyspell overriding other key bindings
-        (define-key flyspell-mode-map (kbd "C-,") nil)
-        (define-key flyspell-mode-map (kbd "C-.") nil)
-        (global-set-key (kbd "<f12>") 'flyspell-mode))
-
-        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-        (with-eval-after-load 'auto-complete
-          (ac-flyspell-workaround))
-        ;; https://github.com/larstvei/dot-emacs#flyspell
-        (add-hook 'text-mode-hook #'turn-on-flyspell)
-        (add-hook 'org-mode-hook  #'turn-on-flyspell)
-
-        ;; Flyspell signals an error if there is no spell-checking tool is
-        ;; installed. We can advice `turn-on-flyspell' and `flyspell-prog-mode'
-        ;; to try to enable flyspell only if a spell-checking tool is available.
-        (defun modi/ispell-not-avail-p (&rest args)
-          "Return `nil' if `ispell-program-name' is available; `t' otherwise."
-          (not (executable-find ispell-program-name)))
-        (advice-add 'turn-on-flyspell   :before-until #'modi/ispell-not-avail-p)
-        (advice-add 'flyspell-prog-mode :before-until #'modi/ispell-not-avail-p))))
-
-(provide 'setup-spell)
 
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
-
-
 #+END_SRC
 
