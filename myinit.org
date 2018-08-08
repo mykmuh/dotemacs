@@ -39,6 +39,13 @@
 
 #+END_SRC
 
+** server
+This is so emacs starts as proper client
+#+BEGIN_SRC emacs-lisp
+;; (server-start)
+(setq ns-pop-up-frames nil)
+#+END_SRC
+
 * user interface tweaks
 ** general
 Never, ever, ever accidentally close the emacsclient again!
@@ -130,8 +137,6 @@ Let's me jump back to frame layout that I'm using.
 #+END_SRC
 
 So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm previewing long bits of CloudFormation.
-
-
 
 
 * flyspell
@@ -300,8 +305,8 @@ Switching back to flatui.
   (highlight-indentation-mode)
   (highlight-indentation-current-column-mode))
 
-(global-set-key (kbd "<f4>") 'highlight-indentation-current-column-mode)
-(global-set-key (kbd "<f3>") 'highlight-indentation-mode)
+(global-set-key (kbd "<f10>") 'highlight-indentation-current-column-mode)
+(global-set-key (kbd "<f11>") 'highlight-indentation-mode)
 
 (set-face-background 'highlight-indentation-face "#f9f6f9")
 (set-face-background 'highlight-indentation-current-column-face "#e3d3e3")
@@ -422,6 +427,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 
 (setq markdown-enable-wiki-links nil)
 (setq markdown-hide-urls t)
+(setq markdown-list-indent-width 4)
 
 (setq markdown-open-command "~/bin/mark")
 (setq markdown-indent-on-enter t)
@@ -465,6 +471,209 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 
 #+END_SRC
 
+* org
+** base org
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+
+(setq org-directory "~/Documents/org")
+(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
+
+(setq org-replace-disputed-keys t)
+
+(add-hook 'org-capture-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(require 'ox-confluence)
+
+;;bind to key
+(define-key org-mode-map (kbd "C-<") 'org-begin-template)
+(global-set-key (kbd "C-<") 'org-begin-template)
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+
+(setq org-adapt-indentation t)
+(setq org-fast-selection-include-todo nil)
+(setq org-log-into-drawer t)
+(setq org-M-RET-may-split-line t)
+(setq org-use-speed-commands t)
+
+;; latex export settings
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(setq org-latex-listings t)
+
+(setq org-latex-listings-options '(("breaklines" "true")))
+
+(setq
+ org-outline-path-complete-in-steps nil
+ org-refile-use-outline-path 'file
+ org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
+ )
+
+(setq-default org-src-fontify-natively t)
+
+;; ;; some org-mode wonder
+(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
+(define-key global-map "\C-cc" 'org-capture)
+
+(setq org-goto-interface 'outline-path-completion
+      org-goto-max-level 10)
+(setq org-startup-folded t)
+(setq org-startup-indented nil)
+
+(setq org-speed-commands-user
+          '(("S" . (widen))))
+
+#+END_SRC
+
+
+** todo-based
+These are specific for to do list work with org. I think I'm switching back!
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-log-mode-items '(clock closed))
+
+(setq org-log-done 'time)
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+(setq org-enforce-todo-checkbox-dependencies t)
+
+(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
+
+(setq org-agenda-custom-commands
+      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
+        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
+        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
+        ("c" "Simple agenda view"
+         (
+          (tags-todo "-research&-home&-tools/!NEXT"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Today's Tasks:")))
+          (agenda "")
+          (tags-todo "-research&-home&-tools/PROJ"
+                     ((org-agenda-overriding-header "Projects:")))
+          (tags-todo "-research&-home&-tools/!WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Waiting Tasks:")))
+          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Task Pool:")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
+                     ((org-agenda-overriding-header "Projects (Someday):")))
+          ))))
+
+
+
+#+END_SRC
+
+
+** capture templates
+I use these more than any other org feature. I think it needs to be pruned a bit.
+
+#+BEGIN_SRC emacs-lisp
+;; ;; my own templates -- screw automation!
+(setq org-capture-templates
+      '(
+	("j" "Journal Entry"
+	 entry (file+datetree "~/Documents/org/work/journal.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("p" "Personal Entry"
+	 entry (file+datetree "~/Documents/org/personal/personal.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("h" "Home Entry"
+	 entry (file+datetree "~/Documents/org/personal/home.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("i" "inbox - Home" entry
+	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
+	 "* TODO %?")
+        ("l" "A link, for reading later."
+         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
+         "** %:description\n%u : %:link\n\n%i"
+         :empty-lines 1)
+	("f" "Fiction Entry"
+	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("e" "Emacs"
+	 entry (file "~/Documents/org/work/notes/emacs.org")
+	 "* %?\n%i\n\n")
+	("x" "Linux Entry"
+	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
+	 "* %?\n%i\n\n")
+	("c" "Chef"
+	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
+	 "** %?")
+	("E" "E" entry
+	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1)
+	("t" "Todo" entry
+	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
+	 "* TODO %?")
+        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
+         "* %?\n%U\n" :clock-in t :clock-resume t)
+	))
+#+END_SRC
+
+
+** drag and drop
+This from John Kitchin. Works well, when I remember to use it.
+
+#+BEGIN_SRC emacs-lisp
+;; drag and drop!
+;; from http://kitchingroup.cheme.cmu.edu/blog/2015/07/10/Drag-images-and-files-onto-org-mode-and-insert-a-link-to-them/#disqus_thread
+
+(defun my-dnd-func (event)
+  (interactive "e")
+  (goto-char (nth 1 (event-start event)))
+  (x-focus-frame nil)
+  (let* ((payload (car (last event)))
+         (type (car payload))
+         (fname (cadr payload))
+         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
+    (cond
+     ;; insert image link
+     ((and  (eq 'drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; insert image link with caption
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert "#+ATTR_ORG: :width 300\n")
+      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; C-drag-n-drop to open a file
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type))
+      (find-file fname))
+     ((and (eq 'M-drag-n-drop (car event))
+           (eq 'file type))
+      (insert (format "[[attachfile:%s]]" fname)))
+     ;; regular drag and drop on file
+     ((eq 'file type)
+      (insert (format "[[%s]]\n" fname)))
+     (t
+      (error "I am not equipped for dnd on %s" payload)))))
+
+
+(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
+#+END_SRC
 * indentation settings
 #+BEGIN_SRC emacs-lisp
 (require 'indent-tools)
@@ -523,6 +732,127 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
   )
 #+END_SRC
 
+* Howard Abrams settings
+#+BEGIN_SRC emacs-lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Howard Abrams settings                                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq initial-scratch-message "")
+(setq visible-bell t)
+
+(when (window-system)
+  (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
+  (when (fboundp 'horizontal-scroll-bar-mode)
+    (horizontal-scroll-bar-mode -1))
+  (scroll-bar-mode -1))           ;; Scrollbars waste screen estate
+
+(use-package hydra
+  :ensure t
+  :config
+  (hydra-add-font-lock))
+
+;; for hydra, below
+(require 'windmove)
+
+(defun hydra-move-splitter-left (arg)
+  "Move window splitter left."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (shrink-window-horizontally arg)
+    (enlarge-window-horizontally arg)))
+
+(defun hydra-move-splitter-right (arg)
+  "Move window splitter right."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (enlarge-window-horizontally arg)
+    (shrink-window-horizontally arg)))
+
+(defun hydra-move-splitter-up (arg)
+  "Move window splitter up."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (enlarge-window arg)
+    (shrink-window arg)))
+
+(defun hydra-move-splitter-down (arg)
+  "Move window splitter down."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (shrink-window arg)
+    (enlarge-window arg)))
+
+(defhydra hydra-splitter (global-map "<f9>")
+  "splitter"
+  ("<left>" hydra-move-splitter-left)
+  ("<down>" hydra-move-splitter-down)
+  ("<up>" hydra-move-splitter-up)
+  ("<right>" hydra-move-splitter-right))
+
+(use-package which-key
+  :ensure t
+  :defer 10
+  :diminish which-key-mode
+  :config
+
+  ;; Replacements for how KEY is replaced when which-key displays
+  ;;   KEY → FUNCTION
+  ;; Eg: After "C-c", display "right → winner-redo" as "▶ → winner-redo"
+  (setq which-key-key-replacement-alist
+        '(("<\\([[:alnum:]-]+\\)>" . "\\1")
+          ("left"                  . "◀")
+          ("right"                 . "▶")
+          ("up"                    . "▲")
+          ("down"                  . "▼")
+          ("delete"                . "DEL") ; delete key
+          ("\\`DEL\\'"             . "BS") ; backspace key
+          ("next"                  . "PgDn")
+          ("prior"                 . "PgUp"))
+
+        ;; List of "special" keys for which a KEY is displayed as just
+        ;; K but with "inverted video" face... not sure I like this.
+        which-key-special-keys '("RET" "DEL" ; delete key
+
+                                 "ESC" "BS" ; backspace key
+                                 "SPC" "TAB")
+
+        ;; Replacements for how part or whole of FUNCTION is replaced:
+        which-key-description-replacement-alist
+        '(("Prefix Command" . "prefix")
+          ("\\`calc-"       . "") ; Hide "calc-" prefixes when listing M-x calc keys
+          ("/body\\'"       . "") ; Remove display the "/body" portion of hydra fn names
+          ("\\`projectile-" . "𝓟/")
+          ("\\`hydra-"      . "+𝐇/")
+          ("\\`org-babel-"  . "ob/"))
+
+        ;; Underlines commands to emphasize some functions:
+        which-key-highlighted-command-list
+        '(("\\`hydra-" . which-key-group-description-face)
+          "\\(rectangle-\\)\\|\\(-rectangle\\)"
+          "\\`org-"))
+
+  ;; Change what string to display for a given *complete* key binding
+  ;; Eg: After "C-x", display "8 → +unicode" instead of "8 → +prefix"
+  (which-key-add-key-based-replacements
+    "C-x 8"   "unicode"
+    "C-c T"   "toggles-"
+    "C-c p s" "projectile-search"
+    "C-c p 4" "projectile-other-buffer-"
+    "C-x a"   "abbrev/expand"
+    "C-x r"   "rect/reg"
+    "C-c /"   "engine-mode-map"
+    "C-c C-v" "org-babel"))
+
+(which-key-mode 1)
+
+(require 'bind-key)
+#+END_SRC
+
 * unfactored
 #+BEGIN_SRC emacs-lisp
 (require 're-builder)
@@ -574,13 +904,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
        (get-buffer-process (current-buffer))
        nil "_"))))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; emacsclient                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; (server-start)
-(setq ns-pop-up-frames nil)
 
 
 
@@ -758,126 +1081,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (setq mouse-wheel-scroll-amount '(1 ((shift) .1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Howard Abrams settings                                                 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq initial-scratch-message "")
-(setq visible-bell t)
-
-(when (window-system)
-  (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
-  (when (fboundp 'horizontal-scroll-bar-mode)
-    (horizontal-scroll-bar-mode -1))
-  (scroll-bar-mode -1))           ;; Scrollbars waste screen estate
-
-(use-package hydra
-  :ensure t
-  :config
-  (hydra-add-font-lock))
-
-;; for hydra, below
-(require 'windmove)
-
-(defun hydra-move-splitter-left (arg)
-  "Move window splitter left."
-  (interactive "p")
-  (if (let ((windmove-wrap-around))
-        (windmove-find-other-window 'right))
-      (shrink-window-horizontally arg)
-    (enlarge-window-horizontally arg)))
-
-(defun hydra-move-splitter-right (arg)
-  "Move window splitter right."
-  (interactive "p")
-  (if (let ((windmove-wrap-around))
-        (windmove-find-other-window 'right))
-      (enlarge-window-horizontally arg)
-    (shrink-window-horizontally arg)))
-
-(defun hydra-move-splitter-up (arg)
-  "Move window splitter up."
-  (interactive "p")
-  (if (let ((windmove-wrap-around))
-        (windmove-find-other-window 'up))
-      (enlarge-window arg)
-    (shrink-window arg)))
-
-(defun hydra-move-splitter-down (arg)
-  "Move window splitter down."
-  (interactive "p")
-  (if (let ((windmove-wrap-around))
-        (windmove-find-other-window 'up))
-      (shrink-window arg)
-    (enlarge-window arg)))
-
-(defhydra hydra-splitter (global-map "<f9>")
-  "splitter"
-  ("<left>" hydra-move-splitter-left)
-  ("<down>" hydra-move-splitter-down)
-  ("<up>" hydra-move-splitter-up)
-  ("<right>" hydra-move-splitter-right))
-
-(use-package which-key
-  :ensure t
-  :defer 10
-  :diminish which-key-mode
-  :config
-
-  ;; Replacements for how KEY is replaced when which-key displays
-  ;;   KEY → FUNCTION
-  ;; Eg: After "C-c", display "right → winner-redo" as "▶ → winner-redo"
-  (setq which-key-key-replacement-alist
-        '(("<\\([[:alnum:]-]+\\)>" . "\\1")
-          ("left"                  . "◀")
-          ("right"                 . "▶")
-          ("up"                    . "▲")
-          ("down"                  . "▼")
-          ("delete"                . "DEL") ; delete key
-          ("\\`DEL\\'"             . "BS") ; backspace key
-          ("next"                  . "PgDn")
-          ("prior"                 . "PgUp"))
-
-        ;; List of "special" keys for which a KEY is displayed as just
-        ;; K but with "inverted video" face... not sure I like this.
-        which-key-special-keys '("RET" "DEL" ; delete key
-
-                                 "ESC" "BS" ; backspace key
-                                 "SPC" "TAB")
-
-        ;; Replacements for how part or whole of FUNCTION is replaced:
-        which-key-description-replacement-alist
-        '(("Prefix Command" . "prefix")
-          ("\\`calc-"       . "") ; Hide "calc-" prefixes when listing M-x calc keys
-          ("/body\\'"       . "") ; Remove display the "/body" portion of hydra fn names
-          ("\\`projectile-" . "𝓟/")
-          ("\\`hydra-"      . "+𝐇/")
-          ("\\`org-babel-"  . "ob/"))
-
-        ;; Underlines commands to emphasize some functions:
-        which-key-highlighted-command-list
-        '(("\\`hydra-" . which-key-group-description-face)
-          "\\(rectangle-\\)\\|\\(-rectangle\\)"
-          "\\`org-"))
-
-  ;; Change what string to display for a given *complete* key binding
-  ;; Eg: After "C-x", display "8 → +unicode" instead of "8 → +prefix"
-  (which-key-add-key-based-replacements
-    "C-x 8"   "unicode"
-    "C-c T"   "toggles-"
-    "C-c p s" "projectile-search"
-    "C-c p 4" "projectile-other-buffer-"
-    "C-x a"   "abbrev/expand"
-    "C-x r"   "rect/reg"
-    "C-c /"   "engine-mode-map"
-    "C-c C-v" "org-babel"))
-
-(which-key-mode 1)
-
-(require 'bind-key)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tramp                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -909,190 +1112,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 
 (global-set-key [f6] 'ivy-resume)
 (setq magit-completing-read-function 'ivy-completing-read)
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; org-mode                                                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(require 'org)
-(setq org-replace-disputed-keys t)
-(setq org-agenda-log-mode-items '(clock closed))
-
-(require 'ox-confluence)
-
-;;bind to key
-(define-key org-mode-map (kbd "C-<") 'org-begin-template)
-(global-set-key (kbd "C-<") 'org-begin-template)
-
-(global-set-key (kbd "C-c l") 'org-store-link)
-
-(setq org-log-done 'time)
-
-(setq org-adapt-indentation t)
-
-(setq org-fast-selection-include-todo nil)
-(setq org-log-into-drawer t)
-
-(setq-default org-src-fontify-natively t)
-
-(setq org-M-RET-may-split-line t)
-
-(setq org-use-speed-commands t)
-
-(setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
-
-(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
-
-;; latex export settings
-(add-to-list 'org-latex-packages-alist '("" "listings"))
-(setq org-latex-listings t)
-
-(setq org-latex-listings-options '(("breaklines" "true")))
-
-(setq
- org-outline-path-complete-in-steps nil
- org-refile-use-outline-path 'file
- org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
- )
-
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-(setq org-enforce-todo-checkbox-dependencies t)
-
-;; ;; some org-mode wonder
-(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
-(define-key global-map "\C-cc" 'org-capture)
-
-(setq org-goto-interface 'outline-path-completion
-      org-goto-max-level 10)
-(setq org-startup-folded t)
-(setq org-startup-indented nil)
-
-(setq org-speed-commands-user
-          '(("S" . (widen))))
-
-;; ;; my own templates -- screw automation!
-(setq org-capture-templates
-      '(
-	("j" "Journal Entry"
-	 entry (file+datetree "~/Documents/org/work/journal.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("h" "Home Entry"
-	 entry (file+datetree "~/Documents/org/personal/home.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("i" "inbox - Home" entry
-	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
-	 "* TODO %?")
-        ("l" "A link, for reading later."
-         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
-         "** %:description\n%u : %:link\n\n%i"
-         :empty-lines 1)
-	("f" "Fiction Entry"
-	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("e" "Emacs"
-	 entry (file "~/Documents/org/work/notes/emacs.org")
-	 "* %?\n%i\n\n")
-	("x" "Linux Entry"
-	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
-	 "* %?\n%i\n\n")
-	("c" "Chef"
-	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
-	 "** %?")
-	("E" "E" entry
-	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	("t" "Todo" entry
-	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
-	 "* TODO %?")
-        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
-	))
-
-(add-hook 'org-capture-mode-hook 'visual-line-mode)
-(add-hook 'org-mode-hook 'visual-line-mode)
-(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
-
-(setq org-agenda-custom-commands
-      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-        ("c" "Simple agenda view"
-         (
-          (tags-todo "-research&-home&-tools/!NEXT"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Today's Tasks:")))
-          (agenda "")
-          (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
-          (tags-todo "-research&-home&-tools/!WAITING"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-research&-home&-tools/!TODO|WAITING"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Task Pool:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
-                     ((org-agenda-overriding-header "Projects (Someday):")))
-          ))))
-
-;; drag and drop!
-;; from http://kitchingroup.cheme.cmu.edu/blog/2015/07/10/Drag-images-and-files-onto-org-mode-and-insert-a-link-to-them/#disqus_thread
-(defun my-dnd-func (event)
-  (interactive "e")
-  (goto-char (nth 1 (event-start event)))
-  (x-focus-frame nil)
-  (let* ((payload (car (last event)))
-         (type (car payload))
-         (fname (cadr payload))
-         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
-    (cond
-     ;; insert image link
-     ((and  (eq 'drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; insert image link with caption
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert "#+ATTR_ORG: :width 300\n")
-      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; C-drag-n-drop to open a file
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type))
-      (find-file fname))
-     ((and (eq 'M-drag-n-drop (car event))
-           (eq 'file type))
-      (insert (format "[[attachfile:%s]]" fname)))
-     ;; regular drag and drop on file
-     ((eq 'file type)
-      (insert (format "[[%s]]\n" fname)))
-     (t
-      (error "I am not equipped for dnd on %s" payload)))))
-
-
-(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
