@@ -13,16 +13,15 @@ Unfortunately, if you look at all the directories in =~/emacs.d/delpa=, you'll f
 (add-to-list 'exec-path "/usr/local/texlive/2016/bin/x86_64-darwin")
 
 (require 'url-handlers)
-
 (add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
 
 ;; all in personal lisp and downloaded packages
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+;; (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;; mkm: moving to use-package for everything, so following will become useless
-(setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
+;; ;; mkm: moving to use-package for everything, so following will become useless
+;; (setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
 
-(mapc #'package-install my-package-list)
+;; (mapc #'package-install my-package-list)
 #+END_SRC
 
 ** mac specific
