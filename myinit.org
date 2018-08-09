@@ -1,6 +1,11 @@
 #+STARTUP: overview
 * initial set up
 ** packages
+
+The =(mapc #'package-install my-package-list)= line handles when I am first running my Emacs install on a new machine. It uses =package-list= to check for (and, if necessary, install) any packages into the default package-user-dir. Once those packages are downloaded and placed into that directory, they are autoloaded by Emacs.
+
+Unfortunately, if you look at all the directories in =~/emacs.d/delpa=, you'll find only a tiny fraction of them have been added to the list. 
+
 #+BEGIN_SRC emacs-lisp
 (setenv "PATH"
 	(concat (getenv "PATH")
@@ -8,7 +13,6 @@
 (add-to-list 'exec-path "/usr/local/texlive/2016/bin/x86_64-darwin")
 
 (require 'url-handlers)
-
 
 (add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
 
@@ -137,6 +141,229 @@ Let's me jump back to frame layout that I'm using.
 #+END_SRC
 
 So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm previewing long bits of CloudFormation.
+
+* org
+** base org
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+
+(setq org-directory "~/Documents/org")
+(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
+
+(setq org-replace-disputed-keys t)
+
+(add-hook 'org-capture-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(require 'ox-confluence)
+
+;;bind to key
+(define-key org-mode-map (kbd "C-<") 'org-begin-template)
+(global-set-key (kbd "C-<") 'org-begin-template)
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+
+(setq org-adapt-indentation t)
+(setq org-fast-selection-include-todo nil)
+(setq org-log-into-drawer t)
+(setq org-M-RET-may-split-line t)
+(setq org-use-speed-commands t)
+
+;; latex export settings
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(setq org-latex-listings t)
+
+(setq org-latex-listings-options '(("breaklines" "true")))
+
+(setq
+ org-outline-path-complete-in-steps nil
+ org-refile-use-outline-path 'file
+ org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
+ )
+
+(setq-default org-src-fontify-natively t)
+
+;; ;; some org-mode wonder
+(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
+(define-key global-map "\C-cc" 'org-capture)
+
+(setq org-goto-interface 'outline-path-completion
+      org-goto-max-level 10)
+(setq org-startup-folded t)
+(setq org-startup-indented nil)
+
+(setq org-speed-commands-user
+          '(("S" . (widen))))
+
+#+END_SRC
+
+** todo-based
+These are specific for to do list work with org. I think I'm switching back.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+(setq org-agenda-log-mode-items '(clock closed))
+
+(setq org-log-done 'time)
+
+(setq org-agenda-dim-blocked-tasks t)
+(setq org-enforce-todo-checkbox-dependencies t)
+
+;; just archive DONE entries
+(defun org-archive-done-tasks ()
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (org-archive-subtree)
+     (setq org-map-continue-from (outline-previous-heading)))
+"/DONE" 'tree))
+
+
+(setq org-todo-keywords
+           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
+             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
+             (type "AOR(a)" "|" "DONE")))
+(setq org-tag-alist '((:startgroup . nil)
+                      ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
+                      (:endgroup . nil)
+                      (:newline . nil)
+                      ("tools" . ?T) ("cloudConnector" . ?C) ("deviceDB" . ?D) 
+))
+
+;; archive cancelled tasks
+(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
+
+(setq org-agenda-custom-commands
+      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
+        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
+         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
+        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
+        ("c" "MKM agenda"
+         (
+          (tags-todo "-research&-home&-tools/!NEXT"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Today's Tasks:")))
+          (agenda "")
+          (tags-todo "-research&-home&-tools/PROJ"
+                     ((org-agenda-overriding-header "Projects:")))
+          (tags-todo "-research&-home&-tools/!WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Waiting Tasks:")))
+          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Task Pool:")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
+                     ((org-agenda-overriding-header "Projects (Someday):")))
+          ))))
+
+
+#+END_SRC
+
+** capture templates
+I use these more than any other org feature. I think it needs to be pruned a bit.
+
+#+BEGIN_SRC emacs-lisp
+;; ;; my own templates -- screw automation!
+(setq org-capture-templates
+      '(
+	("j" "Journal Entry"
+	 entry (file+datetree "~/Documents/org/work/journal.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("p" "Personal Entry"
+	 entry (file+datetree "~/Documents/org/personal/personal.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("h" "Home Entry"
+	 entry (file+datetree "~/Documents/org/personal/home.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("i" "inbox - Home" entry
+	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
+	 "* TODO %?")
+        ("l" "A link, for reading later."
+         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
+         "** %:description\n%u : %:link\n\n%i"
+         :empty-lines 1)
+	("f" "Fiction Entry"
+	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("e" "Emacs"
+	 entry (file "~/Documents/org/work/notes/emacs.org")
+	 "* %?\n%i\n\n")
+	("x" "Linux Entry"
+	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
+	 "* %?\n%i\n\n")
+	("c" "Chef"
+	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
+	 "** %?")
+	("E" "E" entry
+	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1)
+	("t" "Todo" entry
+	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
+	 "* TODO %?")
+        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
+         "* %?\n%U\n" :clock-in t :clock-resume t)
+	))
+#+END_SRC
+
+** drag and drop
+This from John Kitchin. Works well, when I remember to use it.
+
+#+BEGIN_SRC emacs-lisp
+;; drag and drop!
+;; from http://kitchingroup.cheme.cmu.edu/blog/2015/07/10/Drag-images-and-files-onto-org-mode-and-insert-a-link-to-them/#disqus_thread
+
+(defun my-dnd-func (event)
+  (interactive "e")
+  (goto-char (nth 1 (event-start event)))
+  (x-focus-frame nil)
+  (let* ((payload (car (last event)))
+         (type (car payload))
+         (fname (cadr payload))
+         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
+    (cond
+     ;; insert image link
+     ((and  (eq 'drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; insert image link with caption
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert "#+ATTR_ORG: :width 300\n")
+      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; C-drag-n-drop to open a file
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type))
+      (find-file fname))
+     ((and (eq 'M-drag-n-drop (car event))
+           (eq 'file type))
+      (insert (format "[[attachfile:%s]]" fname)))
+     ;; regular drag and drop on file
+     ((eq 'file type)
+      (insert (format "[[%s]]\n" fname)))
+     (t
+      (error "I am not equipped for dnd on %s" payload)))))
+
+
+(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
+(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
+#+END_SRC
 
 
 * flyspell
@@ -471,209 +698,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 
 #+END_SRC
 
-* org
-** base org
-#+BEGIN_SRC emacs-lisp
-(require 'org)
-
-(setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
-
-(setq org-replace-disputed-keys t)
-
-(add-hook 'org-capture-mode-hook 'visual-line-mode)
-(add-hook 'org-mode-hook 'visual-line-mode)
-
-(require 'ox-confluence)
-
-;;bind to key
-(define-key org-mode-map (kbd "C-<") 'org-begin-template)
-(global-set-key (kbd "C-<") 'org-begin-template)
-
-(global-set-key (kbd "C-c l") 'org-store-link)
-
-(setq org-adapt-indentation t)
-(setq org-fast-selection-include-todo nil)
-(setq org-log-into-drawer t)
-(setq org-M-RET-may-split-line t)
-(setq org-use-speed-commands t)
-
-;; latex export settings
-(add-to-list 'org-latex-packages-alist '("" "listings"))
-(setq org-latex-listings t)
-
-(setq org-latex-listings-options '(("breaklines" "true")))
-
-(setq
- org-outline-path-complete-in-steps nil
- org-refile-use-outline-path 'file
- org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
- )
-
-(setq-default org-src-fontify-natively t)
-
-;; ;; some org-mode wonder
-(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
-(define-key global-map "\C-cc" 'org-capture)
-
-(setq org-goto-interface 'outline-path-completion
-      org-goto-max-level 10)
-(setq org-startup-folded t)
-(setq org-startup-indented nil)
-
-(setq org-speed-commands-user
-          '(("S" . (widen))))
-
-#+END_SRC
-
-
-** todo-based
-These are specific for to do list work with org. I think I'm switching back!
-
-#+BEGIN_SRC emacs-lisp
-(setq org-agenda-log-mode-items '(clock closed))
-
-(setq org-log-done 'time)
-
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-(setq org-enforce-todo-checkbox-dependencies t)
-
-(setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
-
-(setq org-agenda-custom-commands
-      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
-        ("c" "Simple agenda view"
-         (
-          (tags-todo "-research&-home&-tools/!NEXT"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Today's Tasks:")))
-          (agenda "")
-          (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
-          (tags-todo "-research&-home&-tools/!WAITING"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-research&-home&-tools/!TODO|WAITING"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Task Pool:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
-                     ((org-agenda-overriding-header "Projects (Someday):")))
-          ))))
-
-
-
-#+END_SRC
-
-
-** capture templates
-I use these more than any other org feature. I think it needs to be pruned a bit.
-
-#+BEGIN_SRC emacs-lisp
-;; ;; my own templates -- screw automation!
-(setq org-capture-templates
-      '(
-	("j" "Journal Entry"
-	 entry (file+datetree "~/Documents/org/work/journal.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("p" "Personal Entry"
-	 entry (file+datetree "~/Documents/org/personal/personal.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("h" "Home Entry"
-	 entry (file+datetree "~/Documents/org/personal/home.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("i" "inbox - Home" entry
-	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
-	 "* TODO %?")
-        ("l" "A link, for reading later."
-         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
-         "** %:description\n%u : %:link\n\n%i"
-         :empty-lines 1)
-	("f" "Fiction Entry"
-	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("e" "Emacs"
-	 entry (file "~/Documents/org/work/notes/emacs.org")
-	 "* %?\n%i\n\n")
-	("x" "Linux Entry"
-	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
-	 "* %?\n%i\n\n")
-	("c" "Chef"
-	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
-	 "** %?")
-	("E" "E" entry
-	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	("t" "Todo" entry
-	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
-	 "* TODO %?")
-        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
-	))
-#+END_SRC
-
-
-** drag and drop
-This from John Kitchin. Works well, when I remember to use it.
-
-#+BEGIN_SRC emacs-lisp
-;; drag and drop!
-;; from http://kitchingroup.cheme.cmu.edu/blog/2015/07/10/Drag-images-and-files-onto-org-mode-and-insert-a-link-to-them/#disqus_thread
-
-(defun my-dnd-func (event)
-  (interactive "e")
-  (goto-char (nth 1 (event-start event)))
-  (x-focus-frame nil)
-  (let* ((payload (car (last event)))
-         (type (car payload))
-         (fname (cadr payload))
-         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
-    (cond
-     ;; insert image link
-     ((and  (eq 'drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; insert image link with caption
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type)
-            (string-match img-regexp fname))
-      (insert "#+ATTR_ORG: :width 300\n")
-      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
-      (insert (format "[[%s]]" fname))
-      (org-display-inline-images t t))
-     ;; C-drag-n-drop to open a file
-     ((and  (eq 'C-drag-n-drop (car event))
-            (eq 'file type))
-      (find-file fname))
-     ((and (eq 'M-drag-n-drop (car event))
-           (eq 'file type))
-      (insert (format "[[attachfile:%s]]" fname)))
-     ;; regular drag and drop on file
-     ((eq 'file type)
-      (insert (format "[[%s]]\n" fname)))
-     (t
-      (error "I am not equipped for dnd on %s" payload)))))
-
-
-(define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
-(define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
-#+END_SRC
 * indentation settings
 #+BEGIN_SRC emacs-lisp
 (require 'indent-tools)
