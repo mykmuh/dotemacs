@@ -2,10 +2,6 @@
 * initial set up
 ** packages
 
-The =(mapc #'package-install my-package-list)= line handles when I am first running my Emacs install on a new machine. It uses =package-list= to check for (and, if necessary, install) any packages into the default package-user-dir. Once those packages are downloaded and placed into that directory, they are autoloaded by Emacs.
-
-Unfortunately, if you look at all the directories in =~/emacs.d/delpa=, you'll find only a tiny fraction of them have been added to the list. 
-
 #+BEGIN_SRC emacs-lisp
 (setenv "PATH"
 	(concat (getenv "PATH")
@@ -15,13 +11,7 @@ Unfortunately, if you look at all the directories in =~/emacs.d/delpa=, you'll f
 (require 'url-handlers)
 (add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
 
-;; all in personal lisp and downloaded packages
-;; (add-to-list 'load-path "~/.emacs.d/lisp/")
-
-;; ;; mkm: moving to use-package for everything, so following will become useless
-;; (setq my-package-list '(ace-link ace-window async avy bind-key boxquote cl-lib-highlight dash deft diminish dired+ dired-toggle-sudo epl exec-path-from-shell expand-region fringe-helper git-commit git-gutter+ git-gutter-fringe+ helm lua-mode magit magit-popup markdown-mode neotree pdf-tools pkg-info powerline powershell projectile rebox2 session simpleclip swiper use-package whole-line-or-region window-number with-editor with-editor worf ))
-
-;; (mapc #'package-install my-package-list)
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 #+END_SRC
 
 ** mac specific
@@ -42,8 +32,8 @@ Unfortunately, if you look at all the directories in =~/emacs.d/delpa=, you'll f
 
 #+END_SRC
 
-** server
-This is so emacs starts as proper client
+Open any new docs in the same emacs frame.
+
 #+BEGIN_SRC emacs-lisp
 ;; (server-start)
 (setq ns-pop-up-frames nil)
@@ -51,15 +41,25 @@ This is so emacs starts as proper client
 
 * user interface tweaks
 ** general
+
 Never, ever, ever accidentally close the emacsclient again!
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-w") 'kill-ring-save)
 #+END_SRC
 
+I am trying to steer away from =require=, but I think that this package doesn't have autoload cookies, hence the necessity to tell Emacs explicitely to load it.
+
 #+BEGIN_SRC emacs-lisp
 ;; mouse like kitchin
 (require 'org-mouse)
+#+END_SRC
 
+=fset= changes the function that the symbol points to. Essentially, whenever a package writer tries to call =yes-or-no-p=, Emacs will swap in the =y-or-n-p= function.
+
+Tricksy.
+
+#+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq-default indent-tabs-mode nil)
@@ -72,7 +72,7 @@ Never, ever, ever accidentally close the emacsclient again!
               ("P" . peep-dired)))
 
 ;; got to kill it
-(bind-key "<C-f5>" 'save-buffers-kill-emacs)
+(global-set-key (kbd "C-<f5>") 'save-buffers-kill-emacs)
 #+END_SRC
 
 ** visual
@@ -363,7 +363,6 @@ This from John Kitchin. Works well, when I remember to use it.
 (define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<M-drag-n-drop>") 'my-dnd-func)
 #+END_SRC
-
 
 * flyspell
 This screws me up enough to merit its own section.
