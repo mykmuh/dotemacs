@@ -569,6 +569,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * projectile
+
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
@@ -577,7 +578,13 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
   (setq projectile-mode-line
-        '(:eval (format " [%s]" (projectile-project-name)))))
+        '(:eval (format " [%s]" (projectile-project-name))))
+  :bind (("C-c p" . projectile-command-map)
+         :map projectile-mode-map
+         ("s-d" . projectile-find-dir)
+         ("s-f" . projectile-find-file)
+         ("s-g" . projectile-grep))
+  )
 
 (use-package counsel-projectile
   :ensure t
@@ -587,9 +594,9 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
 
 ;; super key
-(define-key global-map [?\s-d] 'projectile-find-dir)
-(define-key global-map [?\s-f] 'projectile-find-file)
-(define-key global-map [?\s-g] 'projectile-grep)
+;; (define-key global-map [?\s-d] 'projectile-find-dir)
+;; (define-key global-map [?\s-f] 'projectile-find-file)
+;; (define-key global-map [?\s-g] 'projectile-grep)
 
 ;; note: for iterm2, set alt to esc+
 
