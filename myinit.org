@@ -538,10 +538,12 @@ When running as a daemon, some themes don't seem to want to load when restarting
 ;; (load-theme 'gruvbox t)
 ;; (load-theme 'monokai t)
 
+
 * highlight-indentation
+
 #+BEGIN_SRC emacs-lisp
 (require 'highlight-indentation)
-;; f3
+
 (defun mkm/show-lines ()
   "Toggle `highlight-indentation-mode and `highlight-indentation-current-column-mode."
   (interactive)
@@ -550,9 +552,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
 
 (global-set-key (kbd "<f10>") 'highlight-indentation-current-column-mode)
 (global-set-key (kbd "<f11>") 'highlight-indentation-mode)
-
-(set-face-background 'highlight-indentation-face "#f9f6f9")
-(set-face-background 'highlight-indentation-current-column-face "#e3d3e3")
 #+END_SRC
 
 * ivy
