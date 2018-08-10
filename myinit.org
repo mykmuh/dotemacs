@@ -88,13 +88,14 @@ Just some tweaks here.
 
 ;; show full path in title bar
 (setq frame-title-format
-      (list (format "%s %%S: %%j " (system-name))
+      (list (format "%s| %%S|: %%j " (system-name))
             '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
 (blink-cursor-mode 1)
 
 (add-to-list 'default-frame-alist
 	     '(font . "Source Code Pro 14"))
+
 (set-face-attribute 'default t :font "Source Code Pro 14")
 
 (show-paren-mode 1)
@@ -121,11 +122,7 @@ Just some tweaks here.
                         :foreground 'unspecified
                         :inherit 'error)
     (set-face-foreground 'rainbow-delimiters-depth-1-face "snow4")))
-#+END_SRC
 
-I'm not sure what the following do. Maybe I should look 'em up?
-
-#+BEGIN_SRC emacs-lisp
 (setq-default indicate-buffer-boundaries 'left)
 (setq-default indicate-empty-lines +1)
 #+END_SRC
@@ -139,10 +136,9 @@ Let's me jump back to frame layout that I'm using.
 (save-place-mode 1)
 #+END_SRC
 
-So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm previewing long bits of CloudFormation.
-
 * org
 ** base org
+
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 
@@ -182,7 +178,7 @@ So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm pr
 
 (setq-default org-src-fontify-natively t)
 
-;; ;; some org-mode wonder
+;; some org-mode wonder
 (setq org-default-notes-file (concat org-directory "/work/inbox.org"))
 (define-key global-map "\C-cc" 'org-capture)
 
@@ -199,6 +195,19 @@ So, I'm trying out code folding to give me that "Visual Studio" vibe when I'm pr
 ** todo-based
 These are specific for to do list work with org. I think I'm switching back.
 
+This first bit needs special discussion because I keep forgetting to use it. This archives off all done tasks in the subtree, even nested, and without that stupid prompt. This needs to be mapped to a key!
+
+#+BEGIN_SRC emacs-lisp
+;; just archive DONE entries
+(defun org-archive-done-tasks ()
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (org-archive-subtree)
+     (setq org-map-continue-from (outline-previous-heading)))
+"/DONE" 'tree))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -208,16 +217,6 @@ These are specific for to do list work with org. I think I'm switching back.
 
 (setq org-agenda-dim-blocked-tasks t)
 (setq org-enforce-todo-checkbox-dependencies t)
-
-;; just archive DONE entries
-(defun org-archive-done-tasks ()
-  (interactive)
-  (org-map-entries
-   (lambda ()
-     (org-archive-subtree)
-     (setq org-map-continue-from (outline-previous-heading)))
-"/DONE" 'tree))
-
 
 (setq org-todo-keywords
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
@@ -1249,4 +1248,3 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
-
