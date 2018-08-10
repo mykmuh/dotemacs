@@ -470,13 +470,30 @@ And the use of mapcar is to loop over all of the custom-enabled themes, disablin
 ;;  :ensure t)
 #+END_SRC
 
+** specific themes
+zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
+
+Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light". Ok, flatui. I promise to stop now. Maybe github-modern?
+
+Ok, back to zenburn, with a tweak to see if I can set and reuse my:theme from this location in init.
+
+#+BEGIN_SRC emacs-lisp
+(use-package zenburn-theme
+  :ensure t
+  :config (load-theme 'zenburn t))
+
+(defvar my:theme 'zenburn)
+#+END_SRC
+
 ** fix for loading as a daemon
 
 When running as a daemon, some themes don't seem to want to load when restarting. Hopefully the following will help:
 
 #+BEGIN_SRC emacs-lisp
 ;; theme
-(defvar my:theme 'github-modern)
+
+;; need to set my theme wherever I set the main theme
+;; (defvar my:theme 'github-modern)
 (defvar my:theme-window-loaded nil)
 (defvar my:theme-terminal-loaded nil)
 
@@ -502,15 +519,7 @@ When running as a daemon, some themes don't seem to want to load when restarting
       (setq my:theme-terminal-loaded t))))
 #+END_SRC
 
-** specific themes
-zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
 
-Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal light". Ok, flatui. I promise to stop now. Maybe github-modern?
-
-Switching back to flatui.
-# (use-package zenburn-theme
-#   :ensure t
-#   :config (load-theme 'zenburn t))
 ** list of possibilities
 ;; light
 - flatui is nice and what I'm trying
