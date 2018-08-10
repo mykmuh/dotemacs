@@ -222,6 +222,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
              (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
              (type "AOR(a)" "|" "DONE")))
+
 (setq org-tag-alist '((:startgroup . nil)
                       ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
                       (:endgroup . nil)
@@ -417,12 +418,20 @@ This screws me up enough to merit its own section.
 #+END_SRC
 * themes
 ** github-modern mods
+
 My current choice, but needs some tweaking
+
 #+BEGIN_SRC emacs-lisp
 (setq github-override-colors-alist
       '(("github-selection" . "#ffc04c")))
 #+END_SRC
+
 ** scaffolding
+
+I was a *bit* confused by the use of intern. Explanation: when you get the string from the minibuffer, it's just a string, not pointing to anything. By interning it, you get the symbol to which it points, which you then pass back as the output of the interactive macro into the function argument.
+
+And the use of mapcar is to loop over all of the custom-enabled themes, disabling them. Remember, you have to use the =#= notation to clue the emacs compiler into the fact that "disable-theme" is a function (and should be checked for existence) and not just a string.
+
 #+BEGIN_SRC emacs-lisp
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
@@ -462,6 +471,7 @@ My current choice, but needs some tweaking
 #+END_SRC
 
 ** fix for loading as a daemon
+
 When running as a daemon, some themes don't seem to want to load when restarting. Hopefully the following will help:
 
 #+BEGIN_SRC emacs-lisp
@@ -537,16 +547,17 @@ Switching back to flatui.
 #+END_SRC
 
 * ivy
-First, a tweak to selection. I'm not too hip on what ivy is doing here with the multip matches, but this gets me so I can read stuff again in the minibuffer.
+
+First, a tweak to selection. I'm not too hip on what ivy is doing here with the multip matches, but this gets me so I can read stuff again in the minibuffer. Currently, this is commented out, as I'm experimenting with themes -- again :(
 
 #+BEGIN_SRC emacs-lisp
-(custom-set-faces
- '(ivy-minibuffer-match-face-1 ((t (:background "#D3D3E3"))))
- '(ivy-minibuffer-match-face-2 ((t (:background "#f2f3d3"))))
- '(ivy-minibuffer-match-face-3 ((t (:background "#f2f3d3"))))
- '(ivy-minibuffer-match-face-4 ((t (:background "#f2f3d3"))))
- '(ivy-highlight-face ((t (:background "#f2f3d3"))))
- '(ivy-current-match ((t (:background "#b3ffb3")))))
+;; (custom-set-faces
+;;  '(ivy-minibuffer-match-face-1 ((t (:background "#D3D3E3"))))
+;;  '(ivy-minibuffer-match-face-2 ((t (:background "#f2f3d3"))))
+;;  '(ivy-minibuffer-match-face-3 ((t (:background "#f2f3d3"))))
+;;  '(ivy-minibuffer-match-face-4 ((t (:background "#f2f3d3"))))
+;;  '(ivy-highlight-face ((t (:background "#f2f3d3"))))
+;;  '(ivy-current-match ((t (:background "#b3ffb3")))))
 #+END_SRC
 
 * projectile
