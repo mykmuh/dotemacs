@@ -871,16 +871,16 @@ Not sure why we need the =bind key= here.
   ;; Replacements for how KEY is replaced when which-key displays
   ;;   KEY → FUNCTION
   ;; Eg: After "C-c", display "right → winner-redo" as "▶ → winner-redo"
-  (setq which-key-key-replacement-alist
-        '(("<\\([[:alnum:]-]+\\)>" . "\\1")
-          ("left"                  . "◀")
-          ("right"                 . "▶")
-          ("up"                    . "▲")
-          ("down"                  . "▼")
-          ("delete"                . "DEL") ; delete key
-          ("\\`DEL\\'"             . "BS") ; backspace key
-          ("next"                  . "PgDn")
-          ("prior"                 . "PgUp"))
+  (setq which-key-replacement-alist
+        '((("<\\([[:alnum:]-]+\\)>") . ("\\1"))
+          (("left")                  . ("◀"))
+          (("right")                 . ("▶"))
+          (("up")                    . ("▲"))
+          (("down")                  . ("▼"))
+          (("delete")                . ("DEL")) ; delete key
+          (("\\`DEL\\'")             . ("BS")) ; backspace key
+          (("next")                  . ("PgDn"))
+          (("prior")                 . ("PgUp")))
 
         ;; List of "special" keys for which a KEY is displayed as just
         ;; K but with "inverted video" face... not sure I like this.
@@ -901,8 +901,7 @@ Not sure why we need the =bind key= here.
         ;; Underlines commands to emphasize some functions:
         which-key-highlighted-command-list
         '(("\\`hydra-" . which-key-group-description-face)
-          "\\(rectangle-\\)\\|\\(-rectangle\\)"
-          "\\`org-"))
+          "\\(rectangle-\\)\\|\\(-rectangle\\)"))
 
   ;; Change what string to display for a given *complete* key binding
   ;; Eg: After "C-x", display "8 → +unicode" instead of "8 → +prefix"
@@ -914,9 +913,11 @@ Not sure why we need the =bind key= here.
     "C-x a"   "abbrev/expand"
     "C-x r"   "rect/reg"
     "C-c /"   "engine-mode-map"
-    "C-c C-v" "org-babel"))
+    "C-c C-v" "org-babel")
 
-(which-key-mode 1)
+  (setq which-key-allow-multiple-replacements t)
+
+  (which-key-mode 1))
 
 (require 'bind-key)
 #+END_SRC
