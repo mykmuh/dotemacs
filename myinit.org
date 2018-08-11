@@ -603,6 +603,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * ibuffer
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
@@ -640,6 +641,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
                   (name . ".*\\.erb")
                   (name . ".*\\.yml")))
          )))
+
 (add-hook 'ibuffer-mode-hook
 	  '(lambda ()
              (ibuffer-auto-mode 1)
@@ -666,6 +668,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * markdown
+
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :ensure t
@@ -685,6 +688,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * git
+
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter+
   :ensure t
@@ -709,6 +713,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * yaml
+
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
   :ensure t
@@ -722,6 +727,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * indentation settings
+
 #+BEGIN_SRC emacs-lisp
 (require 'indent-tools)
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
@@ -780,6 +786,8 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * Howard Abrams settings
+** main
+
 #+BEGIN_SRC emacs-lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Howard Abrams settings                                                 ;;
@@ -793,7 +801,13 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
   (when (fboundp 'horizontal-scroll-bar-mode)
     (horizontal-scroll-bar-mode -1))
   (scroll-bar-mode -1))           ;; Scrollbars waste screen estate
+#+END_SRC
 
+** window movement
+
+This is the awesome stuff. Let's you move split windows using the arrow keys. It would be nice to be able to switch to a different window and start sizing from there . . . 
+
+#+BEGIN_SRC emacs-lisp
 (use-package hydra
   :ensure t
   :config
@@ -840,7 +854,14 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
   ("<down>" hydra-move-splitter-down)
   ("<up>" hydra-move-splitter-up)
   ("<right>" hydra-move-splitter-right))
+#+END_SRC
 
+
+** which key
+
+Not sure why we need the =bind key= here.
+
+#+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure t
   :defer 10
