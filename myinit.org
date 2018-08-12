@@ -859,8 +859,6 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 
 ** which key
 
-Not sure why we need the =bind key= here.
-
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure t
@@ -901,7 +899,9 @@ Not sure why we need the =bind key= here.
         ;; Underlines commands to emphasize some functions:
         which-key-highlighted-command-list
         '(("\\`hydra-" . which-key-group-description-face)
-          "\\(rectangle-\\)\\|\\(-rectangle\\)"))
+          "\\(rectangle-\\)\\|\\(-rectangle\\)")
+
+        which-key-allow-multiple-replacements t)
 
   ;; Change what string to display for a given *complete* key binding
   ;; Eg: After "C-x", display "8 → +unicode" instead of "8 → +prefix"
@@ -915,11 +915,7 @@ Not sure why we need the =bind key= here.
     "C-c /"   "engine-mode-map"
     "C-c C-v" "org-babel")
 
-  (setq which-key-allow-multiple-replacements t)
-
   (which-key-mode 1))
-
-(require 'bind-key)
 #+END_SRC
 
 * unfactored
