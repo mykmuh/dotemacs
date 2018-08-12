@@ -918,16 +918,11 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
   (which-key-mode 1))
 #+END_SRC
 
-* unfactored
+* misc language settings
+
+** json
+
 #+BEGIN_SRC emacs-lisp
-(require 're-builder)
-(setq reb-re-syntax 'string)
-
-(require 'deft)
-
-(setq neo-smart-open t)
-
-
 (use-package json-mode
   :ensure t
   :defer t
@@ -941,12 +936,30 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
         (if (region-active-p)
             (call-interactively #'json-reformat-region)
           (json-reformat-region (point-min) (point-max)))))))
+#+END_SRC
 
+** python
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; babel                                                                  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+BEGIN_SRC emacs-lisp
+;; mkm Sunday, August 12, 2018
+;; this should be resolved in my current emacs
+;; remove if this is true
 
+;; ;; to fix python
+;; (with-eval-after-load 'python
+;;   (defun python-shell-completion-native-try ()
+;;     "Return non-nil if can trigger native completion."
+;;     (let ((python-shell-completion-native-enable t)
+;;           (python-shell-completion-native-output-timeout
+;;            python-shell-completion-native-try-output-timeout))
+;;       (python-shell-completion-native-get-completions
+;;        (get-buffer-process (current-buffer))
+;;        nil "_"))))
+#+END_SRC
+
+* babel
+
+#+BEGIN_SRC emacs-lisp
 (setq org-src-preserve-indentation nil 
       org-edit-src-content-indentation 0)
 
@@ -957,20 +970,14 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
    (shell . t)
    (python . t)
    (ruby . t)))
+#+END_SRC
 
-;; to fix python
-(with-eval-after-load 'python
-  (defun python-shell-completion-native-try ()
-    "Return non-nil if can trigger native completion."
-    (let ((python-shell-completion-native-enable t)
-          (python-shell-completion-native-output-timeout
-           python-shell-completion-native-try-output-timeout))
-      (python-shell-completion-native-get-completions
-       (get-buffer-process (current-buffer))
-       nil "_"))))
+* unfactored
+#+BEGIN_SRC emacs-lisp
+(require 're-builder)
+(setq reb-re-syntax 'string)
 
-
-
+(setq neo-smart-open t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; grep                                                                   ;;
