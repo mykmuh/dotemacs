@@ -125,6 +125,18 @@ Just some tweaks here.
 
 (setq-default indicate-buffer-boundaries 'left)
 (setq-default indicate-empty-lines +1)
+
+;; hide gibberish header from grep return
+(defun mkm/delete-grep-header ()
+  (save-excursion
+    (with-current-buffer grep-last-buffer
+      (goto-line 5)
+      (narrow-to-region (point) (point-max)))))
+
+(defadvice grep (after delete-grep-header activate) (mkm/delete-grep-header))
+(defadvice rgrep (after delete-grep-header activate) (mkm/delete-grep-header))
+
+
 #+END_SRC
 
 Let's me jump back to frame layout that I'm using. 
@@ -199,13 +211,15 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 
 #+BEGIN_SRC emacs-lisp
 ;; just archive DONE entries
-(defun org-archive-done-tasks ()
+(defun mkm/org-archive-done-tasks ()
   (interactive)
   (org-map-entries
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
 "/DONE" 'tree))
+
+(global-set-key (kbd "s-a") 'org-archive-subtree-default)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -220,7 +234,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 
 (setq org-todo-keywords
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
-             (sequence "SOMEDAY(s)" "|" "CANCELED(c@!)")
+             (sequence "SOMEDAY(s)" "|" "CANCELLED(c@!)")
              (type "AOR(a)" "|" "DONE")))
 
 (setq org-tag-alist '((:startgroup . nil)
@@ -477,12 +491,18 @@ Ok, switching to Leuven for a bit. Ugh, changed my mind. Now trying "minimal lig
 
 Ok, back to zenburn, with a tweak to see if I can set and reuse my:theme from this location in init.
 
-#+BEGIN_SRC emacs-lisp
-(use-package zenburn-theme
-  :ensure t
-  :config (load-theme 'zenburn t))
+I was using zenburn, now sanityinc-tomorrow-eighties
 
-(defvar my:theme 'zenburn)
+;; sanityinc-tomorrow-eighties
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   :config (load-theme 'zenburn t))
+
+(defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-eighties)
+;; (defvar my:theme 'zenburn)
 #+END_SRC
 
 ** fix for loading as a daemon
@@ -537,7 +557,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
 ;; gruvbox has too garish brights
 ;; (load-theme 'gruvbox t)
 ;; (load-theme 'monokai t)
-
 
 * highlight-indentation
 
@@ -712,20 +731,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 #+END_SRC
 
-* yaml
-
-#+BEGIN_SRC emacs-lisp
-(use-package yaml-mode
-  :ensure t
-  :defer t
-  :config
-  (add-hook 'yaml-mode-hook
-            (lambda ()
-              (setq-local paragraph-separate ".*>-$\\|[   ]*$")
-              (setq-local paragraph-start paragraph-separate))))
-
-#+END_SRC
-
 * indentation settings
 
 #+BEGIN_SRC emacs-lisp
@@ -733,16 +738,6 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
 
 (require 'yafolding)
-
-(defun aj-toggle-fold ()
-  "Toggle fold all lines larger than indentation on current line"
-  (interactive)
-  (let ((col 1))
-    (save-excursion
-      (back-to-indentation)
-      (setq col (+ 1 (current-column)))
-      (set-selective-display
-       (if selective-display nil (or col 1))))))
 
 (defhydra mkm-indent-tools-hydra (:color red :hint nil)
   "
@@ -920,6 +915,21 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 
 * misc language settings
 
+** yaml
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'yaml-mode-hook
+            (lambda ()
+              (setq-local paragraph-separate ".*>-$\\|[   ]*$")
+              (setq-local paragraph-start paragraph-separate))))
+
+#+END_SRC
+
+
 ** json
 
 #+BEGIN_SRC emacs-lisp
@@ -978,21 +988,6 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 (setq reb-re-syntax 'string)
 
 (setq neo-smart-open t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; grep                                                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; remove crappy header from grep return
-(defun delete-grep-header ()
-  (save-excursion
-    (with-current-buffer grep-last-buffer
-      (goto-line 5)
-      (narrow-to-region (point) (point-max)))))
-
-(defadvice grep (after delete-grep-header activate) (delete-grep-header))
-(defadvice rgrep (after delete-grep-header activate) (delete-grep-header))
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
