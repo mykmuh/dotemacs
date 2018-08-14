@@ -204,6 +204,39 @@ Let's me jump back to frame layout that I'm using.
 
 #+END_SRC
 
+** org capture
+
+This allows me to call up capture from anywhere on my mac. It uses a Keyboard Maestro key combo (s-C [space]) to start the capture.
+
+#+BEGIN_SRC emacs-lisp
+(defadvice org-switch-to-buffer-other-window
+    (after supress-window-splitting activate)
+  "Delete the extra window if we're in a capture frame"
+  (if (equal "capture" (frame-parameter nil 'name))
+      (delete-other-windows)))
+
+(defadvice org-capture-finalize
+    (after delete-capture-frame activate)
+  "Advise capture-finalize to close the frame"
+  (if (equal "capture" (frame-parameter nil 'name))
+      (delete-frame)))
+
+(defun activate-capture-frame ()
+  "run org-capture in capture frame"
+  (select-frame-by-name "capture")
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (org-capture)) 
+
+(defadvice org-capture-select-template (around delete-capture-frame activate)
+  "Advise org-capture-select-template to close the frame on abort"
+  (unless (ignore-errors ad-do-it t)
+    (setq ad-return-value "q"))
+  (if (and
+       (equal "q" ad-return-value)
+       (equal "capture" (frame-parameter nil 'name)))
+      (delete-frame)))
+
+#+END_SRC
 ** org blocks
 
 I just grabbed this from practicemacs.
@@ -373,7 +406,7 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1)
-	("t" "Todo" entry
+	(" " "Todo" entry
 	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
 	 "* TODO %?")
         ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
