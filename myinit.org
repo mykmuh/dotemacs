@@ -192,7 +192,9 @@ Let's me jump back to frame layout that I'm using.
 
 ;; some org-mode wonder
 (setq org-default-notes-file (concat org-directory "/work/inbox.org"))
-(define-key global-map "\C-cc" 'org-capture)
+;; (define-key global-map "\C-cc" 'org-capture)
+;; (define-key global-map "\C-cc" 'org-capture)
+(global-set-key (kbd "C-S-SPC") 'org-capture)
 
 (setq org-goto-interface 'outline-path-completion
       org-goto-max-level 10)
@@ -586,8 +588,8 @@ I was using zenburn, now sanityinc-tomorrow-eighties
 ;;   :ensure t
 ;;   :config (load-theme 'zenburn t))
 
-(defvar my:theme 'sanityinc-tomorrow-eighties)
-;; (defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-eighties)
+(defvar my:theme 'sanityinc-tomorrow-night)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
 
@@ -624,7 +626,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
         (setq my:theme-window-loaded t)
       (setq my:theme-terminal-loaded t))))
 #+END_SRC
-
 
 ** list of possibilities
 ;; light
