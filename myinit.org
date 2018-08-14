@@ -227,7 +227,8 @@ This allows me to call up capture from anywhere on my mac. It uses a Keyboard Ma
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (org-capture)) 
 
-(defadvice org-capture-select-template (around delete-capture-frame activate)
+(defadvice org-capture-select-template 
+    (around delete-capture-frame activate)
   "Advise org-capture-select-template to close the frame on abort"
   (unless (ignore-errors ad-do-it t)
     (setq ad-return-value "q"))
