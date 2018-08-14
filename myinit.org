@@ -188,6 +188,10 @@ Let's me jump back to frame layout that I'm using.
  org-refile-targets  '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
  )
 
+;; fix priorities so non-assigned are after the rest
+(setq org-lowest-priority ?E)
+(setq org-default-priority ?E)
+
 (setq-default org-src-fontify-natively t)
 
 ;; some org-mode wonder
