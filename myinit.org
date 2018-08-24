@@ -197,7 +197,7 @@ Let's me jump back to frame layout that I'm using.
 ;; some org-mode wonder
 (setq org-default-notes-file (concat org-directory "/work/inbox.org"))
 ;; (define-key global-map "\C-cc" 'org-capture)
-;; (define-key global-map "\C-cc" 'org-capture)
+(define-key global-map "\C-cc" 'org-capture)
 (global-set-key (kbd "C-S-SPC") 'org-capture)
 
 (setq org-goto-interface 'outline-path-completion
@@ -1004,8 +1004,34 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
   (which-key-mode 1))
 #+END_SRC
 
-* misc language settings
+* company mode
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3)
+  (global-company-mode t)
+  :bind
+  (:map company-mode-map
+        ("M-TAB" . company-complete))
+  :delight company-mode)
 
+(use-package company-terraform
+  :ensure t
+  :config
+  (company-terraform-init))
+
+;; key bindings are killing me!
+
+(define-key company-active-map (kbd "C-n") 'company-select-next)
+(define-key company-active-map (kbd "C-p") 'company-select-previous)
+(define-key company-search-map (kbd "C-n") 'company-select-next)
+(define-key company-search-map (kbd "C-p") 'company-select-previous)
+(define-key company-search-map (kbd "C-t") 'company-search-toggle-filtering)
+
+#+END_SRC
+* misc language settings
 ** yaml
 
 #+BEGIN_SRC emacs-lisp
@@ -1019,7 +1045,6 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
               (setq-local paragraph-start paragraph-separate))))
 
 #+END_SRC
-
 
 ** json
 
@@ -1058,6 +1083,15 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 ;;        nil "_"))))
 #+END_SRC
 
+** terraform
+
+#+BEGIN_SRC emacs-lisp
+(use-package terraform-mode
+  :ensure t
+  :defer t)
+
+
+#+END_SRC
 * babel
 
 #+BEGIN_SRC emacs-lisp
