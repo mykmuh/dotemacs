@@ -5,7 +5,6 @@
 /ac-comphist.dat
 /auto-save-list
 /bookmarks
-/custom.el
 /elpa/*
 /history
 /image-dired/
@@ -23,6 +22,5 @@
 /lisp/org-devonthink.el
 /lisp/ox-confluence.el
 el-get/
-/myinit.el
 /network-security.data
 /myinit.html
