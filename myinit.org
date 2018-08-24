@@ -162,7 +162,8 @@ Let's me jump back to frame layout that I'm using.
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 
-(require 'ox-confluence)
+;; could not get this to run new mac
+;;(require 'ox-confluence)
 
 ;;bind to key
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
