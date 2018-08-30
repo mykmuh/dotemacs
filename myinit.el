@@ -116,7 +116,8 @@
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 
-(require 'ox-confluence)
+;; could not get this to run new mac
+;;(require 'ox-confluence)
 
 ;;bind to key
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
@@ -437,8 +438,8 @@
 
 (provide 'setup-spell)
 
-(setq github-override-colors-alist
-      '(("github-selection" . "#ffc04c")))
+;;(setq github-override-colors-alist
+;;      '(("github-selection" . "#ffc04c")))
 
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
@@ -481,7 +482,8 @@
 ;;   :config (load-theme 'zenburn t))
 
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-(defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'github)
 ;; (defvar my:theme 'zenburn)
 
 ;; theme
@@ -820,30 +822,6 @@
 
   (which-key-mode 1))
 
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  (global-company-mode t)
-  :bind
-  (:map company-mode-map
-        ("M-TAB" . company-complete))
-  :delight company-mode)
-
-(use-package company-terraform
-  :ensure t
-  :config
-  (company-terraform-init))
-
-;; key bindings are killing me!
-
-(define-key company-active-map (kbd "C-n") 'company-select-next)
-(define-key company-active-map (kbd "C-p") 'company-select-previous)
-(define-key company-search-map (kbd "C-n") 'company-select-next)
-(define-key company-search-map (kbd "C-p") 'company-select-previous)
-(define-key company-search-map (kbd "C-t") 'company-search-toggle-filtering)
-
 (use-package yaml-mode
   :ensure t
   :defer t
@@ -896,6 +874,14 @@
    (shell . t)
    (python . t)
    (ruby . t)))
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1))
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"))
 
 (require 're-builder)
 (setq reb-re-syntax 'string)

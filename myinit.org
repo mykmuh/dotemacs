@@ -525,12 +525,11 @@ This screws me up enough to merit its own section.
 #+END_SRC
 * themes
 ** github-modern mods
-
 My current choice, but needs some tweaking
 
 #+BEGIN_SRC emacs-lisp
-(setq github-override-colors-alist
-      '(("github-selection" . "#ffc04c")))
+;;(setq github-override-colors-alist
+;;      '(("github-selection" . "#ffc04c")))
 #+END_SRC
 
 ** scaffolding
@@ -594,7 +593,8 @@ I was using zenburn, now sanityinc-tomorrow-eighties
 ;;   :config (load-theme 'zenburn t))
 
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-(defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'github)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
 
@@ -639,6 +639,8 @@ When running as a daemon, some themes don't seem to want to load when restarting
 - material-light : just icky. All the oversized crap from Leuven, with some funky color choices
 - (load-theme 'tao-yang t): not enough contrast
 - (load-theme 'sanityinc-tomorrow-day t): ;; too Xmas
+- github: good, but not against bright window -- uwing this now
+- adwaita: pinks! not good; horrible todo headings
 
 ;; (load-theme 'soft-stone t)
 ;; (load-theme 'twilight-bright t)
@@ -937,10 +939,18 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 
 (defhydra hydra-splitter (global-map "<f9>")
   "splitter"
-  ("<left>" hydra-move-splitter-left)
-  ("<down>" hydra-move-splitter-down)
-  ("<up>" hydra-move-splitter-up)
-  ("<right>" hydra-move-splitter-right))
+  ("C-b" hydra-move-splitter-left)
+  ("C-n" hydra-move-splitter-down)
+  ("C-p" hydra-move-splitter-up)
+  ("C-f" hydra-move-splitter-right))
+
+;; (defhydra hydra-splitter (global-map "<f9>")
+;;   "splitter"
+;;   ("<left>" hydra-move-splitter-left)
+;;   ("<down>" hydra-move-splitter-down)
+;;   ("<up>" hydra-move-splitter-up)
+;;   ("<right>" hydra-move-splitter-right))
+
 #+END_SRC
 
 
@@ -1005,33 +1015,6 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
   (which-key-mode 1))
 #+END_SRC
 
-* company mode
-#+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  (global-company-mode t)
-  :bind
-  (:map company-mode-map
-        ("M-TAB" . company-complete))
-  :delight company-mode)
-
-(use-package company-terraform
-  :ensure t
-  :config
-  (company-terraform-init))
-
-;; key bindings are killing me!
-
-(define-key company-active-map (kbd "C-n") 'company-select-next)
-(define-key company-active-map (kbd "C-p") 'company-select-previous)
-(define-key company-search-map (kbd "C-n") 'company-select-next)
-(define-key company-search-map (kbd "C-p") 'company-select-previous)
-(define-key company-search-map (kbd "C-t") 'company-search-toggle-filtering)
-
-#+END_SRC
 * misc language settings
 ** yaml
 
@@ -1108,6 +1091,44 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
    (ruby . t)))
 #+END_SRC
 
+* company-mode
+
+Trying to add this back in. Not sure if I'll get it working to my satisfaction -- I didn't last time. Also, consider the following for avoiding clashes with yasnippet:
+1. only enable yasnippet manually
+2. restrict myself to 2-letter yasnippet commands and set company mode to 3
+3. see about the other fixes outlined on reddit
+
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3))
+
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "SPC") nil)
+  (define-key company-active-map (kbd "SPC") 'company-abort))
+
+(require 'company-terraform)
+(company-terraform-init)
+#+END_SRC
+
+* yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1))
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"))
+#+END_SRC
 * unfactored
 #+BEGIN_SRC emacs-lisp
 (require 're-builder)
