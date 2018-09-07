@@ -246,7 +246,7 @@
      (setq org-map-continue-from (outline-previous-heading)))
 "/DONE" 'tree))
 
-(global-set-key (kbd "s-a") 'org-archive-subtree-default)
+(global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -438,8 +438,23 @@
 
 (provide 'setup-spell)
 
+(defvar my:theme 'zenburn)
+;; for day
+;; (defvar my:theme 'sanityinc-tomorrow-bright)
+;;(defvar my:theme 'zenburn-hc)
+;; for night
+;; (defvar my:theme 'sanityinc-tomorrow-day)
+;; (defvar my:theme 'github)
+;; (defvar my:theme 'sanityinc-tomorrow-eighties)
+;; (defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'zenburn)
+
 ;;(setq github-override-colors-alist
 ;;      '(("github-selection" . "#ffc04c")))
+
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   :config (load-theme 'zenburn t))
 
 (defun load-only-theme ()
   "Disable all themes and then load a single theme interactively."
@@ -476,15 +491,6 @@
 ;; some stuff I'm trying mkm Friday, May 18, 2018)
 ;; (use-package color-theme
 ;;  :ensure t)
-
-;; (use-package zenburn-theme
-;;   :ensure t
-;;   :config (load-theme 'zenburn t))
-
-;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-;; (defvar my:theme 'sanityinc-tomorrow-night)
-(defvar my:theme 'github)
-;; (defvar my:theme 'zenburn)
 
 ;; theme
 
@@ -760,10 +766,17 @@
 
 (defhydra hydra-splitter (global-map "<f9>")
   "splitter"
-  ("<left>" hydra-move-splitter-left)
-  ("<down>" hydra-move-splitter-down)
-  ("<up>" hydra-move-splitter-up)
-  ("<right>" hydra-move-splitter-right))
+  ("C-b" hydra-move-splitter-left)
+  ("C-n" hydra-move-splitter-down)
+  ("C-p" hydra-move-splitter-up)
+  ("C-f" hydra-move-splitter-right))
+
+;; (defhydra hydra-splitter (global-map "<f9>")
+;;   "splitter"
+;;   ("<left>" hydra-move-splitter-left)
+;;   ("<down>" hydra-move-splitter-down)
+;;   ("<up>" hydra-move-splitter-up)
+;;   ("<right>" hydra-move-splitter-right))
 
 (use-package which-key
   :ensure t
@@ -874,6 +887,25 @@
    (shell . t)
    (python . t)
    (ruby . t)))
+
+(use-package company
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3))
+
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "SPC") nil)
+  (define-key company-active-map (kbd "S-SPC") 'company-abort))
+
+(require 'company-terraform)
+(company-terraform-init)
 
 (use-package yasnippet
   :ensure t

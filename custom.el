@@ -62,7 +62,7 @@
  '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
  '(magit-diff-use-overlays nil)
  '(markdown-asymmetric-header t)
- '(markdown-command "/usr/local/bin/markdown")
+ '(markdown-command "/usr/local/bin/markdown" t)
  '(markdown-live-preview-delete-export (quote delete-on-export))
  '(nrepl-message-colors
    (quote
@@ -76,7 +76,7 @@
      (default . minimal))))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets yasnippet solarized-theme github-theme terraform=mode company-terraform terraform-mode hcl-mode color-theme-modern color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow color-theme-solarized paredit vimish-fold flatui-theme github-modern-theme minimal-theme undo-tree json-mode yaml-mode worf markdown-mode lua-mode avy zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+    (hc-zenburn-theme labburn-theme yasnippet-snippets yasnippet solarized-theme github-theme terraform=mode company-terraform terraform-mode hcl-mode color-theme-modern color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow color-theme-solarized paredit vimish-fold flatui-theme github-modern-theme minimal-theme undo-tree json-mode yaml-mode worf markdown-mode lua-mode avy zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
  '(pdf-view-midnight-colors (quote ("#969896" . "#f8eec7")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
