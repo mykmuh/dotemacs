@@ -309,9 +309,9 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
-"/DONE" 'tree))
+   "/+DONE|+CANCELLED" 'tree))
 
-(global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)
+(global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)g
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
