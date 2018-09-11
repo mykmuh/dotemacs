@@ -100,6 +100,8 @@
 (defadvice grep (after delete-grep-header activate) (mkm/delete-grep-header))
 (defadvice rgrep (after delete-grep-header activate) (mkm/delete-grep-header))
 
+;; (error "Done")
+
 ;; winner-mode for sanity
 (winner-mode 1)
 
@@ -237,14 +239,17 @@
 ;;bind to key
 (define-key org-mode-map (kbd "s-<") 'org-begin-template)
 
-;; just archive DONE entries
+;; show tasks archived off into separate file in the agenda log
+(setq org-agenda-archives-mode t)
+
+;; just archive DONE and CANCELLED entries
 (defun mkm/org-archive-done-tasks ()
   (interactive)
   (org-map-entries
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
-"/DONE" 'tree))
+   "/+DONE|+CANCELLED" 'tree))
 
 (global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)
 
@@ -292,7 +297,7 @@
           (tags-todo "-research&-home&-tools/!TODO|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Task Pool:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&+LEVEL=2/SOMEDAY"
+          (tags-todo "-research&-home&-tools&+{^p_.*}/SOMEDAY"
                      ((org-agenda-overriding-header "Projects (Someday):")))
           ))))
 
@@ -438,11 +443,14 @@
 
 (provide 'setup-spell)
 
-(defvar my:theme 'zenburn)
+;; current
+;;(defvar my:theme 'zenburn)
 ;; for day
 ;; (defvar my:theme 'sanityinc-tomorrow-bright)
-;;(defvar my:theme 'zenburn-hc)
+;; (defvar my:theme 'zenburn-hc)
+
 ;; for night
+(defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)

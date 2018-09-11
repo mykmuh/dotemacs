@@ -1,4 +1,10 @@
 #+STARTUP: overview
+* note
+
+Since I always forget this, to bisect the emacs file for errors, add this:
+
+  : (error "Done")
+
 * initial set up
 ** packages
 
@@ -75,6 +81,12 @@ Tricksy.
 (global-set-key (kbd "C-<f5>") 'save-buffers-kill-emacs)
 #+END_SRC
 
+I've been getting locked pid's since switching to my new machine. Something's amiss, but rather than digging too deeply, I'm just going to have emacs stop worrying about lockfiles.
+
+#+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
+#+END_SRC
+
 ** visual
 
 Just some tweaks here.
@@ -135,6 +147,8 @@ Just some tweaks here.
 
 (defadvice grep (after delete-grep-header activate) (mkm/delete-grep-header))
 (defadvice rgrep (after delete-grep-header activate) (mkm/delete-grep-header))
+
+;; (error "Done")
 
 
 #+END_SRC
@@ -301,8 +315,13 @@ These are specific for to do list work with org. I think I'm switching back.
 
 This first bit needs special discussion because I keep forgetting to use it. This archives off all done tasks in the subtree, even nested, and without that stupid prompt. This needs to be mapped to a key!
 
+
+
 #+BEGIN_SRC emacs-lisp
-;; just archive DONE entries
+;; show tasks archived off into separate file in the agenda log
+(setq org-agenda-archives-mode t)
+
+;; just archive DONE and CANCELLED entries
 (defun mkm/org-archive-done-tasks ()
   (interactive)
   (org-map-entries
@@ -311,7 +330,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
      (setq org-map-continue-from (outline-previous-heading)))
    "/+DONE|+CANCELLED" 'tree))
 
-(global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)g
+(global-set-key (kbd "s-a") 'mkm/org-archive-done-tasks)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -527,12 +546,14 @@ This screws me up enough to merit its own section.
 The way I am using themes is by defining the value of =my:theme=. Once I do that and restart emacs, everything magically works.
 
 #+BEGIN_SRC emacs-lisp
-
-(defvar my:theme 'zenburn)
+;; current
+;;(defvar my:theme 'zenburn)
 ;; for day
 ;; (defvar my:theme 'sanityinc-tomorrow-bright)
-;;(defvar my:theme 'zenburn-hc)
+;; (defvar my:theme 'zenburn-hc)
+
 ;; for night
+(defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
