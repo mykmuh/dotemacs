@@ -762,6 +762,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
          ("yaml" (or
                   (name . ".*\\.yml")
                   (name . ".*\\.yaml")))
+         ("terraform" (name . ".*\\.tf"))
          ("org" (name . "^.*org$"))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
          ("shell" (or
