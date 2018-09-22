@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: output
+# key: out
+# --
+output "${1:name}" {
+  description = "${2}"
+  value       = "${3}"
+}
+$0

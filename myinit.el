@@ -44,6 +44,10 @@
 ;; got to kill it
 (global-set-key (kbd "C-<f5>") 'save-buffers-kill-emacs)
 
+(setq create-lockfiles nil)
+
+(setq set-mark-command-repeat-pop t)
+
 (setq inhibit-startup-message t)
 
 (when (window-system)
@@ -111,7 +115,7 @@
 (require 'org)
 
 (setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
+(setq org-agenda-files (list "~/Documents/org/work"))
 
 (setq org-replace-disputed-keys t)
 
@@ -322,10 +326,6 @@
 	("i" "inbox - Home" entry
 	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
 	 "* TODO %?")
-        ("l" "A link, for reading later."
-         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
-         "** %:description\n%u : %:link\n\n%i"
-         :empty-lines 1)
 	("f" "Fiction Entry"
 	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
 	 "* %?\n\n\n%i\n"
@@ -450,11 +450,11 @@
 ;; (defvar my:theme 'zenburn-hc)
 
 ;; for night
-(defvar my:theme 'sanityinc-solarized-light)
+;; (defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'sanityinc-tomorrow-night)
 ;; (defvar my:theme 'zenburn)
 
 ;;(setq github-override-colors-alist
@@ -589,6 +589,7 @@
          ("yaml" (or
                   (name . ".*\\.yml")
                   (name . ".*\\.yaml")))
+         ("terraform" (name . ".*\\.tf"))
          ("org" (name . "^.*org$"))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
          ("shell" (or
@@ -673,6 +674,10 @@
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+
+;; having issues with git-gutter not being updated post commit
+(add-hook 'git-gutter:update-hooks 'magit-after-revert-hook)
+(add-hook 'git-gutter:update-hooks 'magit-not-reverted-hook)
 
 (require 'indent-tools)
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
@@ -926,7 +931,6 @@
 (require 're-builder)
 (setq reb-re-syntax 'string)
 
-(setq neo-smart-open t)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1049,6 +1053,14 @@
 
 ;;(require 'neotree)
 ;;(global-set-key (kbd "C-`") 'neotree-toggle)
+(setq neo-smart-open t)
+
+(use-package neotree
+  :ensure t
+  :bind (([f8] . neotree-toggle))
+  :config (
+           setq neo-smart-open t
+                neo-autorefresh nil))
 
 ;; mkm make sure savehistory is working as intended
 ;; disabling so I can try session mode

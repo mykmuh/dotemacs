@@ -87,6 +87,12 @@ I've been getting locked pid's since switching to my new machine. Something's am
 (setq create-lockfiles nil)
 #+END_SRC
 
+I'm trying to make better use of the mark ring to navigate. Here's some steps towards that.
+
+#+BEGIN_SRC emacs-lisp
+(setq set-mark-command-repeat-pop t)
+#+END_SRC
+
 ** visual
 
 Just some tweaks here.
@@ -169,7 +175,7 @@ Let's me jump back to frame layout that I'm using.
 (require 'org)
 
 (setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work" "~/Documents/org/work/projects"))
+(setq org-agenda-files (list "~/Documents/org/work"))
 
 (setq org-replace-disputed-keys t)
 
@@ -410,10 +416,6 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	("i" "inbox - Home" entry
 	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
 	 "* TODO %?")
-        ("l" "A link, for reading later."
-         entry (file+headline "~/Documents/org/work/inbox.org" "Reading List")
-         "** %:description\n%u : %:link\n\n%i"
-         :empty-lines 1)
 	("f" "Fiction Entry"
 	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
 	 "* %?\n\n\n%i\n"
@@ -553,11 +555,11 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'zenburn-hc)
 
 ;; for night
-(defvar my:theme 'sanityinc-solarized-light)
+;; (defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'sanityinc-tomorrow-night)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
 ** previous choices
@@ -855,6 +857,11 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+
+;; having issues with git-gutter not being updated post commit
+(add-hook 'git-gutter:update-hooks 'magit-after-revert-hook)
+(add-hook 'git-gutter:update-hooks 'magit-not-reverted-hook)
+
 #+END_SRC
 
 * indentation settings
@@ -1166,7 +1173,6 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 (require 're-builder)
 (setq reb-re-syntax 'string)
 
-(setq neo-smart-open t)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1289,6 +1295,14 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 
 ;;(require 'neotree)
 ;;(global-set-key (kbd "C-`") 'neotree-toggle)
+(setq neo-smart-open t)
+
+(use-package neotree
+  :ensure t
+  :bind (([f8] . neotree-toggle))
+  :config (
+           setq neo-smart-open t
+                neo-autorefresh nil))
 
 ;; mkm make sure savehistory is working as intended
 ;; disabling so I can try session mode
