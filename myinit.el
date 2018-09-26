@@ -101,8 +101,8 @@
       (goto-line 5)
       (narrow-to-region (point) (point-max)))))
 
-(defadvice grep (after delete-grep-header activate) (mkm/delete-grep-header))
-(defadvice rgrep (after delete-grep-header activate) (mkm/delete-grep-header))
+;; (defadvice grep (after delete-grep-header activate) (mkm/delete-grep-header))
+;; (defadvice rgrep (after delete-grep-header activate) (mkm/delete-grep-header))
 
 ;; (error "Done")
 
@@ -565,9 +565,13 @@
 (use-package counsel-projectile
   :ensure t
   :config
-  (counsel-projectile-mode))
+  (counsel-projectile-mode)
+  :bind (("s-s" . counsel-projectile-ag)))
 
+(projectile-mode +1)
 (add-to-list 'projectile-globally-ignored-directories ".kitchen")
+(add-to-list 'projectile-globally-ignored-files "#*.*#")
+(add-to-list 'projectile-globally-ignored-files "*.DS_Store")
 
 ;; super key
 ;; (define-key global-map [?\s-d] 'projectile-find-dir)
@@ -899,7 +903,8 @@
    (ruby . t)
    (shell . t)
    (python . t)
-   (ruby . t)))
+   (ruby . t)
+   (ditaa . t)))
 
 (use-package company
   :config
