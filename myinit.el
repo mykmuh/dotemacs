@@ -8,6 +8,10 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+;; load org file again
+(global-set-key (kbd "C-c i")
+                (lambda() (interactive)(org-babel-load-file "~/.emacs.d/myinit.org")))
+
 ;; super vs shift key
 ;; - s = super
 ;; - S = shift
@@ -50,6 +54,8 @@
 
 (setq inhibit-startup-message t)
 
+(setq visible-bell nil)
+
 (when (window-system)
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
@@ -67,6 +73,9 @@
 (set-face-attribute 'default t :font "Source Code Pro 14")
 
 (show-paren-mode 1)
+
+(require 'delight)
+(delight 'terraform-mode "TF")
 
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
@@ -454,7 +463,9 @@
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-(defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'autumn-light)
+;; (defvar my:theme 'spacemacs-light)
 ;; (defvar my:theme 'zenburn)
 
 ;;(setq github-override-colors-alist
@@ -547,20 +558,24 @@
 ;;  '(ivy-highlight-face ((t (:background "#f2f3d3"))))
 ;;  '(ivy-current-match ((t (:background "#b3ffb3")))))
 
+(defun mkm/projectile-mode-line ()
+  "Report project name and type in the modeline."
+  (let ((project-name (projectile-project-name)))
+    (format " P:[%s]"
+            project-name)))
+
 (use-package projectile
   :ensure t
   :config
-  (projectile-global-mode)
-  (setq projectile-enable-caching t)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line
-        '(:eval (format " [%s]" (projectile-project-name))))
+  (projectile-global-mode 1)
+  (setq projectile-enable-caching t
+        projectile-completion-system 'ivy
+        projectile-mode-line-fn 'mkm/projectile-mode-line)
   :bind (("C-c p" . projectile-command-map)
          :map projectile-mode-map
          ("s-d" . projectile-find-dir)
          ("s-f" . projectile-find-file)
-         ("s-g" . projectile-grep))
-  )
+         ("s-g" . projectile-grep)))
 
 (use-package counsel-projectile
   :ensure t
@@ -568,12 +583,16 @@
   (counsel-projectile-mode)
   :bind (("s-s" . counsel-projectile-ag)))
 
-(projectile-mode +1)
-(add-to-list 'projectile-globally-ignored-directories ".kitchen")
-(add-to-list 'projectile-globally-ignored-files "#*.*#")
-(add-to-list 'projectile-globally-ignored-files "*.DS_Store")
+;; (projectile-mode +1)
+;;(define-key projectile-mode-map (kbd "s-f") 'projectile-find-file)
+;; (setq projectile-mode-line-fn (quote (:eval (format " bbb [%s]" (projectile-project-name)))))
+;; (add-to-list 'projectile-globally-ignored-directories ".kitchen")
+;; (add-to-list 'projectile-globally-ignored-files "#*.*#")
+;; (add-to-list 'projectile-globally-ignored-files "*.DS_Store")
 
-;; super key
+;; (setq projectile-indexing-method 'native)
+
+;; ;; super key
 ;; (define-key global-map [?\s-d] 'projectile-find-dir)
 ;; (define-key global-map [?\s-f] 'projectile-find-file)
 ;; (define-key global-map [?\s-g] 'projectile-grep)
@@ -733,7 +752,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq initial-scratch-message "")
-(setq visible-bell t)
+(setq visible-bell nil)
 
 (when (window-system)
   (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
@@ -892,6 +911,7 @@
 
 (use-package terraform-mode
   :ensure t
+  :diminish terraform-mode
   :defer t)
 
 (setq org-src-preserve-indentation nil 
@@ -906,7 +926,9 @@
    (ruby . t)
    (ditaa . t)))
 
+(diminish 'yas--direct-terraform-mode)
 (use-package company
+  :diminish company-mode
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 3))
@@ -926,6 +948,7 @@
 (company-terraform-init)
 
 (use-package yasnippet
+  :diminish yas-minor-mode
   :ensure t
   :init
   (yas-global-mode 1))
@@ -1016,9 +1039,9 @@
 ;; fix for 'ls does not support --dired' message
 (setq dired-use-ls-dired nil)
 
-(use-package dired+
-  :ensure t
-  :diminish dired+-mode)
+;;(use-package dired+
+;;  :ensure t
+;;  :diminish dired+-mode)
 
 ;; some editing extras
 ;; disabled Saturday, May 19, 2018
@@ -1037,7 +1060,6 @@
 
 ;; undo tree!
 (use-package undo-tree
-  :ensure t
   :diminish undo-tree-mode
   :config
   (bind-keys*

@@ -21,3 +21,4 @@
 (load custom-file)
 
 (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
+(put 'upcase-region 'disabled nil)

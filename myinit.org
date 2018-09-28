@@ -18,6 +18,10 @@ Since I always forget this, to bisect the emacs file for errors, add this:
 (add-to-list 'load-path "/Users/michael/.emacs.d/el-get/org-opml/")
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; load org file again
+(global-set-key (kbd "C-c i")
+                (lambda() (interactive)(org-babel-load-file "~/.emacs.d/myinit.org")))
 #+END_SRC
 
 ** mac specific
@@ -100,6 +104,8 @@ Just some tweaks here.
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 
+(setq visible-bell nil)
+
 (when (window-system)
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
@@ -117,6 +123,9 @@ Just some tweaks here.
 (set-face-attribute 'default t :font "Source Code Pro 14")
 
 (show-paren-mode 1)
+
+(require 'delight)
+(delight 'terraform-mode "TF")
 
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
@@ -559,10 +568,43 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
-(defvar my:theme 'sanityinc-tomorrow-night)
+;; (defvar my:theme 'sanityinc-tomorrow-night)
+(defvar my:theme 'autumn-light)
+;; (defvar my:theme 'spacemacs-light)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
 ** previous choices
+**** specific themes
+Here are theme's I've tried and why they did or didn't work:
+
+Some darks:
+- sanityinc-tomorrow-eighties: nice dark theme
+- zenburn: made a tweak to see if I can set and reuse my:theme from this location in init.
+
+Some lights:
+- adwaita: pinks! not good; horrible todo headings
+- autumn-light: this is looking good
+  - not liking the magit diff
+  - gutter is solid color, hm, not so good
+- eziam: ugh
+  - horrible colors
+  - oversized shit from Leuven
+- flatui -- out of date
+- github-modern: current winner, but there's issues with some org agenda settings
+- github: good, but not against bright window -- is this different than modern?
+- gruvbox has too garish brights
+- Leuven: Ugh, changed my mind
+- material-light : just icky.
+  - all the oversized crap from Leuven
+  - some funky color choices
+- minimal-light: so far, this is rocking it! -- eh, maybe not
+- monokai t)
+- sanityinc-tomorrow-day: too Xmas
+  - awful git diff
+- soft-stone t)
+- tao-yang: not enough contrast
+- twilight-bright t)
+
 **** github-modern mods
 My current choice, but needs some tweaking
 
@@ -570,8 +612,6 @@ My current choice, but needs some tweaking
 ;;(setq github-override-colors-alist
 ;;      '(("github-selection" . "#ffc04c")))
 #+END_SRC
-
-
 
 **** zenburn
 zenburn is ok for now, but I prefer a lighter theme. Should I switch back to Leuven?
@@ -626,29 +666,6 @@ And the use of mapcar is to loop over all of the custom-enabled themes, disablin
 ;;  :ensure t)
 #+END_SRC
 
-**** specific themes
-
-Here are theme's I've tried and why they did or didn't work:
-
-Some darks:
-- sanityinc-tomorrow-eighties: nice dark theme
-- zenburn: made a tweak to see if I can set and reuse my:theme from this location in init.
-
-Some lights:
-- flatui -- out of date
-- Leuven: Ugh, changed my mind
-- minimal-light: so far, this is rocking it! -- eh, maybe not
-- github-modern: current winner, but there's issues with some org agenda settings
-- github: good, but not against bright window -- is this different than modern?
-- adwaita: pinks! not good; horrible todo headings
-- tao-yang: not enough contrast
-- sanityinc-tomorrow-day: too Xmas
-- material-light : just icky. All the oversized crap from Leuven, with some funky color choices
-- soft-stone t)
-- twilight-bright t)
-- gruvbox has too garish brights
-- monokai t)
-
 ** fix for loading as a daemon
 
 When running as a daemon, some themes don't seem to want to load when restarting. Hopefully the following will help:
@@ -683,8 +700,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
       (setq my:theme-terminal-loaded t))))
 #+END_SRC
 
-** list of possibilities
-
 * highlight-indentation
 
 #+BEGIN_SRC emacs-lisp
@@ -717,20 +732,24 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 * projectile
 
 #+BEGIN_SRC emacs-lisp
+(defun mkm/projectile-mode-line ()
+  "Report project name and type in the modeline."
+  (let ((project-name (projectile-project-name)))
+    (format " P:[%s]"
+            project-name)))
+
 (use-package projectile
   :ensure t
   :config
-  (projectile-global-mode)
-  (setq projectile-enable-caching t)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line
-        '(:eval (fitormat " [%s]" (projectile-project-name))))
+  (projectile-global-mode 1)
+  (setq projectile-enable-caching t
+        projectile-completion-system 'ivy
+        projectile-mode-line-fn 'mkm/projectile-mode-line)
   :bind (("C-c p" . projectile-command-map)
          :map projectile-mode-map
          ("s-d" . projectile-find-dir)
          ("s-f" . projectile-find-file)
-         ("s-g" . projectile-grep))
-  )
+         ("s-g" . projectile-grep)))
 
 (use-package counsel-projectile
   :ensure t
@@ -738,12 +757,16 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
   (counsel-projectile-mode)
   :bind (("s-s" . counsel-projectile-ag)))
 
-(projectile-mode +1)
-(add-to-list 'projectile-globally-ignored-directories ".kitchen")
-(add-to-list 'projectile-globally-ignored-files "#*.*#")
-(add-to-list 'projectile-globally-ignored-files "*.DS_Store")
+;; (projectile-mode +1)
+;;(define-key projectile-mode-map (kbd "s-f") 'projectile-find-file)
+;; (setq projectile-mode-line-fn (quote (:eval (format " bbb [%s]" (projectile-project-name)))))
+;; (add-to-list 'projectile-globally-ignored-directories ".kitchen")
+;; (add-to-list 'projectile-globally-ignored-files "#*.*#")
+;; (add-to-list 'projectile-globally-ignored-files "*.DS_Store")
 
-;; super key
+;; (setq projectile-indexing-method 'native)
+
+;; ;; super key
 ;; (define-key global-map [?\s-d] 'projectile-find-dir)
 ;; (define-key global-map [?\s-f] 'projectile-find-file)
 ;; (define-key global-map [?\s-g] 'projectile-grep)
@@ -926,7 +949,7 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq initial-scratch-message "")
-(setq visible-bell t)
+(setq visible-bell nil)
 
 (when (window-system)
   (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
@@ -1115,7 +1138,10 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 #+BEGIN_SRC emacs-lisp
 (use-package terraform-mode
   :ensure t
+  :diminish terraform-mode
   :defer t)
+
+
 
 
 #+END_SRC
@@ -1143,7 +1169,9 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 3. see about the other fixes outlined on reddit
 
 #+BEGIN_SRC emacs-lisp
+(diminish 'yas--direct-terraform-mode)
 (use-package company
+  :diminish company-mode
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 3))
@@ -1166,6 +1194,7 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 * yasnippet
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
+  :diminish yas-minor-mode
   :ensure t
   :init
   (yas-global-mode 1))
@@ -1258,9 +1287,9 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 ;; fix for 'ls does not support --dired' message
 (setq dired-use-ls-dired nil)
 
-(use-package dired+
-  :ensure t
-  :diminish dired+-mode)
+;;(use-package dired+
+;;  :ensure t
+;;  :diminish dired+-mode)
 
 ;; some editing extras
 ;; disabled Saturday, May 19, 2018
@@ -1279,7 +1308,6 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 
 ;; undo tree!
 (use-package undo-tree
-  :ensure t
   :diminish undo-tree-mode
   :config
   (bind-keys*

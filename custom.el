@@ -9,7 +9,6 @@
    ["#FAFAFA" "#FF1744" "#66BB6A" "#F57F17" "#42A5F5" "#7E57C2" "#0097A7" "#546E7A"])
  '(ansi-term-color-vector
    [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
- '(beacon-color "#ff9da4")
  '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
@@ -31,31 +30,7 @@
       (not
        (regexp . "^_.*"))))))
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
- '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
  '(highlight-indent-guides-auto-enabled nil t)
- '(highlight-symbol-colors
-   (--map
-    (solarized-color-blend it "#fdf6e3" 0.25)
-    (quote
-     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
- '(highlight-symbol-foreground-color "#586e75")
- '(highlight-tail-colors
-   (quote
-    (("#eee8d5" . 0)
-     ("#B4C342" . 20)
-     ("#69CABF" . 30)
-     ("#69B7F0" . 50)
-     ("#DEB542" . 60)
-     ("#F2804F" . 70)
-     ("#F771AC" . 85)
-     ("#eee8d5" . 100))))
- '(hl-bg-colors
-   (quote
-    ("#DEB542" "#F2804F" "#FF6E64" "#F771AC" "#9EA0E5" "#69B7F0" "#69CABF" "#B4C342")))
- '(hl-fg-colors
-   (quote
-    ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
- '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
  '(magit-diff-use-overlays nil)
  '(markdown-asymmetric-header t)
  '(markdown-command "/usr/local/bin/markdown" t)
@@ -72,12 +47,10 @@
      (default . minimal))))
  '(package-selected-packages
    (quote
-    (hc-zenburn-theme labburn-theme yasnippet-snippets yasnippet solarized-theme github-theme terraform=mode company-terraform terraform-mode hcl-mode color-theme-modern color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow color-theme-solarized paredit vimish-fold flatui-theme github-modern-theme minimal-theme undo-tree json-mode yaml-mode worf markdown-mode lua-mode avy zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling smooth-scroll peep-dired org-projectile projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
+    (greymatters-theme spacemacs-theme eziam-theme leuven-theme autumn-light-theme delight hc-zenburn-theme labburn-theme yasnippet-snippets yasnippet solarized-theme github-theme terraform=mode company-terraform terraform-mode hcl-mode color-theme-modern color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow color-theme-solarized paredit vimish-fold flatui-theme github-modern-theme minimal-theme undo-tree json-mode yaml-mode worf markdown-mode lua-mode avy zenburn-theme htmlize highlight-indent-guides origami makey discover indent-tools dired-ranger ranger el-get command-log-mode base16-twilight base16-twilight-theme twilight twilight-anti-bright-theme twilight-bright-theme twilight-theme tango-plus-theme tango-plus apropospriate-theme moe-theme base16-theme gruvbox-theme chruby seeing-is-believing ruby-electric dired-filter dired-narrow rainbow-delimiters robe company company-shell wgrep wgrep-ack wgrep-ag ztree ivy-hydra org counselq counsel-osx-app counsel-projectile highlight-indentation company-restclient restclient test-kitchen ag json-reformat smartscan which-key smooth-scrolling smooth-scroll peep-dired org-projectile with-editor session magit-popup hydra helm git-gutter+ git-commit fringe-helper epl diminish dash bind-key avys async ace-link window-number whole-line-or-region use-package swiper simpleclip rebox2 powershell powerline pkg-info pdf-tools neotree magit git-gutter-fringe+ expand-region exec-path-from-shell dired-toggle-sudo dired+ deft cl-lib-highlight boxquote ace-window)))
  '(pdf-view-midnight-colors (quote ("#969896" . "#f8eec7")))
  '(show-paren-mode t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
- '(term-default-bg-color "#fdf6e3")
- '(term-default-fg-color "#657b83")
  '(tool-bar-mode nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-very-old-color nil)
