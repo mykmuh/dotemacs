@@ -49,6 +49,12 @@ Open any new docs in the same emacs frame.
 (setq ns-pop-up-frames nil)
 #+END_SRC
 
+* manual installs
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+(load "org-devonthink")
+#+END_SRC
 * user interface tweaks
 ** general
 
