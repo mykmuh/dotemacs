@@ -26,3 +26,5 @@ el-get/
 /network-security.data
 /myinit.html
 .emacs.desktop*
+myinit.el
+/.mc-lists.el

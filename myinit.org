@@ -183,6 +183,20 @@ Let's me jump back to frame layout that I'm using.
 (save-place-mode 1)
 #+END_SRC
 
+** mark-multiple
+I'm finally hopping aboard the train. I read that there's bugs, but I'll give it a shot.
+
+#+BEGIN_SRC emacs-lisp
+;;(define-key markdown-mode-map "\M-n" nil)
+;;(define-key markdown-mode-map "\M-p" nil)
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("M-n" . mc/mark-next-like-this)
+         ("M-p" . mc/mark-previous-like-this)
+         ("C-c a" . mc/mark-all-like-this)
+         ("C-c e" . mc/edit-lines)))
+#+END_SRC
 * org
 ** base org
 
@@ -243,6 +257,9 @@ Let's me jump back to frame layout that I'm using.
 
 (setq org-speed-commands-user
           '(("S" . (widen))))
+
+;; I *hate* this key combo!
+(define-key org-mode-map (kbd "C-,") nil)
 
 #+END_SRC
 
@@ -736,7 +753,11 @@ First, a tweak to selection. I'm not too hip on what ivy is doing here with the 
 #+END_SRC
 
 * projectile
+Adding ag
 
+#+BEGIN_SRC emacs-lisp
+(use-package ag :ensure t)
+#+END_SRC
 #+BEGIN_SRC emacs-lisp
 (defun mkm/projectile-mode-line ()
   "Report project name and type in the modeline."
@@ -1141,15 +1162,70 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 
 ** terraform
 
+Need to make this stop at undercore!
+
 #+BEGIN_SRC emacs-lisp
 (use-package terraform-mode
   :ensure t
   :diminish terraform-mode
   :defer t)
+#+END_SRC
+** smart-parens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens-config
+  :ensure smartparens
+  :diminish
+  :config
+  (progn
+    (show-smartparens-global-mode t)))
 
+(bind-keys
+ :map smartparens-mode-map
+ ("C-M-a" . sp-beginning-of-sexp)
+ ("C-M-e" . sp-end-of-sexp)
 
+ ("C-<down>" . sp-down-sexp)
+ ("C-<up>"   . sp-up-sexp)
+ ("M-<down>" . sp-backward-down-sexp)
+ ("M-<up>"   . sp-backward-up-sexp)
 
+ ("C-M-f" . sp-forward-sexp)
+ ("C-M-b" . sp-backward-sexp)
 
+ ("C-M-n" . sp-next-sexp)
+ ("C-M-p" . sp-previous-sexp)
+
+ ("C-S-f" . sp-forward-symbol)
+ ("C-S-b" . sp-backward-symbol)
+
+ ;; ("C-<right>" . sp-forward-slurp-sexp)
+ ;; ("M-<right>" . sp-forward-barf-sexp)
+ ;; ("C-<left>"  . sp-backward-slurp-sexp)
+ ;; ("M-<left>"  . sp-backward-barf-sexp)
+
+ ("C-M-t" . sp-transpose-sexp)
+ ("C-M-k" . sp-kill-sexp)
+ ("C-k"   . sp-kill-hybrid-sexp)
+ ("M-k"   . sp-backward-kill-sexp)
+ ("C-M-w" . sp-copy-sexp)
+ ("C-M-d" . delete-sexp)
+
+ ("M-<backspace>" . backward-kill-word)
+ ("C-<backspace>" . sp-backward-kill-word)
+ ([remap sp-backward-kill-word] . backward-kill-word)
+
+ ("M-[" . sp-backward-unwrap-sexp)
+ ("M-]" . sp-unwrap-sexp)
+
+ ("C-x C-t" . sp-transpose-hybrid-sexp)
+
+ ("C-c ("  . wrap-with-parens)
+ ("C-c ["  . wrap-with-brackets)
+ ("C-c {"  . wrap-with-braces)
+ ("C-c '"  . wrap-with-single-quotes)
+ ("C-c \"" . wrap-with-double-quotes)
+ ("C-c _"  . wrap-with-underscores)
+ ("C-c `"  . wrap-with-back-quotes))
 #+END_SRC
 * babel
 
