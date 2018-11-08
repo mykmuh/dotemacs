@@ -83,7 +83,9 @@ Tricksy.
 ;;preview files in dired
 (use-package peep-dired
   :ensure t
-  :defer t ; don't access `dired-mode-map' until `peep-dired' is loaded
+  :config
+  (setq peep-dired-cleanup-on-disable t)
+  (setq peep-dired-ignored-extensions '("DS_Store"))
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
@@ -408,19 +410,20 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Today's Tasks:")))
           (agenda "")
-          (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
           (tags-todo "-research&-home&-tools/!WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Waiting Tasks:")))
+          (tags-todo "-research&-home&-tools/PROJ"
+                     ((org-agenda-overriding-header "Projects:")))
           (tags-todo "-research&-home&-tools/!TODO|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Task Pool:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}/SOMEDAY"
                      ((org-agenda-overriding-header "Projects (Someday):")))
+          (tags-todo "home/!TODO|NEXT|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Home Stuff:")))
           ))))
-
-
 #+END_SRC
 
 ** capture templates
