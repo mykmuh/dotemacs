@@ -85,7 +85,6 @@ Tricksy.
   :ensure t
   :config
   (setq peep-dired-cleanup-on-disable t)
-  (setq peep-dired-ignored-extensions '("DS_Store"))
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
