@@ -594,7 +594,8 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
 ;; (defvar my:theme 'sanityinc-tomorrow-night)
-(defvar my:theme 'autumn-light)
+;; (defvar my:theme 'autumn-light)
+(defvar my:theme 'zenburn)
 ;; (defvar my:theme 'spacemacs-light)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
