@@ -125,9 +125,9 @@ Just some tweaks here.
 (blink-cursor-mode 1)
 
 (add-to-list 'default-frame-alist
-	     '(font . "Source Code Pro 14"))
+	     '(font . "Monaco"))
 
-(set-face-attribute 'default t :font "Source Code Pro 14")
+(set-face-attribute 'default nil :font "Monaco" :height 140)
 
 (show-paren-mode 1)
 
