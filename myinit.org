@@ -594,8 +594,8 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'github)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
 ;; (defvar my:theme 'sanityinc-tomorrow-night)
-;; (defvar my:theme 'autumn-light)
-(defvar my:theme 'zenburn)
+(defvar my:theme 'autumn-light)
+;; (defvar my:theme 'zenburn)
 ;; (defvar my:theme 'spacemacs-light)
 ;; (defvar my:theme 'zenburn)
 #+END_SRC
@@ -812,18 +812,17 @@ Adding ag
 
 (setq ibuffer-saved-filter-groups
       '(("default"
+         ("magit" (or
+                   (name . "^.*magit.*:.*")))
+         ("terraform" (name . ".*\\.tf"))
+         ("markdown" (name . ".*\\.md"))
+         ("yaml" (or
+                  (name . ".*\\.yml")
+                  (name . ".*\\.yaml")))
          ("tramp" (or
                    (name . "^\\*tramp.*")
                    (filename . "^/sudo.*")
                    (filename . "^/ssh.*")))
-         ("markdown" (name . ".*\\.md"))
-         ("dired" (mode . dired-mode))
-         ("yaml" (or
-                  (name . ".*\\.yml")
-                  (name . ".*\\.yaml")))
-         ("terraform" (name . ".*\\.tf"))
-         ("org" (name . "^.*org$"))
-         ("web" (or (mode . web-mode) (mode . js2-mode)))
          ("shell" (or
                    (mode . eshell-mode)
                    (mode . shell-mode)
@@ -834,16 +833,17 @@ Adding ag
                          (mode . perl-mode)
                          (mode . ruby-mode)
                          (name . ".*\\.ps1")))
+         ("org" (name . "^.*org$"))
          ("emacs" (or
                    (name . "^\\*scratch\\*$")
                    (name . "^\\*Messages\\*$")
                    (name . "^\\*Help\\*$")
                    (name . ".*\\.el$")))
-         ("magit" (or
-                   (name . "^*magit.*:.*")))
+         ("web" (or (mode . web-mode) (mode . js2-mode)))
          ("chef" (or
                   (name . ".*\\.erb")
                   (name . ".*\\.yml")))
+         ("dired" (mode . dired-mode))
          )))
 
 (add-hook 'ibuffer-mode-hook
