@@ -398,34 +398,40 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("z" "Available Tasks" tags-todo "-research&-home&-tools/!NEXT|TODO"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
-         ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("c" "MKM agenda"
+      '(("c" "Chooser"
          (
           (tags-todo "-research&-home&-tools/!NEXT"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Today's Tasks:")))
-          (agenda "")
+                      (org-agenda-overriding-header "Current Tasks:")))
+          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Task Pool:")))))
+        ("o" "Overview"
+         (
+          (tags-todo "-research&-home&-tools/!NEXT"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Current Tasks:")))
+          (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
+                     ((org-agenda-overriding-header "Active Projects:")))
           (tags-todo "-research&-home&-tools/!WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
+                     ((org-agenda-overriding-header "Projects (Waiting):")))
+          (agenda "")
           (tags-todo "-research&-home&-tools/!TODO|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Task Pool:")))
           (tags-todo "home/!TODO|NEXT|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Home Stuff:")))))
-        ("p" "MKM projects"
+        ("p" "Project View"
           (
-          (tags-todo "-research&-home&-tools/PROJ"
-                     ((org-agenda-overriding-header "Projects:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}/WAITING"
+          (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
+                     ((org-agenda-overriding-header "Active Projects:")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}/SOMEDAY"
+          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
                      ((org-agenda-overriding-header "Projects (Someday):")))))))
 #+END_SRC
 
