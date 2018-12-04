@@ -402,7 +402,6 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
          ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
         ("n" "Next Tasks" tags-todo "-research&-home&-tools/!NEXT|WAITING"
          ((org-agenda-sorting-strategy '(todo-state-up priority-down))))
-        ("p" "Show Projects" tags-todo "-research&-home&-tools/PROJ")
         ("c" "MKM agenda"
          (
           (tags-todo "-research&-home&-tools/!NEXT"
@@ -417,12 +416,17 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
           (tags-todo "-research&-home&-tools/!TODO|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Task Pool:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}/SOMEDAY"
-                     ((org-agenda-overriding-header "Projects (Someday):")))
           (tags-todo "home/!TODO|NEXT|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Home Stuff:")))
-          ))))
+                      (org-agenda-overriding-header "Home Stuff:")))))
+        ("p" "MKM projects"
+          (
+          (tags-todo "-research&-home&-tools/PROJ"
+                     ((org-agenda-overriding-header "Projects:")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}/WAITING"
+                     ((org-agenda-overriding-header "Projects (Waiting):")))
+          (tags-todo "-research&-home&-tools&+{^p_.*}/SOMEDAY"
+                     ((org-agenda-overriding-header "Projects (Someday):")))))))
 #+END_SRC
 
 ** capture templates
