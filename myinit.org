@@ -400,27 +400,32 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-agenda-custom-commands
       '(("c" "Chooser"
          (
-          (tags-todo "-research&-home&-tools/!NEXT"
+          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Tasks:")))
-          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+          (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))))
         ("o" "Overview"
          (
-          (tags-todo "-research&-home&-tools/!NEXT"
+          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Tasks:")))
           (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
                      ((org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "-research&-home&-tools/!WAITING"
+          (tags-todo "-research&-home&-tools/!WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-overriding-header "Projects (Waiting):")))
           (agenda "")
-          (tags-todo "-research&-home&-tools/!TODO|WAITING"
+          (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))
           (tags-todo "home/!TODO|NEXT|WAITING"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
@@ -430,9 +435,78 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
           (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
                      ((org-agenda-overriding-header "Active Projects:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
-                     ((org-agenda-overriding-header "Projects (Waiting):")))
+                     ((org-agenda-overriding-header "Waiting Projects:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
-                     ((org-agenda-overriding-header "Projects (Someday):")))))))
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Someday Projects:")))
+          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-overriding-header "Current Tasks:")))))))
+
+;; add a function to skip projects in the waiting tasks
+;; if level 2 and have p_ tag, it's not a task but a project
+(defun my-skip-projects ()
+  (let (beg end m)
+    (org-back-to-heading t)
+    (setq beg (point)
+          end (progn (outline-next-heading) (1- (point))))
+    (goto-char beg)
+    (setq alltags (prin1-to-string (org-get-tags-at)))
+    (goto-char beg)
+    (if (and (string-match "p_.*" alltags)
+             (= (org-current-level) 2))
+        end)))
+
+(defun my-skip-waiting-projects ()
+  (let (subtree-end beg end)
+    (setq beg (point)
+          end (progn (outline-next-heading) (1- (point))))
+    (goto-char beg)
+    (setq subtree-end (save-excursion (org-end-of-subtree t)))
+    (if (not (or (re-search-forward "SOMEDAY.*" end t)
+                 (and (re-search-forward ":p_.*" subtree-end t)
+                      (= (org-current-level) 2))))
+        nil
+      subtree-end)))
+
+;; I want to skip processing nested entries
+;; when current heading is WAITING or SOMEDAY
+;; also skip all projects converted to W or S
+(defun my-skip-inside-waits ()
+  (let (subtree-end beg end)
+        (setq beg (point)
+              end (progn (outline-next-heading) (1- (point))))
+        (goto-char beg)
+        (setq alltags (prin1-to-string (org-get-tags-at)))
+        (goto-char beg)
+        (setq subtree-end (save-excursion (org-end-of-subtree t)))
+        (if (not (or (re-search-forward "WAITING.*" end t)
+                     (re-search-forward "SOMEDAY.*" end t)
+                     (and (string-match "p_.*" alltags)
+                          (= (org-current-level) 2))))
+            nil
+          subtree-end)))
+
+;; don't show waiting inside projects that are someday/waiting
+;; also skip all projects converted to W or S
+(defun my-skip-nested-waits ()
+  (let (subtree-end beg end)
+        (setq beg (point)
+              end (progn (outline-next-heading) (1- (point))))
+        (goto-char beg)
+        (setq alltags (prin1-to-string (org-get-tags-at)))
+        (goto-char beg)
+        (setq subtree-end (save-excursion (org-end-of-subtree t)))
+        (if (not (or (re-search-forward "WAITING.*" end t)
+                     (re-search-forward "SOMEDAY.*" end t)
+                     ;; ignore projects
+                     (and (string-match "p_.*" alltags)
+                          (= (org-current-level) 2))))
+            nil
+          subtree-end)))
+
+
 #+END_SRC
 
 ** capture templates
