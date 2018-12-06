@@ -1461,9 +1461,11 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 ;;  :diminish dired+-mode)
 
 ;; some editing extras
-;; disabled Saturday, May 19, 2018
-;; (require 'expand-region)
-;; (global-set-key (kbd "C-=") 'er/expand-region)
+(use-package expand-region
+  :ensure t
+  :diminish expand-region-mode
+  :bind(("C-=" . er/expand-region)))
+        
 ;; (setq whole-line-or-region t)
 
 (eval-after-load "fundamental-mode" '(diminish 'fundamental-mode))
