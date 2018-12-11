@@ -383,8 +383,8 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-enforce-todo-checkbox-dependencies t)
 
 (setq org-todo-keywords
-           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w!)" "|" "DONE(d!)")
-             (sequence "SOMEDAY(s)" "|" "CANCELLED(c@!)")
+           '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w)" "|" "DONE(d!)")
+             (sequence "SOMEDAY(s)" "|" "CANCELLED(c)")
              (type "AOR(a)" "|" "DONE")))
 
 (setq org-tag-alist '((:startgroup . nil)
