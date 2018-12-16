@@ -1439,6 +1439,8 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
 
+(setq counsel-git-cmd "rg --files")
+
 (global-set-key [(control x) (control c)]
                 (function
                  (lambda () (interactive)
