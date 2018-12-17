@@ -401,11 +401,13 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
       '(("c" "Chooser"
          (
           (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Tasks:")))
           (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))))
         ("o" "Overview"
@@ -413,34 +415,43 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
           (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Current Tasks:")))
           (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
-                     ((org-agenda-overriding-header "Active Projects:")))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
           (tags-todo "-research&-home&-tools/!WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-overriding-header "Projects (Waiting):")))
           (agenda "")
           (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))
           (tags-todo "home/!TODO|NEXT|WAITING"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Home Stuff:")))))
         ("p" "Project View"
           (
           (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
-                     ((org-agenda-overriding-header "Active Projects:")))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
-                     ((org-agenda-overriding-header "Waiting Projects:")))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Waiting Projects:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Someday Projects:")))
           (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Tasks:")))))))
 
@@ -662,7 +673,6 @@ This screws me up enough to merit its own section.
 (provide 'setup-spell)
 #+END_SRC
 * themes
-
 The way I am using themes is by defining the value of =my:theme=. Once I do that and restart emacs, everything magically works.
 
 #+BEGIN_SRC emacs-lisp
@@ -676,6 +686,7 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
+;; (defvar my:theme 'github-modern)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
 ;; (defvar my:theme 'sanityinc-tomorrow-night)
 (defvar my:theme 'autumn-light)

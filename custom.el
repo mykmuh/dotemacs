@@ -33,7 +33,7 @@
  '(highlight-indent-guides-auto-enabled nil t)
  '(magit-diff-use-overlays nil)
  '(markdown-asymmetric-header t)
- '(markdown-command "/usr/local/bin/markdown")
+ '(markdown-command "/usr/local/bin/markdown" t)
  '(markdown-live-preview-delete-export (quote delete-on-export))
  '(nrepl-message-colors
    (quote
