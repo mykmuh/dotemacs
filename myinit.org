@@ -212,6 +212,8 @@ I'm finally hopping aboard the train. I read that there's bugs, but I'll give it
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 
+;; trying out cycling
+(setq org-cycle-include-plain-lists 'integrate)
 ;; could not get this to run new mac
 ;;(require 'ox-confluence)
 
@@ -426,7 +428,8 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
           (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
-                     ((org-agenda-overriding-header "Projects (Waiting):")))
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Projects (Waiting):")))
           (agenda "")
           (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
@@ -1393,10 +1396,42 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 ;; editing                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; adding back dired+
+;; first, get quelpa
+;; (use-package quelpa-use-package
+;;   :init (setq quelpa-update-melpa-p nil))
+
+;; (use-package dired+
+;;   :quelpa (dired+ :fetcher url :url "https://www.emacswiki.org/emacs/download/dired+.el")
+;;   :defer 1
+;;   :init
+;;   (setq diredp-hide-details-initially-flag nil)
+;;   (setq diredp-hide-details-propagate-flag nil)
+
+;;   :config
+;;   (diredp-toggle-find-file-reuse-dir 1))
+
+(use-package dired-subtree
+  :config
+  (bind-keys :map dired-mode-map
+             ("i" . dired-subtree-insert)
+             (";" . dired-subtree-remove))
+  :init
+  (setq dired-subtree-use-backgrounds nil))
+
 (use-package dired-filter
   :ensure t)
 
 (define-key dired-mode-map (kbd "/") dired-filter-map)
+
+(use-package dired-narrow
+  :ensure t
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow)))
+
+(use-package dired-collapse
+  :ensure t
+  :hook dired-mode)
 
 ;; rename function from Steve Yegge
 (defun rename-this-buffer-and-file ()
