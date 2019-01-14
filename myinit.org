@@ -88,6 +88,9 @@ Tricksy.
   :bind (:map dired-mode-map
               ("P" . peep-dired)))
 
+;; dired copy to other shown dired buffer
+(setq dired-dwim-target t)
+
 ;; got to kill it
 (global-set-key (kbd "C-<f5>") 'save-buffers-kill-emacs)
 #+END_SRC
@@ -105,7 +108,6 @@ I'm trying to make better use of the mark ring to navigate. Here's some steps to
 #+END_SRC
 
 ** visual
-
 Just some tweaks here.
 
 #+BEGIN_SRC emacs-lisp
@@ -117,9 +119,8 @@ Just some tweaks here.
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
 
-;; show full path in title bar
 (setq frame-title-format
-      (list (format "%s| %%S|: %%j " (system-name))
+      (list (format "%s %%S: %%j " (system-name))
             '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
 (blink-cursor-mode 1)
@@ -200,7 +201,9 @@ I'm finally hopping aboard the train. I read that there's bugs, but I'll give it
 #+END_SRC
 * org
 ** base org
+One new change I've added is that I absolutely *detest* how org repositions the page whenever you cycle visibility. I'm not sure whether this is something that I've added myself or if it's something that has always occurred and I'm just now noticing it. I'm trying to turn this off now.
 
+Ok, fixed now. See the "kill tab optimize" below.
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 
@@ -211,6 +214,10 @@ I'm finally hopping aboard the train. I read that there's bugs, but I'll give it
 
 (add-hook 'org-capture-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
+
+;; kill tab optimize
+(remove-hook 'org-cycle-hook
+             #'org-optimize-window-after-visibility-change)
 
 ;; trying out cycling
 (setq org-cycle-include-plain-lists 'integrate)
