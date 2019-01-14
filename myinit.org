@@ -219,6 +219,9 @@ Ok, fixed now. See the "kill tab optimize" below.
 (remove-hook 'org-cycle-hook
              #'org-optimize-window-after-visibility-change)
 
+;; make expand work after ellipsis
+(setq org-special-ctrl-a/e t)
+
 ;; trying out cycling
 (setq org-cycle-include-plain-lists 'integrate)
 ;; could not get this to run new mac
