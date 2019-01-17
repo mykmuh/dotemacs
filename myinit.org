@@ -1,10 +1,7 @@
 #+STARTUP: overview
 * note
-
 Since I always forget this, to bisect the emacs file for errors, add this:
-
   : (error "Done")
-
 * initial set up
 ** packages
 
@@ -129,6 +126,9 @@ Just some tweaks here.
 	     '(font . "Monaco"))
 
 (set-face-attribute 'default nil :font "Monaco" :height 140)
+
+;; for presenting in meetings
+;;(set-face-attribute 'default nil :font "Monaco" :height 200)
 
 (show-paren-mode 1)
 
