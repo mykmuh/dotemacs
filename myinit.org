@@ -33,9 +33,11 @@ Since I always forget this, to bisect the emacs file for errors, add this:
   (exec-path-from-shell-initialize))
 
 ;; keys
-(setq mac-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq sentence-end-double-space nil)
+(if (equal system-type 'darwin)
+    (progn
+      (setq mac-command-modifier 'super)
+      (setq mac-option-modifier 'meta)
+      (setq sentence-end-double-space nil)))
 
 #+END_SRC
 
@@ -126,6 +128,9 @@ Just some tweaks here.
 	     '(font . "Monaco"))
 
 (set-face-attribute 'default nil :font "Monaco" :height 140)
+
+;; make increasing size of text less carpal-tunnelish
+(global-set-key (kbd "C-x C-=") 'text-scale-adjust)
 
 ;; for presenting in meetings
 ;;(set-face-attribute 'default nil :font "Monaco" :height 200)
@@ -220,10 +225,10 @@ Ok, fixed now. See the "kill tab optimize" below.
              #'org-optimize-window-after-visibility-change)
 
 ;; make expand work after ellipsis
-(setq org-special-ctrl-a/e t)
+;;(setq org-special-ctrl-a/e t)
 
 ;; trying out cycling
-(setq org-cycle-include-plain-lists 'integrate)
+(setq org-cycle-include-plain-lists t)
 ;; could not get this to run new mac
 ;;(require 'ox-confluence)
 
