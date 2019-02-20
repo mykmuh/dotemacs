@@ -634,6 +634,14 @@ This from John Kitchin. Works well, when I remember to use it.
 #+END_SRC
 
 ** clocking
+
+First, I need to make the clocking persist across reboots and restarts:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+#+END_SRC
+
 I'm trying to return to this again. Let's see how long things last!
 
 Most of this is lifted directly from http://doc.norang.ca/org-mode.html
