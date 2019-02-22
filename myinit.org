@@ -1480,27 +1480,27 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 3. see about the other fixes outlined on reddit
 
 #+BEGIN_SRC emacs-lisp
-(diminish 'yas--direct-terraform-mode)
-(use-package company
-  :diminish company-mode
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3))
+# (diminish 'yas--direct-terraform-mode)
+# (use-package company
+#   :diminish company-mode
+#   :config
+#   (setq company-idle-delay 0)
+#   (setq company-minimum-prefix-length 3))
 
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+# (require 'company)
+# (add-hook 'after-init-hook 'global-company-mode)
 
-(with-eval-after-load 'company
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-  (define-key company-active-map (kbd "SPC") nil)
-  (define-key company-active-map (kbd "S-SPC") 'company-abort))
+# (with-eval-after-load 'company
+#   (define-key company-active-map (kbd "M-p") nil)
+#   (define-key company-active-map (kbd "M-n") nil)
+#   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+#   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+#   (define-key company-active-map (kbd "SPC") nil)
+#   (define-key company-active-map (kbd "S-SPC") 'company-abort))
 
-(require 'company-terraform)
-(company-terraform-init)
-#+END_SRC
+# (require 'company-terraform)
+# (company-terraform-init)
+# #+END_SRC
 
 * yasnippet
 #+BEGIN_SRC emacs-lisp
