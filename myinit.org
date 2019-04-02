@@ -1046,6 +1046,7 @@ Adding ag
          ("markdown" (name . ".*\\.md"))
          ("yaml" (or
                   (name . ".*\\.yml")
+                  (name . ".*\\.j2")
                   (name . ".*\\.yaml")))
          ("tramp" (or
                    (name . "^\\*tramp.*")
@@ -1068,9 +1069,6 @@ Adding ag
                    (name . "^\\*Help\\*$")
                    (name . ".*\\.el$")))
          ("web" (or (mode . web-mode) (mode . js2-mode)))
-         ("chef" (or
-                  (name . ".*\\.erb")
-                  (name . ".*\\.yml")))
          ("dired" (mode . dired-mode))
          )))
 
@@ -1150,7 +1148,6 @@ Adding ag
 #+END_SRC
 
 * indentation settings
-
 #+BEGIN_SRC emacs-lisp
 (require 'indent-tools)
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
