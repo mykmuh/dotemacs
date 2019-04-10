@@ -556,8 +556,8 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
-	("i" "inbox - Home" entry
-	 (file+headline "~/Documents/org/personal/todo.org" "INBOX")
+	("i" "inbox - Home"
+         entry (file+headline "~/Documents/org/personal/todo.org" "INBOX")
 	 "* TODO %?")
 	("f" "Fiction Entry"
 	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
@@ -566,7 +566,17 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 )
 	("e" "Emacs"
 	 entry (file "~/Documents/org/work/notes/emacs.org")
-	 "* %?\n%i\n\n")
+	 "* %?\n%i\n\n"
+         :empty-lines 1
+         )
+	("t" "Topic"
+	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
+	 "** %?"
+         )
+	("T" "Topic with copy"
+	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
+	 "** %?\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
+         )
 	("x" "Linux Entry"
 	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
 	 "* %?\n%i\n\n")
