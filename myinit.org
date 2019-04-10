@@ -368,8 +368,6 @@ These are specific for to do list work with org. I think I'm switching back.
 
 This first bit needs special discussion because I keep forgetting to use it. This archives off all done tasks in the subtree, even nested, and without that stupid prompt. This needs to be mapped to a key!
 
-
-
 #+BEGIN_SRC emacs-lisp
 ;; show tasks archived off into separate file in the agenda log
 (setq org-agenda-archives-mode t)
@@ -404,11 +402,11 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w)" "|" "DONE(d!)")
              (sequence "SOMEDAY(s)" "|" "CANCELLED(c)")))
 
-(setq org-tag-alist '((:startgroup . nil)
-                      ("@monitoring" . ?m) ("@general" . ?g) ("@chef" . ?c) ("@sysops" . ?s)
-                      (:endgroup . nil)
+(setq org-tag-alist '(("admin" . ?a)("devops" . ?d)("maint" . ?m)("support" . ?s)
                       (:newline . nil)
-                      ("tools" . ?T) ("cloudConnector" . ?C) ("deviceDB" . ?D) 
+                      ("monitor" . ?M)("out" . ?o)("train" . ?t)
+                      (:newline . nil)
+                      ("camp" . ?c)("@dconnect" . ?D)
 ))
 
 ;; archive cancelled tasks
