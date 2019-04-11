@@ -402,7 +402,9 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w)" "|" "DONE(d!)")
              (sequence "SOMEDAY(s)" "|" "CANCELLED(c)")))
 
-(setq org-tag-alist '(("admin" . ?a)("devops" . ?d)("maint" . ?m)("support" . ?s)
+(setq org-tag-alist '(("maint" . ?m)("support" . ?s)
+                      (:newline . nil)
+                      ("admin" . ?a)("devops" . ?d)
                       (:newline . nil)
                       ("monitor" . ?M)("out" . ?o)("train" . ?t)
                       (:newline . nil)
