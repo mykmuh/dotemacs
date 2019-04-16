@@ -417,57 +417,64 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-agenda-custom-commands
       '(("c" "Chooser"
          (
-          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Tasks:")))
-          (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))))
         ("o" "Overview"
          (
-          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-home&-tools&-learning/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Current Tasks:")))
-          (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
+          (tags-todo "-home&-tools&-learning&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
           (agenda "" ((org-agenda-span 1)))
-          (tags-todo "-research&-home&-tools/!WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools/!WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-research&-home&-tools/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Task Pool:")))
+                      (org-agenda-overriding-header "Task Pool:")))))
+        ("h" "Home"
+         (
+          (tags-todo "learning/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Learning:")))
           (tags-todo "home/!TODO|NEXT|WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Home Stuff:")))))
         ("p" "Project View"
           (
-          (tags-todo "-research&-home&-tools&LEVEL=2/PROJ"
+          (tags-todo "-learning&-home&-tools&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Waiting Projects:")))
-          (tags-todo "-research&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
+          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Someday Projects:")))
-          (tags-todo "-research&-home&-tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
