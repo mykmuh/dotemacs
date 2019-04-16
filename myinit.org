@@ -409,6 +409,8 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       ("monitor" . ?M)("out" . ?o)("train" . ?t)
                       (:newline . nil)
                       ("camp" . ?c)("@dconnect" . ?D)
+                      (:newline . nil)
+                      ("home" . ?H)("learning" . ?L)("tools" . ?T)
 ))
 
 ;; archive cancelled tasks
@@ -453,20 +455,31 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-overriding-header "Task Pool:")))))
         ("h" "Home"
          (
-          (tags-todo "tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "home|learning|tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Tools:")))
-          (tags-todo "learning/!NEXT|WAITING|SOMEDAY"
+                      (org-agenda-overriding-header "Current:")))
+          (tags-todo "learning/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Learning:")))
-          (tags-todo "home/!TODO|NEXT|WAITING"
+          (tags-todo "tools/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Tools:")))
+          (tags-todo "home/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Home:")))
+          (tags-todo "home|learning|tools/!WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Home Stuff:")))))
+                      (org-agenda-skip-function 'my-skip-waiting-projects)
+                      (org-agenda-overriding-header "Waiting Tasks:")))))
         ("p" "Project View"
           (
           (tags-todo "-learning&-home&-tools&LEVEL=2/PROJ"
@@ -474,7 +487,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-overriding-header "Active Projects:")))
           (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Waiting Projects:")))
+                      (org-agenda-overriding-header "Waiting Projects:")))b
           (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
