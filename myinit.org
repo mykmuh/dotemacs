@@ -571,11 +571,11 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 "* %?\n%i\n\n"
          :empty-lines 1
          )
-	("t" "Topic"
+	("r" "Research"
 	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
 	 "** %?"
          )
-	("T" "Topic with copy"
+	("R" "Research with copy"
 	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
 	 "** %?\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
          )
@@ -589,7 +589,7 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1)
-	(" " "Todo" entry
+	("t" "Todo" entry
 	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
 	 "* TODO %?")
         ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
