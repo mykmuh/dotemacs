@@ -453,6 +453,11 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-overriding-header "Task Pool:")))))
         ("h" "Home"
          (
+          (tags-todo "tools/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Tools:")))
           (tags-todo "learning/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
