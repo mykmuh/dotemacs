@@ -429,7 +429,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))))
-        ("o" "Overview"
+        ("w" "Work"
          (
           (tags-todo "-home&-tools&-learning/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
