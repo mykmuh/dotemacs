@@ -402,7 +402,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
            '((sequence "NEXT(n)" "TODO(t)" "PROJ(p)" "WAITING(w)" "|" "DONE(d!)")
              (sequence "SOMEDAY(s)" "|" "CANCELLED(c)")))
 
-(setq org-tag-alist '(("maint" . ?m)("support" . ?s)
+(setq org-tag-alist '(("maint (low)" . ?m)("support (high)" . ?s)
                       (:newline . nil)
                       ("admin" . ?a)("devops" . ?d)
                       (:newline . nil)
@@ -448,7 +448,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
           (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-admin&-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
