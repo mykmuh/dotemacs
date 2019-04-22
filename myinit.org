@@ -460,6 +460,9 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Current:")))
+          (tags-todo "home|learning|tools&LEVEL=2/PROJ"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
           (tags-todo "learning/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
