@@ -29,4 +29,5 @@ el-get/
 myinit.el
 /.mc-lists.el
 /quelpa
-/init.el
+init.el
+/org-clock-save.el
