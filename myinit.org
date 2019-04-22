@@ -253,6 +253,21 @@ Ok, fixed now. See the "kill tab optimize" below.
  org-refile-targets  '((nil :maxlevel . 1) (org-agenda-files :maxlevel . 1))
  )
 
+
+;; add my own refile target
+(defun mkm/org-refile-in-file (&optional prefix)
+  "Refile to a target with the current file."
+  (interactive)
+  (let ((org-refile-targets `(("work.org" :regexp . ".*p_.*$")("work.org" :todo . "PROJ")("work.org" :regexp . "* AOR.*$"))))
+    (call-interactively 'org-refile)))
+
+;; now, remap some shit
+(add-to-list 'org-speed-commands-user '("w" call-interactively 'mkm/org-refile-in-file))
+(add-to-list 'org-speed-commands-user '("W" call-interactively 'org-refile))
+(add-to-list 'org-speed-commands-user '(("S" . (widen))))
+
+        
+
 ;; fix priorities so non-assigned are after the rest
 (setq org-lowest-priority ?E)
 (setq org-default-priority ?E)
@@ -269,9 +284,6 @@ Ok, fixed now. See the "kill tab optimize" below.
       org-goto-max-level 10)
 (setq org-startup-folded t)
 (setq org-startup-indented nil)
-
-(setq org-speed-commands-user
-          '(("S" . (widen))))
 
 ;; I *hate* this key combo!
 (define-key org-mode-map (kbd "C-,") nil)
