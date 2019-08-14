@@ -1387,6 +1387,14 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 #+END_SRC
 
 * misc language settings
+** language servers
+I'm going to try and get the LSP server protocol to work. First, for Python.
+
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :config
+  (add-hook 'python-mode-hook #'lsp))
+#+END_SRC
 ** yaml
 
 #+BEGIN_SRC emacs-lisp
