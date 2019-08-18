@@ -1392,8 +1392,54 @@ I'm going to try and get the LSP server protocol to work. First, for Python.
 
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
+  :ensure t
+
   :config
-  (add-hook 'python-mode-hook #'lsp))
+  (require 'lsp-ui-imenu)
+  (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection "pyls")
+    :major-modes '(python-mode)
+    :server-id 'pyls))
+
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+  (use-package company-lsp
+    :config
+    (push 'company-lsp company-backends))
+
+  (defun lsp-set-cfg ()
+    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+      ;; TODO: check lsp--cur-workspace here to decide per server / project
+      (lsp--set-configuration lsp-cfg)))
+
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+
+(setq
+ lsp-pyls-plugins-pyflakes-enabled nil
+ lsp-pyls-plugins-pylint-enabled nil
+ lsp-pyls-plugins-pycodestyle-enabled nil
+ flycheck-checker 'python-flake8)
+
+(add-hook 'python-mode-hook #'flycheck-mode)
+(setq flycheck-python-flake8-executable "/usr/local/bin/flake8")
+
+(add-to-list 'flycheck-disabled-checkers 'python-pylint)
+(add-hook 'python-mode-hook
+          (lambda () (flycheck-select-checker 'python-flake8)))
+
+;;(use-package company-jedi
+;;  :ensure t)
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (company-mode 1)))
+
 #+END_SRC
 ** yaml
 
@@ -1430,6 +1476,11 @@ I'm going to try and get the LSP server protocol to work. First, for Python.
 ** python
 
 #+BEGIN_SRC emacs-lisp
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:setup-keys t)
+;; (setq jedi:complete-on-dot t)
+
+
 ;; mkm Sunday, August 12, 2018
 ;; this should be resolved in my current emacs
 ;; remove if this is true
@@ -1538,14 +1589,15 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 
 #+BEGIN_SRC emacs-lisp
 # (diminish 'yas--direct-terraform-mode)
-# (use-package company
-#   :diminish company-mode
-#   :config
-#   (setq company-idle-delay 0)
-#   (setq company-minimum-prefix-length 3))
+(use-package company
+  :diminish company-mode
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3)
+  (global-set-key (kbd "C-<tab>") 'company-complete))
 
-# (require 'company)
-# (add-hook 'after-init-hook 'global-company-mode)
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
 
 # (with-eval-after-load 'company
 #   (define-key company-active-map (kbd "M-p") nil)
