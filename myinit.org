@@ -607,7 +607,7 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 :empty-lines 1
 	 )
 	("e" "Emacs"
-	 entry (file "~/Documents/org/work/notes/emacs.org")
+	 entry (file "~/Documents/org/work/emacs.org")
 	 "* %?\n%i\n\n"
          :empty-lines 1
          )
@@ -1390,55 +1390,58 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 ** language servers
 I'm going to try and get the LSP server protocol to work. First, for Python.
 
+MKM: Sunday, August 18, 2019
+I've decided to try elpy first and then try lsp later, if needed.
+
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-mode
-  :ensure t
+;; (use-package lsp-mode
+;;   :ensure t
 
-  :config
-  (require 'lsp-ui-imenu)
-  (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection "pyls")
-    :major-modes '(python-mode)
-    :server-id 'pyls))
+;;   :config
+;;   (require 'lsp-ui-imenu)
+;;   (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
+;;   (lsp-register-client
+;;    (make-lsp-client
+;;     :new-connection (lsp-stdio-connection "pyls")
+;;     :major-modes '(python-mode)
+;;     :server-id 'pyls))
 
-  (use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+;;   (use-package lsp-ui
+;;     :ensure t
+;;     :config
+;;     (setq lsp-ui-sideline-ignore-duplicate t)
+;;     (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-  (use-package company-lsp
-    :config
-    (push 'company-lsp company-backends))
+;;   (use-package company-lsp
+;;     :config
+;;     (push 'company-lsp company-backends))
 
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
+;;   (defun lsp-set-cfg ()
+;;     (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+;;       ;; TODO: check lsp--cur-workspace here to decide per server / project
+;;       (lsp--set-configuration lsp-cfg)))
 
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
 
-(setq
- lsp-pyls-plugins-pyflakes-enabled nil
- lsp-pyls-plugins-pylint-enabled nil
- lsp-pyls-plugins-pycodestyle-enabled nil
- flycheck-checker 'python-flake8)
+;; (setq
+;;  lsp-pyls-plugins-pyflakes-enabled nil
+;;  lsp-pyls-plugins-pylint-enabled nil
+;;  lsp-pyls-plugins-pycodestyle-enabled nil
+;;  flycheck-checker 'python-flake8)
 
-(add-hook 'python-mode-hook #'flycheck-mode)
+;; (add-hook 'python-mode-hook #'flycheck-mode)
 (setq flycheck-python-flake8-executable "/usr/local/bin/flake8")
 
-(add-to-list 'flycheck-disabled-checkers 'python-pylint)
-(add-hook 'python-mode-hook
-          (lambda () (flycheck-select-checker 'python-flake8)))
+;; (add-to-list 'flycheck-disabled-checkers 'python-pylint)
+;; (add-hook 'python-mode-hook
+;;           (lambda () (flycheck-select-checker 'python-flake8)))
 
 ;;(use-package company-jedi
 ;;  :ensure t)
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (company-mode 1)))
+;; (add-hook 'python-mode-hook
+;;           (lambda ()
+;;             (company-mode 1)))
 
 #+END_SRC
 ** yaml
@@ -1474,8 +1477,21 @@ I'm going to try and get the LSP server protocol to work. First, for Python.
 #+END_SRC
 
 ** python
+As noted in the lsp section, I'm giving elpy a shot.
+
 
 #+BEGIN_SRC emacs-lisp
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+
+(when (load "flycheck" t t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (define-key elpy-mode-map (kbd "C-c C-p") 'flycheck-previous-error)
+  (define-key elpy-mode-map (kbd "C-c C-n") 'flycheck-next-error)
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
 ;; (add-hook 'python-mode-hook 'jedi:setup)
 ;; (setq jedi:setup-keys t)
 ;; (setq jedi:complete-on-dot t)
@@ -1589,15 +1605,15 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 
 #+BEGIN_SRC emacs-lisp
 # (diminish 'yas--direct-terraform-mode)
-(use-package company
-  :diminish company-mode
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  (global-set-key (kbd "C-<tab>") 'company-complete))
+# (use-package company
+#   :diminish company-mode
+#   :config
+#   (setq company-idle-delay 0)
+#   (setq company-minimum-prefix-length 3)
+#   (global-set-key (kbd "C-<tab>") 'company-complete))
 
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+# (require 'company)
+# (add-hook 'after-init-hook 'global-company-mode)
 
 # (with-eval-after-load 'company
 #   (define-key company-active-map (kbd "M-p") nil)
