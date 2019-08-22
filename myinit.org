@@ -138,8 +138,8 @@ Just some tweaks here.
 
 (show-paren-mode 1)
 
-(require 'delight)
-(delight 'terraform-mode "TF")
+;; (require 'delight)
+;; (delight 'terraform-mode "TF")
 
 ;; no need for tabs
 (setq-default indent-tabs-mode nil)
@@ -869,10 +869,12 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'sanityinc-solarized-light)
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
-;; (defvar my:theme 'github-modern)
+;;(defvar my:theme 'github-modern)
+(defvar my:theme 'adwaita)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
 ;; (defvar my:theme 'sanityinc-tomorrow-night)
-(defvar my:theme 'autumn-light)
+;; mkm Wednesday, August 21, 2019
+;; (defvar my:theme 'autumn-light)  
 ;; (defvar my:theme 'zenburn)
 ;; (defvar my:theme 'spacemacs-light)
 ;; (defvar my:theme 'zenburn)
@@ -1393,55 +1395,47 @@ I'm going to try and get the LSP server protocol to work. First, for Python.
 MKM: Sunday, August 18, 2019
 I've decided to try elpy first and then try lsp later, if needed.
 
+MKM: Tuesday, August 20, 2019
+Now going back to trying lsp
+
 #+BEGIN_SRC emacs-lisp
+;; works!
 ;; (use-package lsp-mode
-;;   :ensure t
-
+;;   :ensure
 ;;   :config
-;;   (require 'lsp-ui-imenu)
-;;   (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
-;;   (lsp-register-client
-;;    (make-lsp-client
-;;     :new-connection (lsp-stdio-connection "pyls")
-;;     :major-modes '(python-mode)
-;;     :server-id 'pyls))
+;;   (add-hook 'python-mode-hook #'lsp))
 
-;;   (use-package lsp-ui
-;;     :ensure t
-;;     :config
-;;     (setq lsp-ui-sideline-ignore-duplicate t)
-;;     (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+;; fucking works!!!
+(use-package lsp-python-ms
+  :ensure t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-python-ms)
+                         (lsp))))
+(use-package flycheck)
 
-;;   (use-package company-lsp
-;;     :config
-;;     (push 'company-lsp company-backends))
+(use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (setq lsp-ui-doc-enable t)
+    (setq lsp-ui-doc-use-childframe t)
+    (setq lsp-ui-doc-use-webkit t)
+    (setq lsp-ui-doc-background "#2e49b8")
+    (setq lsp-ui-flycheck-enable t)
+    (set-face-attribute 'lsp-ui-doc-background  nil :background "#f9f2d9")
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    (add-hook 'python-mode-hook 'flycheck-mode))
 
-;;   (defun lsp-set-cfg ()
-;;     (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-;;       ;; TODO: check lsp--cur-workspace here to decide per server / project
-;;       (lsp--set-configuration lsp-cfg)))
+(require 'lsp-ui-imenu)
+  (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
 
-;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
 
-;; (setq
-;;  lsp-pyls-plugins-pyflakes-enabled nil
-;;  lsp-pyls-plugins-pylint-enabled nil
-;;  lsp-pyls-plugins-pycodestyle-enabled nil
-;;  flycheck-checker 'python-flake8)
-
-;; (add-hook 'python-mode-hook #'flycheck-mode)
-(setq flycheck-python-flake8-executable "/usr/local/bin/flake8")
-
-;; (add-to-list 'flycheck-disabled-checkers 'python-pylint)
-;; (add-hook 'python-mode-hook
-;;           (lambda () (flycheck-select-checker 'python-flake8)))
-
-;;(use-package company-jedi
-;;  :ensure t)
-
-;; (add-hook 'python-mode-hook
-;;           (lambda ()
-;;             (company-mode 1)))
+(use-package company-lsp
+  :ensure t
+  :config
+  (push 'company-lsp company-backends))
 
 #+END_SRC
 ** yaml
@@ -1481,16 +1475,16 @@ As noted in the lsp section, I'm giving elpy a shot.
 
 
 #+BEGIN_SRC emacs-lisp
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
+;; (use-package elpy
+;;   :ensure t
+;;   :init
+;;   (elpy-enable))
 
-(when (load "flycheck" t t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (define-key elpy-mode-map (kbd "C-c C-p") 'flycheck-previous-error)
-  (define-key elpy-mode-map (kbd "C-c C-n") 'flycheck-next-error)
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+;; (when (load "flycheck" t t)
+;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+;;   (define-key elpy-mode-map (kbd "C-c C-p") 'flycheck-previous-error)
+;;   (define-key elpy-mode-map (kbd "C-c C-n") 'flycheck-next-error)
+;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
 ;; (add-hook 'python-mode-hook 'jedi:setup)
 ;; (setq jedi:setup-keys t)
