@@ -1398,45 +1398,10 @@ I've decided to try elpy first and then try lsp later, if needed.
 MKM: Tuesday, August 20, 2019
 Now going back to trying lsp
 
+MKM: Thursday, August 22, 2019
+Went back to elpy for a while.
+
 #+BEGIN_SRC emacs-lisp
-;; works!
-;; (use-package lsp-mode
-;;   :ensure
-;;   :config
-;;   (add-hook 'python-mode-hook #'lsp))
-
-;; fucking works!!!
-(use-package lsp-python-ms
-  :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp))))
-(use-package flycheck)
-
-(use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (setq lsp-ui-doc-enable t)
-    (setq lsp-ui-doc-use-childframe t)
-    (setq lsp-ui-doc-use-webkit t)
-    (setq lsp-ui-doc-background "#2e49b8")
-    (setq lsp-ui-flycheck-enable t)
-    (set-face-attribute 'lsp-ui-doc-background  nil :background "#f9f2d9")
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    (add-hook 'python-mode-hook 'flycheck-mode))
-
-(require 'lsp-ui-imenu)
-  (add-hook 'lsp-after-open-hook 'lsp-enable-ui-imenu)
-
-(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-
-(use-package company-lsp
-  :ensure t
-  :config
-  (push 'company-lsp company-backends))
-
 #+END_SRC
 ** yaml
 
