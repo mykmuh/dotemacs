@@ -1438,13 +1438,15 @@ Went back to elpy for a while.
 ** python
 As noted in the lsp section, I'm giving elpy a shot.
 
-
 #+BEGIN_SRC emacs-lisp
-;; (use-package elpy
-;;   :ensure t
-;;   :init
-;;   (elpy-enable))
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  :config
+  (setq elpy-syntax-check-command "/usr/local/bin/flake8"))
 
+ 
 ;; (when (load "flycheck" t t)
 ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
 ;;   (define-key elpy-mode-map (kbd "C-c C-p") 'flycheck-previous-error)
