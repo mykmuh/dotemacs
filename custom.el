@@ -25,9 +25,12 @@
         (idx 0))
       (not
        (regexp . "^_.*"))))))
+ '(elpy-modules
+   (quote
+    (elpy-module-company elpy-module-eldoc elpy-module-flymake elpy-module-pyvenv elpy-module-yasnippet elpy-module-django elpy-module-sane-defaults)))
  '(magit-diff-use-overlays nil)
  '(markdown-asymmetric-header t)
- '(markdown-command "/usr/local/bin/markdown")
+ '(markdown-command "/usr/local/bin/markdown" t)
  '(markdown-live-preview-delete-export (quote delete-on-export))
  '(nrepl-message-colors
    (quote

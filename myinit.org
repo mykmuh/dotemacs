@@ -870,7 +870,9 @@ The way I am using themes is by defining the value of =my:theme=. Once I do that
 ;; (defvar my:theme 'sanityinc-tomorrow-day)
 ;; (defvar my:theme 'github)
 ;;(defvar my:theme 'github-modern)
-(defvar my:theme 'adwaita)
+;; (defvar my:theme 'adwaita)
+;; (defvar my:theme 'tsdh-light)
+(defvar my:theme 'whiteboard)
 ;; (defvar my:theme 'sanityinc-tomorrow-eighties)
 ;; (defvar my:theme 'sanityinc-tomorrow-night)
 ;; mkm Wednesday, August 21, 2019
@@ -909,6 +911,8 @@ Some lights:
   - awful git diff
 - soft-stone t)
 - tao-yang: not enough contrast
+- tsdh-light: haven't documented this one before (Thursday, September 5, 2019). Looks good so far. Nope. Did not like the level 4 headings in org.
+- whiteboard: emacs-included. Looks good.
 - twilight-bright t)
 
 **** github-modern mods
@@ -1446,6 +1450,10 @@ As noted in the lsp section, I'm giving elpy a shot.
   :config
   (setq elpy-syntax-check-command "/usr/local/bin/flake8"))
 
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 4)))
  
 ;; (when (load "flycheck" t t)
 ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
