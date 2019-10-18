@@ -71,7 +71,7 @@ I am trying to steer away from =require=, but I think that this package doesn't 
 (require 'org-mouse)
 #+END_SRC
 
-=fset= changes the function that the symbol points to. Essentially, whenever a package writer tries to call =yes-or-no-p=, Emacs will swap in the =y-or-n-p= function.
+=fset= (function set, duh) changes the function that the symbol points to. Essentially, whenever a package writer tries to call =yes-or-no-p=, Emacs will swap in the =y-or-n-p= function.
 
 Tricksy.
 
@@ -429,7 +429,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("c" "Chooser"
+      '(("C" "Chooser"
          (
           (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
@@ -443,24 +443,24 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-overriding-header "Task Pool:")))))
         ("w" "Work"
          (
-          (tags-todo "-home&-tools&-learning/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-home&-tools&-learning&-eros&-fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Current Tasks:")))
-          (tags-todo "-home&-tools&-learning&LEVEL=2/PROJ"
+          (tags-todo "-home&-tools&-learning&-eros&-fict&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
           (agenda "" ((org-agenda-span 1)))
-          (tags-todo "-learning&-home&-tools/!WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-eros&-fict/!WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-admin&-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-admin&-learning&-home&-tools&-eros&-fict/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
@@ -495,19 +495,94 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))))
-        ("p" "Project View"
-          (
-          (tags-todo "-learning&-home&-tools&LEVEL=2/PROJ"
+        ("e" "Eros"
+         (
+          (tags-todo "eros/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Current:")))
+          (tags-todo "eros&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "eros&tools/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Tools:")))
+          (tags-todo "eros/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Eros Tasks:")))
+          (tags-todo "eros/!WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-waiting-projects)
+                      (org-agenda-overriding-header "Waiting Tasks:")))))
+        ("e" "Fiction"
+         (
+          (tags-todo "fict/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Current:")))
+          (tags-todo "fict&LEVEL=2/PROJ"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
+          (tags-todo "fict&tools/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Fiction Tools:")))
+          (tags-todo "fict/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Fiction Tasks:")))
+          (tags-todo "fict/!WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-waiting-projects)
+                      (org-agenda-overriding-header "Waiting Tasks:")))))
+        ("c" "Combo"
+         (
+          (tags-todo "eros|fict/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Combo Current:")))
+          (tags-todo "eros|fict&LEVEL=2/PROJ"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
+          (tags-todo "eros|fict&tools/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Combo Tools:")))
+          (tags-todo "eros|fict/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-overriding-header "Combo Tasks:")))
+          (tags-todo "eros|fict/!WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-waiting-projects)
+                      (org-agenda-overriding-header "Waiting Tasks:")))))
+        ("p" "Project View"
+          (
+          (tags-todo "-learning&-home&-tools&-eros&-fict&LEVEL=2/PROJ"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-overriding-header "Active Projects:")))
+          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Waiting Projects:")))
-          (tags-todo "-learning&-home&-tools&+{^p_.*}&LEVEL=2/SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Someday Projects:")))
-          (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-eros&-fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
@@ -606,7 +681,10 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
-	("e" "Emacs"
+	("F" "Fiction Todo" entry
+	 (file+headline "~/Documents/org/work/f_todo.org" "Todo")
+	 "* TODO %?")
+	("M" "eMacs"
 	 entry (file "~/Documents/org/work/emacs.org")
 	 "* %?\n%i\n\n"
          :empty-lines 1
@@ -625,10 +703,13 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	("c" "Chef"
 	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
 	 "** %?")
-	("E" "E" entry
-	 (file+headline"~/Documents/org/personal/eros.org" "Notes")
+	("e" "e" entry
+	 (file+headline"~/Documents/org/fiction/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1)
+	("E" "E Todo" entry
+	 (file+headline "~/Documents/org/work/e_todo.org" "Todo")
+	 "* TODO %?")
 	("t" "Todo" entry
 	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
 	 "* TODO %?")
@@ -1442,7 +1523,17 @@ Went back to elpy for a while.
 ** python
 As noted in the lsp section, I'm giving elpy a shot.
 
+Now, I'm giving realgud a try.
+
 #+BEGIN_SRC emacs-lisp
+(setq-default python-indent 4)
+(setq-default python-indent-offset 4)
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 4)))
+
 (use-package elpy
   :ensure t
   :init
@@ -1450,10 +1541,12 @@ As noted in the lsp section, I'm giving elpy a shot.
   :config
   (setq elpy-syntax-check-command "/usr/local/bin/flake8"))
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode nil)
-            (setq tab-width 4)))
+(use-package realgud
+  :ensure t
+  :init
+  (setenv "TERM" "dumb")
+  :config
+  (setq realgud:pdb-command-name "python -m pdb"))
  
 ;; (when (load "flycheck" t t)
 ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
