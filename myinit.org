@@ -1879,7 +1879,7 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
 ;; recent files?
 (require 'recentf)
 (recentf-mode 1)
-(global-set-key (kbd "C-x C-r") 'ivy-recentf)
+(global-set-key (kbd "C-x C-r") 'counsel-recentf)
 
 ;; let's add dates easier
 (require 'calendar)
