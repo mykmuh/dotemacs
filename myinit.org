@@ -221,6 +221,11 @@ Ok, fixed now. See the "kill tab optimize" below.
 (remove-hook 'org-cycle-hook
              #'org-optimize-window-after-visibility-change)
 
+;; get rid of extra space added when demoting subtrees
+(setq org-adapt-indentation nil)
+
+
+
 ;; make expand work after ellipsis
 ;;(setq org-special-ctrl-a/e t)
 
@@ -258,7 +263,7 @@ Ok, fixed now. See the "kill tab optimize" below.
 (defun mkm/org-refile-in-file (&optional prefix)
   "Refile to a target with the current file."
   (interactive)
-  (let ((org-refile-targets `(("work.org" :regexp . ".*p_.*$")("work.org" :todo . "PROJ")("work.org" :regexp . "* AOR.*$"))))
+  (let ((org-refile-targets `(("t_work.org" :regexp . ".*p_.*$")("t_work.org" :todo . "PROJ")("t_work.org" :regexp . "* AOR.*$"))))
     (call-interactively 'org-refile)))
 
 ;; now, remap some shit
@@ -658,63 +663,53 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
-	("j" "Journal Entry"
-	 entry (file+datetree "~/Documents/org/work/journal.org")
+        ("w" "Work")
+	("ww" "Work Entry"
+	 entry (file+datetree "~/Documents/org/work/work.org")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
-	("p" "Personal Entry"
-	 entry (file+datetree "~/Documents/org/personal/personal.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("h" "Home Entry"
-	 entry (file+datetree "~/Documents/org/personal/home.org")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
-	 )
-	("i" "inbox - Home"
-         entry (file+headline "~/Documents/org/personal/todo.org" "INBOX")
+	("wt" "Work Todo" entry
+	 (file+headline "~/Documents/org/work/t_work.org" "AOR INBOX")
 	 "* TODO %?")
-	("f" "Fiction Entry"
+        ("p" "Personal")
+	("pp" "Personal"
+	 entry (file+datetree "~/Documents/org/home/personal.org")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1
+	 )
+	("pt" "Personal Todo"
+	 entry (file+headline "~/Documents/org/work/t_personal.org" "AOR INBOX")
+	 "* TODO %?"
+	 )
+        ("f" "Fiction and Writing")
+	("ff" "Fiction"
 	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
 	 "* %?\n\n\n%i\n"
 	 :empty-lines 1
 	 )
-	("F" "Fiction Todo" entry
-	 (file+headline "~/Documents/org/work/f_todo.org" "Todo")
+	("ft" "Fiction Todo" entry
+	 (file+headline "~/Documents/org/work/t_f.org" "Todo")
+	 "* TODO %?")
+        ("e" "E Fiction and Writing")
+	("ee" "Erotica" 
+        entry (file+headline"~/Documents/org/fiction/eros.org" "Notes")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1)
+	("et" "Erotica Todo" 
+        entry (file+headline "~/Documents/org/work/t_e.org" "Todo")
 	 "* TODO %?")
 	("M" "eMacs"
 	 entry (file "~/Documents/org/work/emacs.org")
 	 "* %?\n%i\n\n"
          :empty-lines 1
          )
-	("r" "Research"
-	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
-	 "** %?"
-         )
-	("R" "Research with copy"
-	 entry (file+headline "~/Documents/org/work/topics.org" "topic inbox")
-	 "** %?\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
-         )
-	("x" "Linux Entry"
-	 entry (file+olp "~/Documents/org/work/notes/linux.org" "General")
-	 "* %?\n%i\n\n")
-	("c" "Chef"
-	 entry (file+headline "~/Documents/org/work/notes/chef.org" "Notes")
-	 "** %?")
-	("e" "e" entry
-	 (file+headline"~/Documents/org/fiction/eros.org" "Notes")
-	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	("E" "E Todo" entry
-	 (file+headline "~/Documents/org/work/e_todo.org" "Todo")
-	 "* TODO %?")
-	("t" "Todo" entry
-	 (file+headline "~/Documents/org/work/work.org" "AOR INBOX")
-	 "* TODO %?")
         ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
+	("s" "System"
+	 entry (file+datetree "~/Documents/org/home/spec.org" "Notes")
+	 "* %?\n\n\n%i\n"
+	 :empty-lines 1)
 	))
 #+END_SRC
 
