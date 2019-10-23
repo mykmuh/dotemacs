@@ -663,53 +663,45 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
-        ("w" "Work")
-	("ww" "Work Entry"
+	("w" "Work Journal"
 	 entry (file+datetree "~/Documents/org/work/work.org")
 	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
 	 )
-	("wt" "Work Todo" entry
+	("W" "Work Todo" entry
 	 (file+headline "~/Documents/org/work/t_work.org" "AOR INBOX")
 	 "* TODO %?")
-        ("p" "Personal")
-	("pp" "Personal"
+	("p" "Personal Journal" 
 	 entry (file+datetree "~/Documents/org/home/personal.org")
 	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
 	 )
-	("pt" "Personal Todo"
+	("P" "Personal Todo"
 	 entry (file+headline "~/Documents/org/work/t_personal.org" "AOR INBOX")
 	 "* TODO %?"
 	 )
-        ("f" "Fiction and Writing")
-	("ff" "Fiction"
+	("f" "Fiction Journal"
 	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
 	 "* %?\n\n\n%i\n"
-	 :empty-lines 1
 	 )
-	("ft" "Fiction Todo" entry
+	("F" "Fiction Todo" entry
 	 (file+headline "~/Documents/org/work/t_f.org" "Todo")
 	 "* TODO %?")
-        ("e" "E Fiction and Writing")
-	("ee" "Erotica" 
+	("e" "E Journal" 
         entry (file+headline"~/Documents/org/fiction/eros.org" "Notes")
 	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
-	("et" "Erotica Todo" 
+         )
+	("E" "E Todo" 
         entry (file+headline "~/Documents/org/work/t_e.org" "Todo")
 	 "* TODO %?")
 	("M" "eMacs"
 	 entry (file "~/Documents/org/work/emacs.org")
 	 "* %?\n%i\n\n"
-         :empty-lines 1
          )
         ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
 	("s" "System"
 	 entry (file+datetree "~/Documents/org/home/spec.org" "Notes")
 	 "* %?\n\n\n%i\n"
-	 :empty-lines 1)
+	 )
 	))
 #+END_SRC
 
