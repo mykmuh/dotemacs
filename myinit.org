@@ -210,7 +210,7 @@ Ok, fixed now. See the "kill tab optimize" below.
 (require 'org)
 
 (setq org-directory "~/Documents/org")
-(setq org-agenda-files (list "~/Documents/org/work"))
+(setq org-agenda-files (list "~/Documents/org/active"))
 
 (setq org-replace-disputed-keys t)
 
@@ -280,7 +280,7 @@ Ok, fixed now. See the "kill tab optimize" below.
 (setq-default org-src-fontify-natively t)
 
 ;; some org-mode wonder
-(setq org-default-notes-file (concat org-directory "/work/inbox.org"))
+(setq org-default-notes-file (concat org-directory "/work/j_inbox.org"))
 ;; (define-key global-map "\C-cc" 'org-capture)
 (define-key global-map "\C-cc" 'org-capture)
 (global-set-key (kbd "C-S-SPC") 'org-capture)
@@ -664,42 +664,42 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 (setq org-capture-templates
       '(
 	("w" "Work Journal"
-	 entry (file+datetree "~/Documents/org/work/work.org")
+	 entry (file+datetree "~/Documents/org/active/t_work.org")
 	 "* %?\n\n\n%i\n"
 	 )
 	("W" "Work Todo" entry
-	 (file+headline "~/Documents/org/work/t_work.org" "AOR INBOX")
+	 (file+headline "~/Documents/org/active/t_work.org" "AOR INBOX")
 	 "* TODO %?")
 	("p" "Personal Journal" 
-	 entry (file+datetree "~/Documents/org/home/personal.org")
+	 entry (file+datetree "~/Documents/org/active/j_personal.org")
 	 "* %?\n\n\n%i\n"
 	 )
 	("P" "Personal Todo"
-	 entry (file+headline "~/Documents/org/work/t_personal.org" "AOR INBOX")
+	 entry (file+headline "~/Documents/org/active/t_personal.org" "AOR INBOX")
 	 "* TODO %?"
 	 )
 	("f" "Fiction Journal"
-	 entry (file+datetree "~/Documents/org/fiction/fiction.org")
+	 entry (file+datetree "~/Documents/org/active/j_fiction.org")
 	 "* %?\n\n\n%i\n"
 	 )
 	("F" "Fiction Todo" entry
-	 (file+headline "~/Documents/org/work/t_f.org" "Todo")
+	 (file+headline "~/Documents/org/active/t_fiction.org" "Todo")
 	 "* TODO %?")
 	("e" "E Journal" 
-        entry (file+headline"~/Documents/org/fiction/eros.org" "Notes")
+        entry (file+datetree "~/Documents/org/active/n_eros.org")
 	 "* %?\n\n\n%i\n"
          )
 	("E" "E Todo" 
-        entry (file+headline "~/Documents/org/work/t_e.org" "Todo")
+        entry (file+headline "~/Documents/org/active/t_eros.org" "Todo")
 	 "* TODO %?")
 	("M" "eMacs"
-	 entry (file "~/Documents/org/work/emacs.org")
+	 entry (file "~/Documents/org/active/n_emacs.org")
 	 "* %?\n%i\n\n"
          )
-        ("d" "Diary" entry (file+datetree "~/Documents/org/work/diary.org")
+        ("d" "Diary" entry (file+datetree "~/Documents/org/active/j_diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
 	("s" "System"
-	 entry (file+datetree "~/Documents/org/home/spec.org" "Notes")
+	 entry (file+datetree "~/Documents/org/active/j_spec.org" "System Notes")
 	 "* %?\n\n\n%i\n"
 	 )
 	))
