@@ -263,7 +263,7 @@ Ok, fixed now. See the "kill tab optimize" below.
 (defun mkm/org-refile-in-file (&optional prefix)
   "Refile to a target with the current file."
   (interactive)
-  (let ((org-refile-targets `(("t_work.org" :regexp . ".*p_.*$")("t_work.org" :todo . "PROJ")("t_work.org" :regexp . "* AOR.*$"))))
+  (let ((org-refile-targets `(("t_job.org" :regexp . ".*p_.*$")("t_job.org" :todo . "PROJ")("t_job.org" :regexp . "* AOR.*$"))))
     (call-interactively 'org-refile)))
 
 ;; now, remap some shit
@@ -446,26 +446,26 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Task Pool:")))))
-        ("w" "Work"
+        ("j" "Job"
          (
-          (tags-todo "-home&-tools&-learning&-eros&-fict/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-home&-tools&-learning&-fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Current Tasks:")))
-          (tags-todo "-home&-tools&-learning&-eros&-fict&LEVEL=2/PROJ"
+          (tags-todo "-home&-tools&-learning&-fict&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
           (agenda "" ((org-agenda-span 1)))
-          (tags-todo "-learning&-home&-tools&-eros&-fict/!WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-fict/!WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))
-          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "-learning&-home&-tools&-fict&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-admin&-learning&-home&-tools&-eros&-fict/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-admin&-learning&-home&-tools&-fict/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
@@ -500,32 +500,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))))
-        ("e" "Eros"
-         (
-          (tags-todo "eros/!NEXT|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Current:")))
-          (tags-todo "eros&LEVEL=2/PROJ"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "eros&tools/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Tools:")))
-          (tags-todo "eros/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Eros Tasks:")))
-          (tags-todo "eros/!WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-skip-function 'my-skip-waiting-projects)
-                      (org-agenda-overriding-header "Waiting Tasks:")))))
-        ("e" "Fiction"
+        ("w" "Writing"
          (
           (tags-todo "fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-sorting-strategy '(todo-state-up priority-down))
@@ -539,55 +514,30 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Fiction Tools:")))
+                      (org-agenda-overriding-header "Writing Tools:")))
           (tags-todo "fict/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Fiction Tasks:")))
+                      (org-agenda-overriding-header "Writing Tasks:")))
           (tags-todo "fict/!WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-skip-function 'my-skip-waiting-projects)
-                      (org-agenda-overriding-header "Waiting Tasks:")))))
-        ("c" "Combo"
-         (
-          (tags-todo "eros|fict/!NEXT|WAITING|SOMEDAY"
-                     ((org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Combo Current:")))
-          (tags-todo "eros|fict&LEVEL=2/PROJ"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "eros|fict&tools/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Combo Tools:")))
-          (tags-todo "eros|fict/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-overriding-header "Combo Tasks:")))
-          (tags-todo "eros|fict/!WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-waiting-projects)
                       (org-agenda-overriding-header "Waiting Tasks:")))))
         ("p" "Project View"
           (
-          (tags-todo "-learning&-home&-tools&-eros&-fict&LEVEL=2/PROJ"
+          (tags-todo "-learning&-home&-tools&-fict&LEVEL=2/PROJ"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Active Projects:")))
-          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/WAITING"
+          (tags-todo "-learning&-home&-tools&-fict&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-overriding-header "Waiting Projects:")))
-          (tags-todo "-learning&-home&-tools&-eros&-fict&+{^p_.*}&LEVEL=2/SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-fict&+{^p_.*}&LEVEL=2/SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-overriding-header "Someday Projects:")))
-          (tags-todo "-learning&-home&-tools&-eros&-fict/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools&-fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
@@ -663,12 +613,12 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
-	("w" "Work Journal"
-	 entry (file+datetree "~/Documents/org/active/t_work.org")
+	("j" "Job Journal"
+	 entry (file+datetree "~/Documents/org/active/j_job.org")
 	 "* %?\n\n\n%i\n"
 	 )
-	("W" "Work Todo" entry
-	 (file+headline "~/Documents/org/active/t_work.org" "AOR INBOX")
+	("J" "Job Todo" entry
+	 (file+headline "~/Documents/org/active/t_job.org" "AOR INBOX")
 	 "* TODO %?")
 	("p" "Personal Journal" 
 	 entry (file+datetree "~/Documents/org/active/j_personal.org")
@@ -678,21 +628,14 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	 entry (file+headline "~/Documents/org/active/t_personal.org" "AOR INBOX")
 	 "* TODO %?"
 	 )
-	("f" "Fiction Journal"
-	 entry (file+datetree "~/Documents/org/active/j_fiction.org")
+	("w" "Writing Journal"
+	 entry (file+datetree "~/Documents/org/active/j_writing.org")
 	 "* %?\n\n\n%i\n"
 	 )
-	("F" "Fiction Todo" entry
-	 (file+headline "~/Documents/org/active/t_fiction.org" "Todo")
+	("W" "Writing Todo" entry
+	 (file+headline "~/Documents/org/active/t_writing.org" "Todo")
 	 "* TODO %?")
-	("e" "E Journal" 
-        entry (file+datetree "~/Documents/org/active/n_eros.org")
-	 "* %?\n\n\n%i\n"
-         )
-	("E" "E Todo" 
-        entry (file+headline "~/Documents/org/active/t_eros.org" "Todo")
-	 "* TODO %?")
-	("M" "eMacs"
+	("e" "emacs"
 	 entry (file "~/Documents/org/active/n_emacs.org")
 	 "* %?\n%i\n\n"
          )
