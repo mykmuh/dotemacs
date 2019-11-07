@@ -263,7 +263,13 @@ Ok, fixed now. See the "kill tab optimize" below.
 (defun mkm/org-refile-in-file (&optional prefix)
   "Refile to a target with the current file."
   (interactive)
-  (let ((org-refile-targets `(("t_job.org" :regexp . ".*p_.*$")("t_job.org" :todo . "PROJ")("t_job.org" :regexp . "* AOR.*$"))))
+  (let ((org-refile-targets `(
+                              ("t_job.org" :regexp . ".*p_.*$")
+                              ("t_job.org" :todo . "PROJ")
+                              ("t_job.org" :regexp . "* AOR.*$")
+                              ("t_personal.org" :regexp . ".*p_.*$")
+                              ("t_personal.org" :todo . "PROJ")
+                              ("t_personal.org" :regexp . "* AOR.*$"))))
     (call-interactively 'org-refile)))
 
 ;; now, remap some shit
