@@ -418,6 +418,8 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-agenda-dim-blocked-tasks nil)
 (setq org-agenda-inhibit-startup t)
 (setq org-agenda-use-tag-inheritance nil)
+(setq org-agenda-ignore-drawer-properties '(effort appt category))
+(setq org-agenda-sticky t)
 
 (setq org-enforce-todo-checkbox-dependencies t)
 
@@ -440,7 +442,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("C" "Chooser"
+      '(("c" "Choose Tasks"
          (
           (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
@@ -470,12 +472,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
                       (org-agenda-overriding-header "Waiting Tasks:")))
           (tags-todo "-learning&-home&-tools&-fict&+{^p_.*}&LEVEL=2/WAITING"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-overriding-header "Projects (Waiting):")))
-          (tags-todo "-admin&-learning&-home&-tools&-fict/!TODO|WAITING|SOMEDAY"
-                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
-                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
-                      (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Task Pool:")))))
+                      (org-agenda-overriding-header "Projects (Waiting):")))))
         ("h" "Home"
          (
           (tags-todo "home|learning|tools/!NEXT|WAITING|SOMEDAY"
