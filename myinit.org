@@ -280,8 +280,8 @@ Ok, fixed now. See the "kill tab optimize" below.
         
 
 ;; fix priorities so non-assigned are after the rest
-(setq org-lowest-priority ?E)
-(setq org-default-priority ?E)
+(setq org-lowest-priority ?F)
+(setq org-default-priority ?F)
 
 (setq-default org-src-fontify-natively t)
 
@@ -442,18 +442,30 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("c" "Choose Tasks"
+      '(("c" "Choose Job Tasks"
+         (
+          (tags-todo "-learning&-home&-tools-fict&+PRIORITY=\"F\"/!NEXT|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-overriding-header "Current Job Tasks:")))
+          (tags-todo "-learning&-home&-tools-fict&+PRIORITY=\"F\"/!TODO|WAITING|SOMEDAY"
+                     ((org-agenda-prefix-format "%-16:c%?-12t% s")
+                      (org-agenda-sorting-strategy '(todo-state-up priority-down))
+                      (org-agenda-skip-function 'my-skip-inside-waits)
+                      (org-agenda-overriding-header "Job Task Pool:")))))
+        ("C" "Choose All Job Tasks"
          (
           (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Current Tasks:")))
+                      (org-agenda-overriding-header "Current Job Tasks:")))
           (tags-todo "-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Task Pool:")))))
+                      (org-agenda-overriding-header "Task Job Pool:")))))
         ("j" "Job"
          (
           (tags-todo "-home&-tools&-learning&-fict/!NEXT|WAITING|SOMEDAY"
