@@ -419,7 +419,7 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-agenda-inhibit-startup t)
 (setq org-agenda-use-tag-inheritance nil)
 (setq org-agenda-ignore-drawer-properties '(effort appt category))
-(setq org-agenda-sticky t)
+;;(setq org-agenda-sticky t)
 
 (setq org-enforce-todo-checkbox-dependencies t)
 
@@ -442,26 +442,26 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 (setq org-todo-state-tags-triggers '(("CANCELLED" ("ARCHIVE" . t))))
 
 (setq org-agenda-custom-commands
-      '(("c" "Choose Job Tasks"
+      '(("c" "Choose Unprioritized Tasks"
          (
           (tags-todo "-learning&-home&-tools-fict&+PRIORITY=\"F\"/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Current Job Tasks:")))
+                      (org-agenda-overriding-header "Current Unprioritized Tasks:")))
           (tags-todo "-learning&-home&-tools-fict&+PRIORITY=\"F\"/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
-                      (org-agenda-overriding-header "Job Task Pool:")))))
+                      (org-agenda-overriding-header "Unprioritized Tasks:")))))
         ("C" "Choose All Job Tasks"
          (
-          (tags-todo "-learning&-home&-tools/!NEXT|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools-fict/!NEXT|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
                       (org-agenda-overriding-header "Current Job Tasks:")))
-          (tags-todo "-learning&-home&-tools/!TODO|WAITING|SOMEDAY"
+          (tags-todo "-learning&-home&-tools-fict/!TODO|WAITING|SOMEDAY"
                      ((org-agenda-prefix-format "%-16:c%?-12t% s")
                       (org-agenda-sorting-strategy '(todo-state-up priority-down))
                       (org-agenda-skip-function 'my-skip-inside-waits)
@@ -624,7 +624,16 @@ This first bit needs special discussion because I keep forgetting to use it. Thi
 ** capture templates
 I use these more than any other org feature. I think it needs to be pruned a bit.
 
+Just added one for creating new markdown docs in markdown mode for writing topics.
 #+BEGIN_SRC emacs-lisp
+
+(defun mkm/create-writing-md ()
+  "Create a markdown doc for writing topics in technique folder."
+  (interactive)
+  (let ((name (read-string "Filename: ")))
+    (expand-file-name (format "%s.md"
+                              name) "~/Dropbox/fiction/technique")))
+
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
@@ -659,6 +668,10 @@ I use these more than any other org feature. I think it needs to be pruned a bit
 	("s" "System"
 	 entry (file+datetree "~/Documents/org/active/j_spec.org" "System Notes")
 	 "* %?\n\n\n%i\n"
+	 )
+        ("t" "Writing Techique Markdown"
+	 entry (file mkm/create-writing-md)
+	 "# name%?\n\n"
 	 )
 	))
 #+END_SRC
@@ -1188,7 +1201,8 @@ Adding ag
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
+  :init (setq markdown-command "multimarkdown")
+  :bind (("s-s" . ispell-word)))
 
 (setq markdown-enable-wiki-links nil)
 (setq markdown-hide-urls t)
@@ -1197,6 +1211,7 @@ Adding ag
 (setq markdown-open-command "~/bin/mark")
 (setq markdown-indent-on-enter t)
 (setq markdown-gfm-uppercase-checkbox t)
+
 #+END_SRC
 
 * git
@@ -1950,6 +1965,7 @@ Trying to add this back in. Not sure if I'll get it working to my satisfaction -
   (local-set-key (kbd "s-l") 'mkm/link-zk))
 
 (add-hook 'markdown-mode-hook 'my-markdown-mode-hook)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
 
 (defun mkm/link-zk ()
   (interactive)
