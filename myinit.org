@@ -637,6 +637,10 @@ Just added one for creating new markdown docs in markdown mode for writing topic
 ;; ;; my own templates -- screw automation!
 (setq org-capture-templates
       '(
+	("!" "Writing Practice!"
+g	 entry (file+datetree "~/Dropbox/fiction/practice/j_practice.org")
+	 "* %?\n\n\n%i\n"
+	 )
 	("j" "Job Journal"
 	 entry (file+datetree "~/Documents/org/active/j_job.org")
 	 "* %?\n\n\n%i\n"
