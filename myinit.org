@@ -4,7 +4,6 @@ Since I always forget this, to bisect the emacs file for error, add this:
   : (error "Done")
 * initial set up
 ** packages
-
 #+BEGIN_SRC emacs-lisp
 (setenv "PATH"
 	(concat (getenv "PATH")
@@ -20,7 +19,6 @@ Since I always forget this, to bisect the emacs file for error, add this:
 (global-set-key (kbd "C-c i")
                 (lambda() (interactive)(org-babel-load-file "~/.emacs.d/myinit.org")))
 #+END_SRC
-
 ** mac specific
 #+BEGIN_SRC emacs-lisp
 ;; super vs shift key
@@ -40,9 +38,7 @@ Since I always forget this, to bisect the emacs file for error, add this:
       (setq sentence-end-double-space nil)))
 
 #+END_SRC
-
 Open any new docs in the same emacs frame.
-
 #+BEGIN_SRC emacs-lisp
 ;; (server-start)
 (setq ns-pop-up-frames nil)
@@ -54,10 +50,8 @@ Open any new docs in the same emacs frame.
 
 (load "org-devonthink")
 #+END_SRC
-
 * user interface tweaks
 ** general
-
 Never, ever, ever accidentally close the emacsclient again!
 
 #+BEGIN_SRC emacs-lisp
@@ -849,7 +843,6 @@ as the default task."
 #+END_SRC
 * flyspell
 This screws me up enough to merit its own section.
-
 #+BEGIN_SRC emacs-lisp
 (use-package ispell
   :defer 15
@@ -1054,7 +1047,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
 #+END_SRC
 
 * highlight-indentation
-
 #+BEGIN_SRC emacs-lisp
 (require 'highlight-indentation)
 
@@ -1069,7 +1061,6 @@ When running as a daemon, some themes don't seem to want to load when restarting
 #+END_SRC
 
 * ivy
-
 First, a tweak to selection. I'm not too hip on what ivy is doing here with the multip matches, but this gets me so I can read stuff again in the minibuffer. Currently, this is commented out, as I'm experimenting with themes -- again :(
 
 #+BEGIN_SRC emacs-lisp
@@ -1133,7 +1124,6 @@ Adding ag
 #+END_SRC
 
 * ibuffer
-
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
@@ -1252,6 +1242,7 @@ Adding ag
 #+BEGIN_SRC emacs-lisp
 (require 'indent-tools)
 (global-set-key (kbd "C-c >") 'mkm-indent-tools-hydra/body)
+(global-set-key (kbd "<f12>") 'mkm-indent-tools-hydra/body)
 
 (require 'yafolding)
 
@@ -1292,13 +1283,13 @@ Adding ag
   ("l" recenter-top-bottom)
   ("f" yafolding-toggle-element)
   ("F" yafolding-toggle-all)
+  ("a" yafolding-show-all)
   ("q" nil)
   )
 #+END_SRC
 
 * Howard Abrams settings
 ** main
-
 #+BEGIN_SRC emacs-lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Howard Abrams settings                                                 ;;
@@ -1313,9 +1304,7 @@ Adding ag
     (horizontal-scroll-bar-mode -1))
   (scroll-bar-mode -1))           ;; Scrollbars waste screen estate
 #+END_SRC
-
 ** window movement
-
 This is the awesome stuff. Let's you move split windows using the arrow keys. It would be nice to be able to switch to a different window and start sizing from there . . . 
 
 #+BEGIN_SRC emacs-lisp
@@ -1374,7 +1363,6 @@ This is the awesome stuff. Let's you move split windows using the arrow keys. It
 ;;   ("<right>" hydra-move-splitter-right))
 
 #+END_SRC
-
 
 ** which key
 
@@ -1450,6 +1438,9 @@ Now going back to trying lsp
 MKM: Thursday, August 22, 2019
 Went back to elpy for a while.
 
+MKM: Thursday, January 9, 2020
+New version of LSP, trying it again.
+
 #+BEGIN_SRC emacs-lisp
 #+END_SRC
 ** yaml
@@ -1498,19 +1489,19 @@ Now, I'm giving realgud a try.
             (setq indent-tabs-mode nil)
             (setq tab-width 4)))
 
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable)
-  :config
-  (setq elpy-syntax-check-command "/usr/local/bin/flake8"))
+;; (use-package elpy
+;;   :ensure t
+;;   :init
+;;   (elpy-enable)
+;;   :config
+;;   (setq elpy-syntax-check-command "/usr/local/bin/flake8"))
 
-(use-package realgud
-  :ensure t
-  :init
-  (setenv "TERM" "dumb")
-  :config
-  (setq realgud:pdb-command-name "python -m pdb"))
+;; (use-package realgud
+;;   :ensure t
+;;   :init
+;;   (setenv "TERM" "dumb")
+;;   :config
+;;   (setq realgud:pdb-command-name "python -m pdb"))
  
 ;; (when (load "flycheck" t t)
 ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
