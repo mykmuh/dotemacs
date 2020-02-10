@@ -218,8 +218,6 @@ Ok, fixed now. See the "kill tab optimize" below.
 ;; get rid of extra space added when demoting subtrees
 (setq org-adapt-indentation nil)
 
-
-
 ;; make expand work after ellipsis
 ;;(setq org-special-ctrl-a/e t)
 
@@ -233,6 +231,8 @@ Ok, fixed now. See the "kill tab optimize" below.
 (global-set-key (kbd "C-<") 'org-begin-template)
 
 (global-set-key (kbd "C-c l") 'org-store-link)
+
+(global-set-key (kbd "s-q") 'outline-hide-sublevels)
 
 (setq org-adapt-indentation t)
 (setq org-fast-selection-include-todo nil)
