@@ -52,6 +52,12 @@ Open any new docs in the same emacs frame.
 #+END_SRC
 * user interface tweaks
 ** general
+Delete the fucking text!
+
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC
+
 Never, ever, ever accidentally close the emacsclient again!
 
 #+BEGIN_SRC emacs-lisp
@@ -894,7 +900,7 @@ This screws me up enough to merit its own section.
         (define-key flyspell-mode-map (kbd "C-.") nil))
         ;; (global-set-key (kbd "<f12>") 'flyspell-mode))
 
-        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+        ;; (add-hook 'prog-mode-hook #'flyspell-prog-mode)
         (with-eval-after-load 'auto-complete
           (ac-flyspell-workaround))
         ;; https://github.com/larstvei/dot-emacs#flyspell
