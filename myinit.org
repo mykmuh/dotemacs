@@ -115,6 +115,9 @@ Just some tweaks here.
 
 (setq visible-bell nil)
 
+;; get rid of the damn beep!
+(setq ring-bell-function 'ignore)
+
 (when (window-system)
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
